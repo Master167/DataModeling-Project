@@ -1,0 +1,38 @@
+Meeting with Abassi (3-29):
+Other teams are getting smaller
+
+Question: 1
+No, Single User database
+
+Question: 2
+Check the syntax and show an error (Informative or Uninformative)
+-Bad syntax could stop the processing if we wanted too
+You could do a two stage insert, in which errors don't cause a permanent changes in database
+
+Question: 3
+No, XML is going to be converted into SQL commands. The SQL engine is able to handle all the commands
+
+Side on XML:
+XML is a datafile that contains records and their fields.
+XSD shows how the XML should be formatted.
+You're not using this to generate a create table command.
+If the table doesn't exist, show the error.
+The XML is just going to be converted into sql statements that can be run against this database.
+
+Question: 4
+Anything you want.
+
+Question: 5
+Your choice. Except that your database files will be in external files. The LOAD DATABASE can pull those external files. The SAVE DATABASE will create the external files.
+
+Question: 6
+No, you cannot store your data in Oracle.
+
+Question: 7
+You could do it. It gives flexibility. Otherwise you could do a CSV.
+
+Notes:
+XSD could be contained in XML, It's not recommended.
+Abassi could have multiple XML and XSD file that he could load multiple times.
+
+When you get a job, START A ROTH IRA.
