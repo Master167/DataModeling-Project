@@ -11,6 +11,14 @@ public class DataEngine {
     private XMLToSQLGenerator xmlToSqlGenerator;
     private XMLToSQLParser xmlToSqlParser;
     
+    public DataEngine() {
+        this.sqlParser = new SQLParser();
+        this.fileReader = new FileReader();
+        this.userInterface = new UserInterface();
+        this.xmlToSqlGenerator = new XMLToSQLGenerator();
+        this.xmlToSqlParser = new XMLToSQLParser();
+    }
+    
     /**
      * Actual entry point
      */
