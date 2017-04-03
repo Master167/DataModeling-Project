@@ -1,11 +1,11 @@
 /**
- * Main Class for the application, Use this to generate our objects in the global scope
+ * Entry point for program
  * @author Sean Domingo, Michael Frederick, Megan Molumby, Mai Huong Nguyen, Richard Pratt
  */
-public class TSQLEngine {
 
+public class TSQLEngine {
     public static void main(String[] args) {
-        // TODO code application logic here
+        DataEngine db = new DataEngine();
+        db.runEngine();
     }
-    
 }
