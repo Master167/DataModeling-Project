@@ -12,11 +12,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import java.io.*;
 public class XMLToSQLParser {
-    public static void main(String args[]){
+
+    public void parse(File inputFile){
         try{
             //get input file
-            File inputFile = new File("xmlTestFile.txt");
+            //File inputFile = new File("xmlTestFile.txt");
             //Create a DocumentBuilder
+
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document doc = builder.parse(inputFile);

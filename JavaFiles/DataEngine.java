@@ -16,5 +16,15 @@ public class DataEngine {
      */
     public void runEngine() {
         System.out.println("Running");
+        //calls XmlParser and parses given textfile
+        xmlToSQLParser();
+
+    }
+    public void xmlToSQLParser(){
+        fileReader = new FileReader();
+        fileReader.setInputFile();
+        xmlToSqlParser = new XMLToSQLParser();
+        xmlToSqlParser.parse(fileReader.getInputFile());
+
     }
 }
