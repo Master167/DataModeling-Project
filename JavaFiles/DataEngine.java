@@ -1,4 +1,5 @@
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,14 +46,17 @@ public class DataEngine {
     }
 
     private void checkFilesystem() {
+        File temp;
         Path path = Paths.get("tables\\");
         if (Files.notExists(path)) {
-            // Initialize Tables directory
+            temp = new File("tables");
+            temp.mkdir();
         }
         
         path = Paths.get("databases\\");
         if (Files.notExists(path)) {
-            // Initialize database directory
+            temp = new File("databases");
+            temp.mkdir();
         }
     }
 }
