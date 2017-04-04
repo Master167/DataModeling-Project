@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<S>
+	<record>
+		<SNO>S1</SNO>
+		<SNAME>Job</SNAME>
+		<QUOTA>4000</QUOTA>
+		<CITY>Dallas</CITY>
+		<time>04/04/2017 03:45:00</time>
+	</record>
+	<record>
+		<SNO>S2</SNO>
+		<SNAME>Baker</SNAME>
+		<QUOTA>20000</QUOTA>
+		<CITY>Chicago</CITY>
+		<time>04/04/2017 03:45:00</time>
+	</record>
+	<record>
+		<SNO>S3</SNO>
+		<SNAME>Kirby</SNAME>
+		<QUOTA>6000</QUOTA>
+		<CITY>Phoenix</CITY>
+		<time>04/04/2017 03:45:00</time>
+	</record>
+	<record>
+		<SNO>S4</SNO>
+		<SNAME>Sims</SNAME>
+		<QUOTA>3000</QUOTA>
+		<CITY>San Diego</CITY>
+		<time>04/04/2017 03:45:00</time>
+	</record>
+	<record>
+		<SNO>S5</SNO>
+		<SNAME>Jones</SNAME>
+		<QUOTA>30000</QUOTA>
+		<CITY>New York</CITY>
+		<time>04/04/2017 03:45:00</time>
+	</record>
+</S>
