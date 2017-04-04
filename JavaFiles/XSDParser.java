@@ -19,7 +19,7 @@ public class XSDParser {
             DocumentBuilder docBuilder;
             docBuilder = docBuilderFactory.newDocumentBuilder();
             Document doc = docBuilder.parse (new File("xsdTestFile.xsd"));
-            NodeList list = doc.getElementsByTagName("xs:element");
+            NodeList list = doc.getElementsByTagName("xsd:element");
 
 //loop to print data
             for(int i = 0 ; i < list.getLength(); i++)
