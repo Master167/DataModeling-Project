@@ -14,7 +14,7 @@ import org.w3c.dom.Element;
 public class XSDParser {
 
     public void parseXSD(File inputFile, XMLToSQLParser xmlToSQLParser ){
-        try{System.out.print("imhere");
+        try{
             DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder;
             docBuilder = docBuilderFactory.newDocumentBuilder();
@@ -31,7 +31,16 @@ public class XSDParser {
                     String nam = first.getAttribute("name");
                     System.out.println(nam);
                     String nam1 = first.getAttribute("type");
+                    int cut = nam1.indexOf(":")+1;
+                    nam1 = nam1.substring(cut, nam1.length());
                     System.out.println(nam1);
+                    String nam2 = first.getAttribute("maxOccurs");
+                    System.out.println(nam2);
+                    //depends on instructors choice
+                    String nam3 = first.getAttribute("minOccurs");
+                    System.out.println(nam3);
+                    String nam4 = first.getAttribute("fraction");
+                    System.out.println(nam4);
                 }
             }
         }

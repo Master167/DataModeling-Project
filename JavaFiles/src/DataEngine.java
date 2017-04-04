@@ -36,7 +36,7 @@ public class DataEngine {
     public void runEngine() {
         //System.out.println("Running");
         //calls Xsd parser to parse file
-        //xsdParser();
+        xsdParser();
 
     }
 
