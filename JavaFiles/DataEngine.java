@@ -19,6 +19,7 @@ public class DataEngine {
     private UserInterface userInterface;
     private XMLToSQLGenerator xmlToSqlGenerator;
     private XMLToSQLParser xmlToSqlParser;
+    private XSDParser xsdParser;
 
     public DataEngine() {
         this.sqlParser = new SQLParser();
@@ -26,7 +27,7 @@ public class DataEngine {
         this.userInterface = new UserInterface();
         this.xmlToSqlGenerator = new XMLToSQLGenerator();
         this.xmlToSqlParser = new XMLToSQLParser();
-
+        this.xsdParser = new XSDParser();
         checkFilesystem();
     }
 
@@ -35,14 +36,14 @@ public class DataEngine {
      */
     public void runEngine() {
         //System.out.println("Running");
-        //calls XmlParser and parses given textfile
-        //xmlToSQLParser();
+        //calls Xsd parser to parse file
+        //xsdParser();
 
     }
 
-    public void xmlToSQLParser() {
+    public void xsdParser() {
         this.fileReader.setInputFile();
-        this.xmlToSqlParser.parse(this.fileReader.getInputFile());
+        this.xsdParser.parseXSD(this.fileReader.getInputFile(), xmlToSqlParser);
     }
 
     private void checkFilesystem() {
