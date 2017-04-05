@@ -1,0 +1,36 @@
+Meeting with Abassi (4-5):
+
+Question 1:
+Yes, the nested structure is essential. XSD is not W3 standard. But the one in
+
+Question 2:
+It's up to us. One command with a semicolon is the usual. If you want to buffer the commands that fine.
+You're commit could be the end of the command.
+
+Question 3:
+Yes, typical databases are auto commit. But you could buffer the commands if you want. It'd be nice to turn it off.
+
+semicolon is say commit regardless.
+
+Question 4:
+Is that difficult? In reality it doesn't matter. It's case sensitive when checking the table structure.
+
+Question 5:
+Table is going to come from XSD and XML. There is a translation from XSD to SQL datatypes
+
+Question 6:
+Your database is going to empty at start. You can show this in the presentation.
+CHAR(3) is for all the key fields.
+
+Question 7:
+Insert duplicates? Yes insert the duplicate with only a change the date and time.
+
+Extra work:
+Auto-commit is a good idea.
+Capturing System date and time.
+
+
+String maximum size.
+integer maximum size.
+decimal maximum size and precision that removes from maximum.
+date (Date format? written in XSD MM:DD:YY[YY] for initial any other change is extra)
