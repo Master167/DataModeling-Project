@@ -42,10 +42,28 @@ public class DataEngine {
      * Actual entry point
      */
     public void runEngine() {
-        System.out.println("Running");
-        //calls Xsd parser to parse file
-        //xsdParser();
-        System.out.println(this.currentTime);
+        boolean running = true;
+        String userInput = "";
+        this.currentDatabase = "";
+        while (running) {
+            userInput = this.userInterface.getInput();
+            
+            if (userInput.equalsIgnoreCase("exit")) {
+                this.userInterface.showUser("Goodbye");
+                running = false;
+            }
+            else if (userInput.equalsIgnoreCase("help")) {
+                if (this.currentDatabase == "") {
+                    this.userInterface.showDatabaseHelp();
+                }
+                else {
+                    this.userInterface.showTableHelp(currentDatabase);
+                }
+            }
+            else {
+                this.userInterface.showUser(userInput);
+            }
+        }
     }
 
     public void xsdParser() {
@@ -70,8 +88,6 @@ public class DataEngine {
             temp.mkdir();
         }
     }
-
-    private Object SimpleDateFormat(String mmddyyyy_kkmmss) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    
+    
 }
