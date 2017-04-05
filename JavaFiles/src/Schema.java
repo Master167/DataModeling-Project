@@ -1,3 +1,5 @@
+
+
 /**
  * Created by Megan on 4/4/2017.
  */
@@ -5,7 +7,7 @@ public class Schema {
     private String name;
     private String dataType;
     private int length;
-    private int minMax;
+    private int min;//Cannot be null?
     private int fraction;
 
     public Schema(){
@@ -25,5 +27,23 @@ public class Schema {
     }
     public String getDataType(){
         return dataType;
+    }
+    public void setLength(String value){
+        length = Integer.parseInt(value);
+    }
+    public int getLength() {
+        return length;
+    }
+    public void setMin(String value){
+        min = Integer.parseInt(value);
+    }
+    public int getMin(){
+        return min;
+    }
+    public void setFraction(String value){
+        fraction = Integer.parseInt(value);
+    }
+    public int getFraction(){
+        return fraction;
     }
 }
