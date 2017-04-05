@@ -46,6 +46,9 @@ public class DataEngine {
         this.xsdParser.parseXSD(this.fileReader.getInputFile(), xmlToSqlParser);
     }
 
+    /**
+     * Checks if database and tables folders exist, creates them if necessary
+     */
     private void checkFilesystem() {
         File temp;
         Path path = Paths.get("tables\\");
