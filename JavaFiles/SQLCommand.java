@@ -1,6 +1,6 @@
 /**
- *
- * @author Michael
+ * SQLCommnad
+ * @author Sean Domingo, Michael Frederick, Megan Molumby, Mai Huong Nguyen, Richard Pratt
  */
 public abstract class SQLCommand {
     public String database;
