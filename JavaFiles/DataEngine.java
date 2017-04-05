@@ -1,8 +1,9 @@
-
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 
 /**
@@ -21,6 +22,7 @@ public class DataEngine {
     private XMLToSQLParser xmlToSqlParser;
     private XSDParser xsdParser;
     
+    private String currentDatabase;
     private String currentTime;
 
     public DataEngine() {
@@ -33,16 +35,17 @@ public class DataEngine {
         checkFilesystem();
         
         // Get time somewhere here.
+        this.currentTime = new SimpleDateFormat("MM/dd/yyyy kk:mm:ss").format(new Timestamp(System.currentTimeMillis()));
     }
 
     /**
      * Actual entry point
      */
     public void runEngine() {
-        //System.out.println("Running");
+        System.out.println("Running");
         //calls Xsd parser to parse file
         //xsdParser();
-
+        System.out.println(this.currentTime);
     }
 
     public void xsdParser() {
@@ -66,5 +69,9 @@ public class DataEngine {
             temp = new File("databases");
             temp.mkdir();
         }
+    }
+
+    private Object SimpleDateFormat(String mmddyyyy_kkmmss) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
