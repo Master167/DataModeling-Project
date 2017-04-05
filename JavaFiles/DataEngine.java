@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.StringTokenizer;
 
 
 /**
@@ -42,9 +43,12 @@ public class DataEngine {
      * Actual entry point
      */
     public void runEngine() {
+        this.currentDatabase = "";
         boolean running = true;
         String userInput = "";
-        this.currentDatabase = "";
+        String firstToken;
+        StringTokenizer tokenGenerator;
+        
         while (running) {
             userInput = this.userInterface.getInput();
             
@@ -61,7 +65,44 @@ public class DataEngine {
                 }
             }
             else {
-                this.userInterface.showUser(userInput);
+                tokenGenerator = new StringTokenizer(userInput, " ");
+                firstToken = tokenGenerator.nextToken();
+                if (this.currentDatabase == "") {
+                    // No Database selected
+                    if (firstToken.equalsIgnoreCase("create")) {
+                        firstToken = tokenGenerator.nextToken();
+                        if (firstToken.equalsIgnoreCase("database")) {
+                            // Pass userInput to sql parser
+                            
+                            // Set database name when the object comes out
+                        }
+                        else {
+                            this.userInterface.showUserError();
+                        }
+                    }
+                    else if (firstToken.equalsIgnoreCase("load")) {
+                        // Pass userInput to sql parser
+                            
+                        // Set database name when the object comes out
+                    }
+                    else if (firstToken.equalsIgnoreCase("drop")) {
+                        firstToken = tokenGenerator.nextToken();
+                        if (firstToken.equalsIgnoreCase("database")) {
+                            // Pass userInput to sql parser
+                            
+                            // Set database name when the object comes out
+                        }
+                        else {
+                            this.userInterface.showUserError();
+                        }
+                    }
+                    else {
+                        this.userInterface.showUserError();
+                    }
+                }
+                else {
+                    // Database Selected
+                }
             }
         }
     }

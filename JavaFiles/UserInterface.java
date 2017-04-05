@@ -4,7 +4,6 @@
  * @author Sean Domingo, Michael Frederick, Megan Molumby, Mai Huong Nguyen, Richard Pratt
  */
 import java.util.NoSuchElementException;
-import java.lang.IllegalStateException;
 import java.util.Scanner;
 
 public class UserInterface {
@@ -44,10 +43,29 @@ public class UserInterface {
     }
     
     public void showDatabaseHelp() {
-        
+        this.showUser("Available Commands");
+        this.showUser("CREATE DATABASE database;");
+        this.showUser("LOAD DATABASE database;");
+        this.showUser("DROP DATABASE database;");
+        //this.showUser("SET TIME;");
+        this.showUser("HELP");
+        this.showUser("EXIT");
     }
     
     public void showTableHelp(String currentDatabase) {
-        
+        this.showUser("Available Commands");
+        this.showUser("Current Database: " + currentDatabase);
+        this.showUser("CREATE TABLE tableName (fieldName fieldType(n)[ NOT NULL], ...);");
+        this.showUser("DROP TABLE tableName;");
+        this.showUser("INSERT INTO tableName[ (fieldName, ...)] VALUES (fieldValue, ...);");
+        this.showUser("CONVVERT XML xmlFilename, XSD filename AS sqlFile;");
+        this.showUser("INPUT sqlFile;");
+        this.showUser("[t]SELECT [*|(field, ...)] FROM tableName [WHERE (field = value)]");
+        this.showUser("SAVE DATABASE");
+        this.showUser("HELP");
+    }
+    
+    public void showUserError() {
+        this.showUser("Unrecognized Command. Type 'HELP' if needed");
     }
 }
