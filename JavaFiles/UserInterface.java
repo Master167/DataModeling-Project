@@ -20,7 +20,7 @@ public class UserInterface {
         String input;
         try {
             // Change this if we want to pull by ';'
-            this.showUser("sql> ");
+            this.showUser("sql> ", false);
             input = scanner.nextLine();
         }
         catch (NoSuchElementException | IllegalStateException e) {
@@ -40,6 +40,15 @@ public class UserInterface {
     
     public void showUser(String message) {
         System.out.println(message);
+    }
+    
+    public void showUser(String message, boolean newLine) {
+        if (newLine) {
+            this.showUser(message);
+        }
+        else {
+            System.out.printf(message);
+        }
     }
     
     public void showDatabaseHelp() {
