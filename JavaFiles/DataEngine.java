@@ -19,6 +19,8 @@ public class DataEngine {
     private XMLToSQLGenerator xmlToSqlGenerator;
     private XMLToSQLParser xmlToSqlParser;
     private XSDParser xsdParser;
+    
+    private String currentTime;
 
     public DataEngine() {
         this.sqlParser = new SQLParser();
@@ -28,6 +30,8 @@ public class DataEngine {
         this.xmlToSqlParser = new XMLToSQLParser();
         this.xsdParser = new XSDParser();
         checkFilesystem();
+        
+        // Get time somewhere here.
     }
 
     /**
