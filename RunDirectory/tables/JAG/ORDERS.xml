@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ORDERS>
+	<record>
+		<SNO>S1</SNO>
+		<PNO>P1</PNO>
+		<CNO>C5</CNO>
+		<TTLQTY>4</TTLQTY>
+		<time>04/04/2017 03:45:00</time>
+	</record>
+	<record>
+		<SNO>S1</SNO>
+		<PNO>P3</PNO>
+		<CNO>C1</CNO>
+		<TTLQTY>1</TTLQTY>
+		<time>04/04/2017 03:45:00</time>
+	</record>
+	<record>
+		<SNO>S1</SNO>
+		<PNO>P3</PNO>
+		<CNO>C5</CNO>
+		<TTLQTY>2</TTLQTY>
+		<time>04/04/2017 03:45:00</time>
+	</record>
+	<record>
+		<SNO>S2</SNO>
+		<PNO>P1</PNO>
+		<CNO>C1</CNO>
+		<TTLQTY>2</TTLQTY>
+		<time>04/04/2017 03:45:00</time>
+	</record>
+	<record>
+		<SNO>S2</SNO>
+		<PNO>P2</PNO>
+		<CNO>C4</CNO>
+		<TTLQTY>5</TTLQTY>
+		<time>04/04/2017 03:45:00</time>
+	</record>
+	<record>
+		<SNO>S2</SNO>
+		<PNO>P3</PNO>
+		<CNO>C4</CNO>
+		<TTLQTY>5</TTLQTY>
+		<time>04/04/2017 03:45:00</time>
+	</record>
+	<record>
+		<SNO>S2</SNO>
+		<PNO>P4</PNO>
+		<CNO>C4</CNO>
+		<TTLQTY>5</TTLQTY>
+		<time>04/04/2017 03:45:00</time>
+	</record>
+	<record>
+		<SNO>S3</SNO>
+		<PNO>P5</PNO>
+		<CNO>C4</CNO>
+		<TTLQTY>5</TTLQTY>
+		<time>04/04/2017 03:45:00</time>
+	</record>
+	<record>
+		<SNO>S3</SNO>
+		<PNO>P6</PNO>
+		<CNO>C4</CNO>
+		<TTLQTY>2</TTLQTY>
+		<time>04/04/2017 03:45:00</time>
+	</record>
+	<record>
+		<SNO>S5</SNO>
+		<PNO>P2</PNO>
+		<CNO>C2</CNO>
+		<TTLQTY>10</TTLQTY>
+		<time>04/04/2017 03:45:00</time>
+	</record>
+	<record>
+		<SNO>S5</SNO>
+		<PNO>P3</PNO>
+		<CNO>C3</CNO>
+		<TTLQTY>3</TTLQTY>
+		<time>04/04/2017 03:45:00</time>
+	</record>
+	<record>
+		<SNO>S5</SNO>
+		<PNO>P4</PNO>
+		<CNO>C2</CNO>
+		<TTLQTY>10</TTLQTY>
+		<time>04/04/2017 03:45:00</time>
+	</record>
+	<record>
+		<SNO>S5</SNO>
+		<PNO>P5</PNO>
+		<CNO>C2</CNO>
+		<TTLQTY>10</TTLQTY>
+		<time>04/04/2017 03:45:00</time>
+	</record>
+	<record>
+		<SNO>S5</SNO>
+		<PNO>P5</PNO>
+		<CNO>C3</CNO>
+		<TTLQTY>3</TTLQTY>
+		<time>04/04/2017 03:45:00</time>
+	</record>
+	<record>
+		<SNO>S5</SNO>
+		<PNO>P5</PNO>
+		<CNO>C2</CNO>
+		<TTLQTY>2</TTLQTY>
+		<time>04/04/2017 03:45:00</time>
+	</record>
+</ORDERS>
