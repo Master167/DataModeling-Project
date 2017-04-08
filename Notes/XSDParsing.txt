@@ -1,0 +1,1 @@
+When parsing the xsd, current implementation is such that we wil be ignoring all extra attributes that we are not concerned with. 

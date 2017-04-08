@@ -1,9 +1,9 @@
 /**
- * CreateDatabase
+ * DropDatabase
  * @author Sean Domingo, Michael Frederick, Megan Molumby, Mai Huong Nguyen, Richard Pratt
  */
-public class CreateDatabase extends SQLCommand {
-    public CreateDatabase(String databaseName) {
+public class DropDatabase extends SQLCommand {
+    public DropDatabase(String databaseName) {
         super(databaseName);
     }
     
