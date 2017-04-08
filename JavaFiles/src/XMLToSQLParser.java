@@ -7,44 +7,88 @@
 import org.w3c.dom.*;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.w3c.dom.Document;
 
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
 import java.io.*;
+import java.util.ArrayList;
+
 public class XMLToSQLParser {
 
-    public void parse(File inputFile){
-        try{
+    public void parse(ArrayList<Schema> table) {
+        try {
             //get input file
-            //File inputFile = new File("xmlTestFile.txt");
-            //Create a DocumentBuilder
+            File inputFile = new File("xmlTestFile.txt");
 
+            //Create a DocumentBuilder
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document doc = builder.parse(inputFile);
             doc.getDocumentElement().normalize();
-            System.out.println("root element:" + doc.getDocumentElement().getNodeName());
+
 
             //Create a Document from XML input file
-            /*StringBuilder xmlStringBuilder = new StringBulder();
-            xmlStringBuilder.append("<?xml version ="1.0"?> <class> </class>");//THis is will be pulled from XSd.
+            StringBuilder xmlStringBuilder = new StringBuilder();
+            //UNKnOWN ON HOW THIS WILL IMPACT LATER ON BUT CURRENTLY GIVING ME ERROR 4/7/2017
+            // xmlStringBuilder.append("<?xml version="1.0"?> <class> </class>"); //THis is will be pulled from XSd.
             ByteArrayInputStream input = new ByteArrayInputStream(xmlStringBuilder.toString().getBytes("UTF-8"));
-*/
+
 
             //Extract root element
-           // Element root = document.getDocumentElement();
+            Element root = doc.getDocumentElement();
+            System.out.println("Root element :"
+                    + doc.getDocumentElement().getNodeName());
+            NodeList nList = doc.getElementsByTagName(table.get(0).getTableName());
+            System.out.println("----------------------------");
+            for (int temp = 0; temp < nList.getLength(); temp++) {
+                Node nNode = nList.item(temp);
+                System.out.println("\nCurrent Element :"
+                        + nNode.getNodeName());
+                if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                    Element eElement = (Element) nNode;
+                    System.out.println("Student roll no : "
+                            + eElement
+                            .getElementsByTagName(table.get(0).getName())
+                            .item(0)
+                            .getTextContent());
+                    System.out.println("First Name : "
+                            + eElement
+                            .getElementsByTagName(table.get(1).getName())
+                            .item(0)
+                            .getTextContent());
+                    System.out.println("Last Name : "
+                            + eElement
+                            .getElementsByTagName(table.get(2).getName())
+                            .item(0)
+                            .getTextContent());
+                    System.out.println("Nick Name : "
+                            + eElement
+                            .getElementsByTagName(table.get(3).getName())
+                            .item(0)
+                            .getTextContent());
+                    System.out.println("Marks : "
+                            + eElement
+                            .getElementsByTagName(table.get(4).getName())
+                            .item(0)
+                            .getTextContent());
+                }
 
-            //get Specific attributes
-            //returns specific attribute
-            //getAttributes("attributeName");
-            //returns  a Map(table) of names/values
-            // getAttributes();
 
-        }catch(Exception e){
+
+            }
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SAXException e) {
             e.printStackTrace();
         }
 
-
     }
-
 }

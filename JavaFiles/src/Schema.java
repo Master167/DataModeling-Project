@@ -9,7 +9,7 @@ public class Schema {
     private int length;
     private int min;//Cannot be null?
     private int fraction;
-
+    private String tableName;
     public Schema(){
 
     }
@@ -45,5 +45,11 @@ public class Schema {
     }
     public int getFraction(){
         return fraction;
+    }
+    public void setTableName(String value){
+        tableName = value;
+    }
+    public String getTableName(){
+        return tableName;
     }
 }

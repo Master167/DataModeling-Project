@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <xsd:schema xmlns:xsd='FacultyXSDnew' elementFormDefault='qualified'
 attributeFormDefault='qualified'>
-  <xsd:complexType name="Faculty">
+  <xsd:complexType name="FACULTY">
     <xsd:element name='FIRSTNAME' type='xsd:string' maxOccurs='10' minOccurs='1' />
     <xsd:element name='LASTNAME' type='xsd:string' maxOccurs='20' minOccurs='1' />
     <xsd:element name='TITLE' type='xsd:string' maxOccurs='1' minOccurs='1' />

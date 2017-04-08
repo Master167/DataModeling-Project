@@ -42,6 +42,7 @@ public class DataEngine {
 
     public void xsdParser() {
         this.fileReader.setInputFile();
+        //modify to xml and xsd doc
         this.xsdParser.parseXSD(this.fileReader.getInputFile(), xmlToSqlParser);
     }
 
