@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CUST>
+	<record>
+		<CNO>C1</CNO>
+		<CNAME>Sugar and Spice, CPA</CNAME>
+		<CITY>San Diego</CITY>
+		<time>04/04/2017 15:45:00</time>
+	</record>
+	<record>
+		<CNO>C2</CNO>
+		<CNAME>ABC Products</CNAME>
+		<CITY>New York</CITY>
+		<time>04/04/2017 15:45:00</time>
+	</record>
+	<record>
+		<CNO>C3</CNO>
+		<CNAME>Nachfliegen, Inc.</CNAME>
+		<CITY>Philadelphia</CITY>
+		<time>04/04/2017 15:45:00</time>
+	</record>
+	<record>
+		<CNO>C4</CNO>
+		<CNAME>Systems Group</CNAME>
+		<CITY>Chicago</CITY>
+		<time>04/04/2017 15:45:00</time>
+	</record>
+	<record>
+		<CNO>C5</CNO>
+		<CNAME>JTA Inc.</CNAME>
+		<CITY>Norman</CITY>
+		<time>04/04/2017 15:45:00</time>
+	</record>
+</CUST>
