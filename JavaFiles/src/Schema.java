@@ -10,6 +10,7 @@ public class Schema {
     private int min;//Cannot be null?
     private int fraction;
     private String tableName;
+    private String date;
     public Schema(){
 
     }
@@ -51,5 +52,13 @@ public class Schema {
     }
     public String getTableName(){
         return tableName;
+    }
+    public void setDate(String value){
+            date = value;
+
+
+    }
+    public String getDate(){
+        return date;
     }
 }

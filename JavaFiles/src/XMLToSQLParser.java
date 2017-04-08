@@ -8,22 +8,21 @@ import org.w3c.dom.*;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.w3c.dom.Document;
-
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
 import java.io.*;
 import java.util.ArrayList;
 
 public class XMLToSQLParser {
 
     public void parse(ArrayList<Schema> table) {
+        boolean error = false;
         try {
             //CREATE file to write SQL commands to
+            File sqlCommandFile = new File("filename.txt");
             //when interface is created will insert choice filename variable here
-            PrintWriter writer = new PrintWriter("filename.txt", "UTF-8");
+            PrintWriter writer = new PrintWriter(sqlCommandFile, "UTF-8");
 
             //get input file
             File inputFile = new File("xmlTestFile.txt");
@@ -70,25 +69,64 @@ public class XMLToSQLParser {
                     insertCommand=insertCommand.concat(" VALUES (");
                     //add in literals to insert command
                     for(int j = 0; j<table.size(); j++){
-                        //NEED TO ADD CHECKS!
-                        insertCommand=insertCommand.concat(eElement
-                                .getElementsByTagName(table.get(j)
-                                        .getName()).item(0).getTextContent());
-                        if(j+1 == table.size()){
-                            insertCommand=insertCommand.concat(");");
+                        boolean qualified = false;
+                        String value = eElement.getElementsByTagName(table.get(j)
+                                        .getName()).item(0).getTextContent();
+                        String attributeName = table.get(j).getDataType();
+                        String regex;
+                        //CHECKS WITH XSD TO VERIFY DATA TYPE AND LENGTH
+                        switch(attributeName){
+                            //check if string length min and max
+                            case "string": if(value.length() <= table.get(j).getLength() && value.length() >= table.get(j).getMin()){
+                                                    qualified = true;
+                                            }
+                                            break;
+                            //check if decimal fraction
+                            case "decimal": regex = "^\\d{0," + table.get(j).getLength() + "}(\\.\\d{" + table.get(j).getFraction()+ "})?$";
+                                            if(value.matches(regex)){//checks for decimal length/fraction and if not null
+                                                qualified = true;
+                                            }
+                                            break;
+                            //check if integer length is correct
+                            case "integer": regex = "^\\d{0," + table.get(j).getLength() + "}$";
+                                            if(value.matches(regex)){
+                                                qualified =true;
+                                            }
+                                            break;
+                            //CHeck date format//ASSUMING DATE FORMAT IS (mm/dd/[yy]yy)
+                            case "date":  regex="^(0[0-9]||1[0-2])/([0-2][0-9]||3[0-1])/([0-9][0-9])?[0-9][0-9]$";
+                                       if(value.matches(regex)){
+                                            qualified = true;
+                                        }
+                                        break;
+                            default: System.out.println("Error: data type is not a subset of required data types");
+                                    error = true;
+                        }
+                        if(qualified) {
+                            insertCommand = insertCommand.concat(value);
+                            if (j + 1 == table.size()) {
+                                insertCommand = insertCommand.concat(");");
+                            } else {
+                                insertCommand = insertCommand.concat(", ");
+                            }
                         }else{
-                            insertCommand=insertCommand.concat(", ");
+                            System.out.println("ERROR: XML Document does not match specifications in XSD document");
+                            error = true;
                         }
                     }
 
                     writer.println(insertCommand);
-
                 }
 
 
 
             }
+            //if error remove file from directory? Option
+            if(error){
+
+            }
             writer.close();
+            System.out.println("File has been converted to SQL Insert Command File");
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
@@ -100,4 +138,5 @@ public class XMLToSQLParser {
         }
 
     }
+
 }

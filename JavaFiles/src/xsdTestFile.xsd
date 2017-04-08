@@ -4,10 +4,9 @@ attributeFormDefault='qualified'>
   <xsd:complexType name="FACULTY">
     <xsd:element name='FIRSTNAME' type='xsd:string' maxOccurs='10' minOccurs='1' />
     <xsd:element name='LASTNAME' type='xsd:string' maxOccurs='20' minOccurs='1' />
-    <xsd:element name='TITLE' type='xsd:string' maxOccurs='1' minOccurs='1' />
-    <xsd:element name='BIRTHDATE' type='xsd:date' maxOccurs='1' minOccurs='1'
-    date='mm/dd/[yy]yy' />
-    <xsd:element name='ADDRESS' type='xsd:string' maxOccurs='15' minOccurs='1' />
+    <xsd:element name='TITLE' type='xsd:string' maxOccurs='30' minOccurs='1' />
+    <xsd:element name='BIRTHDATE' type='xsd:date' maxOccurs='1' minOccurs='1' date='mm/dd/[yy]yy' />
+    <xsd:element name='ADDRESS' type='xsd:string' maxOccurs='30' minOccurs='1' />
     <xsd:element name='SALARY' type='xsd:decimal' maxOccurs='8' minOccurs='1' fraction='2' />
   </xsd:complexType >
 </xsd:schema>

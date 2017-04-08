@@ -39,10 +39,14 @@ public class XSDParser {
                     //set Table attributes
                     attribute.setName(first.getAttribute("name"));
                     attribute.setDataType(first.getAttribute("type"));
+                    //may need to use .getNextSibling if not specific
                     attribute.setLength(first.getAttribute("maxOccurs"));
                     attribute.setMin(first.getAttribute("minOccurs"));
                     if(first.hasAttribute("fraction")) {
                         attribute.setFraction(first.getAttribute("fraction"));
+                    }
+                    if(first.hasAttribute("date")){
+                        attribute.setDate(first.getAttribute("date"));
                     }
                     table.add(attribute);
                 }
