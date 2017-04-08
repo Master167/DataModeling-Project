@@ -22,11 +22,13 @@ public class XSDParser {
             docBuilder = docBuilderFactory.newDocumentBuilder();
             Document doc = docBuilder.parse (new File("xsdTestFile.xsd"));
             NodeList list = doc.getElementsByTagName("xsd:element");
+
+            //RETRIEVE TABLE NAME FROM DOC
             NodeList tableNames = doc.getElementsByTagName("xsd:complexType");
             Element temp = (Element) tableNames.item(0);
             String tableName = temp.getAttribute("name");
-            //loop to print data
 
+            //loop to print data
             for(int i = 0 ; i < list.getLength(); i++)
             {
                 Schema attribute = new Schema();

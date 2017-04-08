@@ -21,6 +21,10 @@ public class XMLToSQLParser {
 
     public void parse(ArrayList<Schema> table) {
         try {
+            //CREATE file to write SQL commands to
+            //when interface is created will insert choice filename variable here
+            PrintWriter writer = new PrintWriter("filename.txt", "UTF-8");
+
             //get input file
             File inputFile = new File("xmlTestFile.txt");
 
@@ -40,46 +44,51 @@ public class XMLToSQLParser {
 
             //Extract root element
             Element root = doc.getDocumentElement();
-            System.out.println("Root element :"
-                    + doc.getDocumentElement().getNodeName());
+
             NodeList nList = doc.getElementsByTagName(table.get(0).getTableName());
-            System.out.println("----------------------------");
+
+            //For the number of records
             for (int temp = 0; temp < nList.getLength(); temp++) {
-                Node nNode = nList.item(temp);
-                System.out.println("\nCurrent Element :"
-                        + nNode.getNodeName());
-                if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-                    Element eElement = (Element) nNode;
-                    System.out.println("Student roll no : "
-                            + eElement
-                            .getElementsByTagName(table.get(0).getName())
-                            .item(0)
-                            .getTextContent());
-                    System.out.println("First Name : "
-                            + eElement
-                            .getElementsByTagName(table.get(1).getName())
-                            .item(0)
-                            .getTextContent());
-                    System.out.println("Last Name : "
-                            + eElement
-                            .getElementsByTagName(table.get(2).getName())
-                            .item(0)
-                            .getTextContent());
-                    System.out.println("Nick Name : "
-                            + eElement
-                            .getElementsByTagName(table.get(3).getName())
-                            .item(0)
-                            .getTextContent());
-                    System.out.println("Marks : "
-                            + eElement
-                            .getElementsByTagName(table.get(4).getName())
-                            .item(0)
-                            .getTextContent());
+
+                Node record = nList.item(temp);
+                //RECORD TYPE NAME
+
+                if (record.getNodeType() == Node.ELEMENT_NODE) {
+                    //create an element
+                    Element eElement = (Element) record;
+                    String insertCommand = "INSERT INTO " + record.getNodeName() + " (";
+                    //add all fields to insert command
+                    for (int i = 0; i < table.size(); i++) {
+                        insertCommand = insertCommand.concat(table.get(i).getName());
+                        //if last item in field list
+                        if(i+1 == table.size()){
+                           insertCommand = insertCommand.concat(")");
+                        }else{//add comma if followed by another field
+                            insertCommand=insertCommand.concat(", ");
+                        }
+                    }
+                    insertCommand=insertCommand.concat(" VALUES (");
+                    //add in literals to insert command
+                    for(int j = 0; j<table.size(); j++){
+                        //NEED TO ADD CHECKS!
+                        insertCommand=insertCommand.concat(eElement
+                                .getElementsByTagName(table.get(j)
+                                        .getName()).item(0).getTextContent());
+                        if(j+1 == table.size()){
+                            insertCommand=insertCommand.concat(");");
+                        }else{
+                            insertCommand=insertCommand.concat(", ");
+                        }
+                    }
+
+                    writer.println(insertCommand);
+
                 }
 
 
 
             }
+            writer.close();
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
