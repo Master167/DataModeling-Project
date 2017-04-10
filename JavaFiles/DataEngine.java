@@ -43,12 +43,6 @@ public class DataEngine {
      * Actual entry point
      */
     public void runEngine() {
-<<<<<<< HEAD:JavaFiles/src/DataEngine.java
-        //System.out.println("Running");
-        //calls Xsd parser to parse file
-        xsdParser();
-
-=======
         this.currentDatabase = "";
         boolean running = true;
         String userInput = "";
@@ -111,7 +105,6 @@ public class DataEngine {
                 }
             }
         }
->>>>>>> origin/implement-ui:JavaFiles/DataEngine.java
     }
 
     public void xsdParser() {
