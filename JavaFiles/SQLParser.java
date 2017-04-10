@@ -2,6 +2,7 @@
  * SQLParser - This class is to check and generate commands from SQL statements.
  * @author Sean Domingo, Michael Frederick, Megan Molumby, Mai Huong Nguyen, Richard Pratt
  */
+ 
 import java.io.*;
 import java.util.*;
 import java.text.*;
@@ -20,7 +21,6 @@ public class SQLParser {
       
       Lexical(commandLine);
       Syntax();
-      //execute();
    }
    
    public static void Syntax(){
