@@ -3,6 +3,20 @@
  * @author Sean Domingo, Michael Frederick, Megan Molumby, Mai Huong Nguyen, Richard Pratt
  */
  
+/* 
+Current functions of the SQL lexical
+-Creates Tokens
+-Checks for illegal chars such as *, &, !, etc
+-Converts keywords into uppercase
+-Checks for the first char of a non-operand String to be a english letter
+
+Current functions of the Syntax analyzer
+-Creates create database object
+
+Issues 
+-command line entries with no letter/numbers/symbols
+*/
+ 
 import java.io.*;
 import java.util.*;
 import java.text.*;
@@ -11,11 +25,17 @@ import java.lang.*;
 public class SQLParser {
    static ArrayList<Token> allTokens = new ArrayList<Token>();
    static ArrayList<Token> finalTokens = new ArrayList<Token>();
+   static ArrayList<CreateDatabase> allCreateCommands = new ArrayList<CreateDatabase>();
    static String[] keywords1 = {"CREATE", "DROP", "SAVE", "LOAD", "INSERT", "INPUT", "DELETE", "TSELECT", "SELECT", "COMMIT", "DATABASE", "TABLE", "INTO", "VALUES", "FROM"};
    static String[] operands = {"*", "[", "]", "(", ")", ";", "|", ","}; 
+   static int count = 0;
+   
+   public static void main(String[] args) {
+      executeSQLParser();
+   }
    
    //executes the parser
-   public static void execute(){
+   public static void executeSQLParser(){
       String commandLine = "";
       commandLine = getCommand();
       
@@ -24,19 +44,109 @@ public class SQLParser {
    }
    
    public static void Syntax(){
-      for (Token token: finalTokens) {
+      /*for (Token token: finalTokens) {
          System.out.println(token.getToken());
-      }
+      }*/
+      Commands(finalTokens.get(count).getToken());
    } 
+   public static void Commands(String t){
+      if(count+1 < finalTokens.size())
+         count++;
+      switch(t){
+         case "CREATE":
+            //System.out.println(finalTokens.get(count).getToken());
+            if (finalTokens.get(count).getToken().equals("DATABASE")) {
+               //System.out.println(finalTokens.get(count).getToken());
+               DATABASE();
+            }
+            else if (finalTokens.get(count).getToken() == "TABLE") {
+               //System.out.println("CREATE TABLE");
+               TABLE();
+            }
+            else {
+               System.out.println("Error: Invalid command following CREATE.");
+            }   
+         case "DROP":
+         case "SAVE":
+         case "LOAD":
+         case "COMMIT":
+         case "INPUT":
+         case "INSERT":
+         case "DELETE":
+         case "TSELECT":
+         case "SELECT":
+         default:
+            System.out.println("Error: Not a valid start to a command");
+      }      
+   }
+      
+   public static void DATABASE() {
+      if(count+1 < finalTokens.size())
+         count++;
+      //System.out.println(finalTokens.get(count).getToken());
+      if (finalTokens.get(count).getToken().matches("[a-zA-Z0-9]*")) {
+         //System.out.println("Its a valid Identifier");
+         for (int i = 0; i < keywords1.length; i++) {
+            if (finalTokens.get(count).getToken().equals(keywords1[i])){
+               System.out.println("Error: Illegal start of command.");
+               System.exit(0);
+            }
+         }
+         EndCreateCommand(finalTokens.get(count).getToken());
+      }
+      else {
+         System.out.println("Error: Invalid token following DATABASE.");
+      }
+   }
+   
+   public static void TABLE() {
+      if(count+1 < finalTokens.size())
+         count++;
+      //System.out.println(finalTokens.get(count).getToken());
+      if (finalTokens.get(count).getToken().matches("[a-zA-Z0-9]*")) {
+         //System.out.println("Its a valid Identifier");
+         for (int i = 0; i < keywords1.length; i++) {
+            if (finalTokens.get(count).getToken().equals(keywords1[i])){
+               System.out.println("Error: Illegal start of command.");
+               System.exit(0);
+            }
+         }
+         //work starts here
+         EndCreateCommand(finalTokens.get(count).getToken());
+      }
+      else {
+         System.out.println("Error: Invalid token following DATABASE.");
+      }
+   }
+
+   
+   public static void EndCreateCommand(String t){
+      if(count+1 < finalTokens.size())
+         count++;
+         
+      //System.out.println(finalTokens.get(count).getToken());
+      if (finalTokens.get(count).getToken().equals(";")) {
+         CreateDatabase s = new CreateDatabase(t);
+         allCreateCommands.add(s);  
+         System.out.println("Create the database named: " + allCreateCommands.get(0).getDatabaseName());
+      }
+      else {
+         System.out.println("Error: Invalid input after database name.");
+      }          
+   }
    
    //gets the input from the scanner
    public static String getCommand(){
       System.out.println("Input command: ");
       Scanner scan = new Scanner(System.in);
       String input = scan.nextLine();
+      //need to fix command line entries with no letters/numbers/symbols
+      if (input.equals("")){
+         System.out.println("Error: Nothing entered.");
+         System.exit(0);
+      }
       return input;
    }
-   
    //Uses tokenizer to break the string according to whitespaces and makes sure the token 
    //is further broken down to simple form and the keywords are all in a uniform case format
    public static void Lexical(String input) {
@@ -55,6 +165,13 @@ public class SQLParser {
          currentToken = token.getToken();
          if(currentToken != ""){
             //System.out.println(currentToken);
+            for(int i = 0; i < operands.length; i++){
+               char c = currentToken.charAt(0);
+               boolean a = isOperand(c); 
+               if(a != true) {
+                  checkFirstChar(currentToken);
+               }
+            }
             TransToken = convertUpperCase(currentToken);
             Token s = new Token(TransToken);
             finalTokens.add(s);
@@ -65,6 +182,14 @@ public class SQLParser {
         
    }
    
+   public static void checkFirstChar(String t) {
+      char c = t.charAt(0);
+      String s = Character.toString(c);   
+      if(!s.matches("[a-zA-Z]*")) { 
+         System.out.println("Error: Invalid ID name or Command.");
+         System.exit(0);
+      }
+   }   
    public static String convertUpperCase(String t) {
       String returnToken = "";
       for(int i = 0; i < keywords1.length; i++) {            
@@ -134,5 +259,17 @@ class Token{
    
    public String getToken(){
       return token;
+   }
+}
+
+class CreateDatabase {
+   private String databaseName;
+   
+   public CreateDatabase(String databaseName) {
+      this.databaseName = databaseName;
+   }
+   
+   public String getDatabaseName(){
+      return databaseName;
    }
 }
