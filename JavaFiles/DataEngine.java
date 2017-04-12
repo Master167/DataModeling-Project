@@ -49,8 +49,14 @@ public class DataEngine {
         String firstToken;
         StringTokenizer tokenGenerator;
         
+        // Show a program header?
         while (running) {
             userInput = this.userInterface.getInput();
+            
+            /*
+            First: tokenGenerator.nextToken throws exception if no other token exists
+            Second: you need to javadoc your methods.
+            */
             
             if (userInput.equalsIgnoreCase("exit")) {
                 this.userInterface.showUser("Goodbye");
@@ -120,24 +126,80 @@ public class DataEngine {
                     // Database Selected
                     if (firstToken.equalsIgnoreCase("create")){
 //                    this.showUser("CREATE TABLE tableName (fieldName fieldType(n)[ NOT NULL], ...);");
+                        firstToken = tokenGenerator.nextToken();
+                        if (firstToken.equalsIgnoreCase("table")) {
+                              // For now
+                              this.userInterface.showUser("User entered");
+                              this.userInterface.showUser(userInput);
+                        }
+                        else {
+                            this.userInterface.showUserError();
+                        }
                     }
                     else if (firstToken.equalsIgnoreCase("drop")) {
 //                    this.showUser("DROP TABLE tableName;");
+                        firstToken = tokenGenerator.nextToken();
+                        if (firstToken.equalsIgnoreCase("table")) {
+                            // For now
+                            this.userInterface.showUser("User entered");
+                            this.userInterface.showUser(userInput);
+                        }
+                        else {
+                            this.userInterface.showUserError();
+                        }
                     }
                     else if (firstToken.equalsIgnoreCase("insert")) {
 //                    this.showUser("INSERT INTO tableName[ (fieldName, ...)] VALUES (fieldValue, ...);");
+                        firstToken = tokenGenerator.nextToken();
+                        if (firstToken.equalsIgnoreCase("into")) {
+                            // For now
+                            this.userInterface.showUser("User entered");
+                            this.userInterface.showUser(userInput);
+                        }
+                        else {
+                            this.userInterface.showUserError();
+                        }
                     }
                     else if (firstToken.equalsIgnoreCase("convert")) {
 //                    this.showUser("CONVVERT XML xmlFilename, XSD filename AS sqlFile;");
+                        firstToken = tokenGenerator.nextToken();
+                        if (firstToken.equalsIgnoreCase("xml")) {
+                            // For now
+                            this.userInterface.showUser("User entered");
+                            this.userInterface.showUser(userInput);
+                        }
+                        else {
+                            this.userInterface.showUserError();
+                        }
                     }
                     else if (firstToken.equalsIgnoreCase("input")) {
 //                    this.showUser("INPUT sqlFile;");
+                        if (tokenGenerator.hasMoreTokens()) {
+                            // For now
+                            this.userInterface.showUser("User entered");
+                            this.userInterface.showUser(userInput);
+                        }
+                        else {
+                            this.userInterface.showUserError();
+                        }
                     }
                     else if (firstToken.equalsIgnoreCase("tselect") || firstToken.equalsIgnoreCase("select")) {
 //                    this.showUser("[t]SELECT [*|(field, ...)] FROM tableName [WHERE (field = value)]");
+                        // For now
+                        this.userInterface.showUser("User entered");
+                        this.userInterface.showUser(userInput);
                     }
                     else if (firstToken.equalsIgnoreCase("save")) {
                         // save database
+                        firstToken = tokenGenerator.nextToken();
+                        if (firstToken.equalsIgnoreCase("database")) {
+                            // For now
+                            this.userInterface.showUser("User entered");
+                            this.userInterface.showUser(userInput);
+                        }
+                        else {
+                            this.userInterface.showUserError();
+                        }
                     }
                     else {
                         this.userInterface.showUserError();

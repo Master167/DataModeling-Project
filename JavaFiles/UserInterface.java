@@ -75,6 +75,6 @@ public class UserInterface {
     }
     
     public void showUserError() {
-        this.showUser("Unrecognized Command. Type 'HELP' if needed");
+        this.showUser("Invalid or Unrecognized Command. Type 'HELP' if needed");
     }
 }
