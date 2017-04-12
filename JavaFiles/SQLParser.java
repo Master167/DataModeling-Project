@@ -25,10 +25,20 @@ import java.lang.*;
 public class SQLParser {
    static ArrayList<Token> allTokens = new ArrayList<Token>();
    static ArrayList<Token> finalTokens = new ArrayList<Token>();
-   static ArrayList<CreateDatabase> allCreateCommands = new ArrayList<CreateDatabase>();
+   static ArrayList<AttributeDefinitions> allCommandObjects = new ArrayList<AttributeDefinitions>();
    static String[] keywords1 = {"CREATE", "DROP", "SAVE", "LOAD", "INSERT", "INPUT", "DELETE", "TSELECT", "SELECT", "COMMIT", "DATABASE", "TABLE", "INTO", "VALUES", "FROM"};
    static String[] operands = {"*", "[", "]", "(", ")", ";", "|", ","}; 
    static int count = 0;
+   
+   static String p1 = "NULL";
+   static String p2 = "NULL";
+   static String p3 = "NULL";
+   static String p4 = "NULL";
+   static String p5 = "NULL";
+   static String p6 = "NULL";
+   static String p7 = "NULL";
+   static String p8 = "NULL";
+   static Boolean p9 = false;
    
    public static void main(String[] args) {
       executeSQLParser();
@@ -47,88 +57,205 @@ public class SQLParser {
       /*for (Token token: finalTokens) {
          System.out.println(token.getToken());
       }*/
-      Commands(finalTokens.get(count).getToken());
+      //if (count < finalTokens.size())
+         Commands(finalTokens.get(count).getToken());
    } 
    public static void Commands(String t){
       if(count+1 < finalTokens.size())
          count++;
+      
+      //System.out.println(t);
       switch(t){
          case "CREATE":
             //System.out.println(finalTokens.get(count).getToken());
             if (finalTokens.get(count).getToken().equals("DATABASE")) {
                //System.out.println(finalTokens.get(count).getToken());
-               DATABASE();
+               CREATEDATABASE();
             }
-            else if (finalTokens.get(count).getToken() == "TABLE") {
+            else if (finalTokens.get(count).getToken().equals("TABLE")) {
                //System.out.println("CREATE TABLE");
-               TABLE();
+               CREATETABLE();
             }
             else {
                System.out.println("Error: Invalid command following CREATE.");
             }   
          case "DROP":
+            //System.out.println(finalTokens.get(count).getToken());
+            if (finalTokens.get(count).getToken().equals("DATABASE")) {
+               //System.out.println(finalTokens.get(count).getToken());
+               p1 = "DROP DATABASE";
+               SAVEDROPLOAD();
+            }
+            else if (finalTokens.get(count).getToken().equals("TABLE")) {
+               //System.out.println("CREATE TABLE");
+               p1 = "DROP TABLE";
+               SAVEDROPLOAD();
+            }
+            else {
+               System.out.println("Error: Invalid command following DROP.");
+            }   
          case "SAVE":
+            //System.out.println(finalTokens.get(count).getToken());
+            if (finalTokens.get(count).getToken().equals("DATABASE")) {
+               //System.out.println(finalTokens.get(count).getToken());
+               p1 = "SAVE DATABASE";
+               SAVEDROPLOAD();
+            }
+            else {
+               System.out.println("Error: Invalid command following SAVE.");
+            } 
          case "LOAD":
+            //System.out.println(finalTokens.get(count).getToken());
+            if (finalTokens.get(count).getToken().equals("DATABASE")) {
+               //System.out.println(finalTokens.get(count).getToken());
+               p1 = "LOAD DATABASE";
+               SAVEDROPLOAD();
+            }
+            else {
+               System.out.println("Error: Invalid command following LOAD.");
+            } 
          case "COMMIT":
+            //System.out.println(finalTokens.get(count).getToken());
+            if (finalTokens.get(count).getToken().equals(";")) {
+               //System.out.println(finalTokens.get(count).getToken());
+               p1 = "COMMIT";
+               AttributeDefinitions s = new AttributeDefinitions(p1, p2, p3, p4, p5, p6, p7, p8, p9);
+               allCommandObjects.add(s);  
+               System.out.println(allCommandObjects.get(0).getCommandType());
+               //System.exit(0);
+            }
+            else {
+               System.out.println("Error: Invalid string following COMMIT.");
+            } 
          case "INPUT":
+            //System.out.println(finalTokens.get(count).getToken());
+            if (finalTokens.get(count).getToken().matches("[a-zA-Z0-9]*")) {
+               //System.out.println(finalTokens.get(count).getToken());
+               p1 = "INPUT";
+               semiColon();
+            }
+            else {
+               System.out.println("Error: Invalid file name following INPUT.");
+            } 
          case "INSERT":
          case "DELETE":
          case "TSELECT":
          case "SELECT":
          default:
-            System.out.println("Error: Not a valid start to a command");
+            //System.out.println("Error: Not a valid start to a command");
       }      
    }
       
-   public static void DATABASE() {
+   public static void checkIllegalSOC(){
+      for (int i = 0; i < keywords1.length; i++) {
+         if (finalTokens.get(count).getToken().equals(keywords1[i])){  
+            System.out.println("Error: Illegal start of command.");
+               System.exit(0);
+         }
+      }      
+   }
+   
+   public static void SAVEDROPLOAD() {
       if(count+1 < finalTokens.size())
          count++;
       //System.out.println(finalTokens.get(count).getToken());
       if (finalTokens.get(count).getToken().matches("[a-zA-Z0-9]*")) {
          //System.out.println("Its a valid Identifier");
-         for (int i = 0; i < keywords1.length; i++) {
-            if (finalTokens.get(count).getToken().equals(keywords1[i])){
-               System.out.println("Error: Illegal start of command.");
-               System.exit(0);
-            }
-         }
-         EndCreateCommand(finalTokens.get(count).getToken());
+         checkIllegalSOC();
+         semiColon();
+      }
+      else {
+         System.out.println("Error: Invalid token following TABLE or DATABASE.");
+      }
+   }
+      
+   public static void CREATEDATABASE() {
+      if(count+1 < finalTokens.size())
+         count++;
+      //System.out.println(finalTokens.get(count).getToken());
+      if (finalTokens.get(count).getToken().matches("[a-zA-Z0-9]*")) {
+         //System.out.println("Its a valid Identifier");
+         checkIllegalSOC();
+         p2 = finalTokens.get(count).getToken();
+         EndCreateDatabaseCommand();
       }
       else {
          System.out.println("Error: Invalid token following DATABASE.");
       }
    }
-   
-   public static void TABLE() {
+   public static void semiColon(){
+      p2 = finalTokens.get(count).getToken();
       if(count+1 < finalTokens.size())
          count++;
       //System.out.println(finalTokens.get(count).getToken());
+      if (finalTokens.get(count).getToken().matches(";")) {
+         AttributeDefinitions s = new AttributeDefinitions(p1, p2, p3, p4, p5, p6, p7, p8, p9);
+         allCommandObjects.add(s);  
+         System.out.println(allCommandObjects.get(0).getCommandType() + " named: " + allCommandObjects.get(0).getStructureName());
+         System.exit(0);
+      }
+      else {
+         System.out.println("Error: Expected ';'");
+      }
+   }
+
+      
+      
+   public static void CREATETABLE() {
+      if(count+1 < finalTokens.size())
+         p1 = "CREATE TABLE";
+         count++;
+         
+      //System.out.println(finalTokens.get(count).getToken());
       if (finalTokens.get(count).getToken().matches("[a-zA-Z0-9]*")) {
          //System.out.println("Its a valid Identifier");
-         for (int i = 0; i < keywords1.length; i++) {
-            if (finalTokens.get(count).getToken().equals(keywords1[i])){
-               System.out.println("Error: Illegal start of command.");
-               System.exit(0);
-            }
-         }
-         //work starts here
-         EndCreateCommand(finalTokens.get(count).getToken());
+         checkIllegalSOC();
+         p2 = finalTokens.get(count).getToken();
+         firstFieldDef();
       }
       else {
          System.out.println("Error: Invalid token following DATABASE.");
       }
    }
 
+   public static void firstFieldDef() {
+      if(count+1 < finalTokens.size())
+         count++;
+      //System.out.println(finalTokens.get(count).getToken());      
+      //assignFieldType();
+   }
    
-   public static void EndCreateCommand(String t){
+   /*public static void assignFieldType(){
+      if(count+1 < finalTokens.size())
+         count++; 
+         
+      //System.out.println(finalTokens.get(count).getToken()); 
+      if (finalTokens.get(count).getToken().matches("[a-zA-Z0-9]*")) {
+         //System.out.println("Its a valid Identifier");
+         checkIllegalSOC();
+         p2 = finalTokens.get(count).getToken();
+         if(count+1 < finalTokens.size())
+            count++; 
+         if (finalTokens.get(count).getToken().matches("[a-zA-Z0-9]*"))
+         firstFieldDef();
+      }
+      else {
+         System.out.println("Error: Invalid token following DATABASE.");
+      }         
+   }   */
+      
+   public static void EndCreateDatabaseCommand(){
+      p2 = finalTokens.get(count).getToken();
       if(count+1 < finalTokens.size())
          count++;
          
       //System.out.println(finalTokens.get(count).getToken());
       if (finalTokens.get(count).getToken().equals(";")) {
-         CreateDatabase s = new CreateDatabase(t);
-         allCreateCommands.add(s);  
-         System.out.println("Create the database named: " + allCreateCommands.get(0).getDatabaseName());
+         p1 = "CREATE DATABASE";
+         AttributeDefinitions s = new AttributeDefinitions(p1, p2, p3, p4, p5, p6, p7, p8, p9);
+         allCommandObjects.add(s);  
+         System.out.println(allCommandObjects.get(0).getCommandType() + " named: " + allCommandObjects.get(0).getStructureName());
+         System.exit(0);
       }
       else {
          System.out.println("Error: Invalid input after database name.");
@@ -262,14 +389,62 @@ class Token{
    }
 }
 
-class CreateDatabase {
-   private String databaseName;
-   
-   public CreateDatabase(String databaseName) {
-      this.databaseName = databaseName;
-   }
-   
-   public String getDatabaseName(){
-      return databaseName;
-   }
+class AttributeDefinitions {
+    private String commandType;   
+    private String structureName;
+    private String dataType;
+    private String length;
+    private String max;
+    private String decimal;
+    private String dataName;
+    private String date;
+    private boolean Nullable;
+ 
+    public AttributeDefinitions(String commandType, String structureName, String dataType, String length, String max, String decimal, String dataName, String date, Boolean Nullable){
+       this.commandType = commandType;
+       this.structureName = structureName;
+       this.dataName = dataName;
+       this.dataType = dataType;
+       this.length = length;
+       this.max = max;
+       this.decimal = decimal;
+       this.date = date;
+       this.Nullable = Nullable;
+    }
+    
+    public String getCommandType(){
+       return commandType;
+    }
+
+    public String getStructureName(){
+       return structureName;
+    }
+    
+    public String getDataName(){
+       return dataName;
+    }
+    
+    public String getDataType(){
+       return dataType;
+    }
+    
+    public String getLength(){
+        return length;
+    }
+    
+    public String getMax(){
+       return max;
+    }    
+    
+    public String getDecimal(){
+        return decimal;
+    }
+    
+    public String getDate(){
+       return date;
+    }
+    
+    public Boolean Nullable(){
+       return Nullable;
+    }
 }
