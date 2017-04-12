@@ -73,8 +73,13 @@ public class DataEngine {
                         firstToken = tokenGenerator.nextToken();
                         if (firstToken.equalsIgnoreCase("database")) {
                             // Pass userInput to sql parser
-                            
                             // Set database name when the object comes out
+                            
+                            // For now
+                            this.userInterface.showUser("User entered");
+                            this.userInterface.showUser(userInput);
+                            firstToken = tokenGenerator.nextToken().replace(";", "");
+                            this.currentDatabase = firstToken;
                         }
                         else {
                             this.userInterface.showUserError();
@@ -82,21 +87,32 @@ public class DataEngine {
                     }
                     else if (firstToken.equalsIgnoreCase("load")) {
                         // Pass userInput to sql parser
-                            
                         // Set database name when the object comes out
+                        
+                        // For now
+                        this.userInterface.showUser("User entered");
+                        this.userInterface.showUser(userInput);
+                        firstToken = tokenGenerator.nextToken().replace(";", "");
+                        this.currentDatabase = firstToken;
                     }
                     else if (firstToken.equalsIgnoreCase("drop")) {
                         firstToken = tokenGenerator.nextToken();
                         if (firstToken.equalsIgnoreCase("database")) {
                             // Pass userInput to sql parser
-                            
                             // Set database name when the object comes out
+                            
+                            // For now
+                            this.userInterface.showUser("User entered");
+                            this.userInterface.showUser(userInput);
+                            firstToken = tokenGenerator.nextToken().replace(";", "");
+                            this.currentDatabase = firstToken;
                         }
                         else {
                             this.userInterface.showUserError();
                         }
                     }
                     else {
+                        // No database selected and no recognized command at this level
                         this.userInterface.showUserError();
                     }
                 }
