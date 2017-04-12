@@ -118,6 +118,30 @@ public class DataEngine {
                 }
                 else {
                     // Database Selected
+                    if (firstToken.equalsIgnoreCase("create")){
+//                    this.showUser("CREATE TABLE tableName (fieldName fieldType(n)[ NOT NULL], ...);");
+                    }
+                    else if (firstToken.equalsIgnoreCase("drop")) {
+//                    this.showUser("DROP TABLE tableName;");
+                    }
+                    else if (firstToken.equalsIgnoreCase("insert")) {
+//                    this.showUser("INSERT INTO tableName[ (fieldName, ...)] VALUES (fieldValue, ...);");
+                    }
+                    else if (firstToken.equalsIgnoreCase("convert")) {
+//                    this.showUser("CONVVERT XML xmlFilename, XSD filename AS sqlFile;");
+                    }
+                    else if (firstToken.equalsIgnoreCase("input")) {
+//                    this.showUser("INPUT sqlFile;");
+                    }
+                    else if (firstToken.equalsIgnoreCase("tselect") || firstToken.equalsIgnoreCase("select")) {
+//                    this.showUser("[t]SELECT [*|(field, ...)] FROM tableName [WHERE (field = value)]");
+                    }
+                    else if (firstToken.equalsIgnoreCase("save")) {
+                        // save database
+                    }
+                    else {
+                        this.userInterface.showUserError();
+                    }
                 }
             }
         }
