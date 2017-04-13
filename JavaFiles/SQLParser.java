@@ -9,6 +9,7 @@ Current functions of the SQL lexical
 -Checks for illegal chars such as *, &, !, etc
 -Converts keywords into uppercase
 -Checks for the first char of a non-operand String to be a english letter
+-checks for illegal starts of commands
 
 Current functions of the Syntax analyzer
 -Creates create database object
@@ -26,8 +27,8 @@ public class SQLParser {
    static ArrayList<Token> allTokens = new ArrayList<Token>();
    static ArrayList<Token> finalTokens = new ArrayList<Token>();
    static ArrayList<AttributeDefinitions> allCommandObjects = new ArrayList<AttributeDefinitions>();
-   static String[] keywords1 = {"CREATE", "DROP", "SAVE", "LOAD", "INSERT", "INPUT", "DELETE", "TSELECT", "SELECT", "COMMIT", "DATABASE", "TABLE", "INTO", "VALUES", "FROM"};
-   static String[] operands = {"*", "[", "]", "(", ")", ";", "|", ","}; 
+   static String[] keywords1 = {"CREATE", "DROP", "SAVE", "LOAD", "INSERT", "INPUT", "DELETE", "TSELECT", "SELECT", "COMMIT", "DATABASE", "TABLE", "INTO", "VALUES", "FROM", "INTEGER", "CHARACTER", "NUMBER", "DATE"};
+   static String[] operands = {"*", "(", ")", ";", ",", "/"}; 
    static int count = 0;
    
    static String p1 = "NULL";
@@ -38,7 +39,9 @@ public class SQLParser {
    static String p6 = "NULL";
    static String p7 = "NULL";
    static String p8 = "NULL";
-   static Boolean p9 = false;
+   static Boolean p9 = true;
+   static String p10 = "NULL";
+   static String p11 = "NULL";
    
    public static void main(String[] args) {
       executeSQLParser();
@@ -51,6 +54,29 @@ public class SQLParser {
       
       Lexical(commandLine);
       Syntax();
+      for (int i = 0; i < allCommandObjects.size(); i++) {
+         System.out.println("commandType: " + allCommandObjects.get(i).getCommandType() + 
+            " structureName: " + allCommandObjects.get(i).getStructureName() +
+            " dataType: " + allCommandObjects.get(i).getDataType() + " length: " + allCommandObjects.get(i).getLength() +
+            " max: " + allCommandObjects.get(i).getMax() + " decimal: " + allCommandObjects.get(i).getDecimal() +
+            " dataName: " + allCommandObjects.get(i).getDataName() + " date: " + 
+            allCommandObjects.get(i).getDate() + " Nullable: " + allCommandObjects.get(i).isNullable()
+            + " value: " + allCommandObjects.get(i).getValue());
+      }
+      
+   }
+   
+   //gets the input from the scanner
+   public static String getCommand(){
+      System.out.println("Input command: ");
+      Scanner scan = new Scanner(System.in);
+      String input = scan.nextLine();
+      //need to fix command line entries with no letters/numbers/symbols
+      if (input.equals("")){
+         System.out.println("Error: Nothing entered.");
+         System.exit(0);
+      }
+      return input;
    }
    
    public static void Syntax(){
@@ -78,7 +104,8 @@ public class SQLParser {
             }
             else {
                System.out.println("Error: Invalid command following CREATE.");
-            }   
+            }
+            break;   
          case "DROP":
             //System.out.println(finalTokens.get(count).getToken());
             if (finalTokens.get(count).getToken().equals("DATABASE")) {
@@ -93,7 +120,8 @@ public class SQLParser {
             }
             else {
                System.out.println("Error: Invalid command following DROP.");
-            }   
+            }
+            break;   
          case "SAVE":
             //System.out.println(finalTokens.get(count).getToken());
             if (finalTokens.get(count).getToken().equals("DATABASE")) {
@@ -104,6 +132,7 @@ public class SQLParser {
             else {
                System.out.println("Error: Invalid command following SAVE.");
             } 
+            break;
          case "LOAD":
             //System.out.println(finalTokens.get(count).getToken());
             if (finalTokens.get(count).getToken().equals("DATABASE")) {
@@ -114,19 +143,20 @@ public class SQLParser {
             else {
                System.out.println("Error: Invalid command following LOAD.");
             } 
+            break;
          case "COMMIT":
             //System.out.println(finalTokens.get(count).getToken());
             if (finalTokens.get(count).getToken().equals(";")) {
                //System.out.println(finalTokens.get(count).getToken());
                p1 = "COMMIT";
-               AttributeDefinitions s = new AttributeDefinitions(p1, p2, p3, p4, p5, p6, p7, p8, p9);
+               AttributeDefinitions s = new AttributeDefinitions(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
                allCommandObjects.add(s);  
-               System.out.println(allCommandObjects.get(0).getCommandType());
-               //System.exit(0);
+               resetValues();
             }
             else {
                System.out.println("Error: Invalid string following COMMIT.");
             } 
+            break;
          case "INPUT":
             //System.out.println(finalTokens.get(count).getToken());
             if (finalTokens.get(count).getToken().matches("[a-zA-Z0-9]*")) {
@@ -137,12 +167,64 @@ public class SQLParser {
             else {
                System.out.println("Error: Invalid file name following INPUT.");
             } 
+            break;
          case "INSERT":
+            break;
          case "DELETE":
+            break;
          case "TSELECT":
+            if (finalTokens.get(count).getToken().equals("*")) {
+               //System.out.println(finalTokens.get(count).getToken());
+               p1 = t;
+               p10 = finalTokens.get(count).getToken();
+               
+               if(count+1 < finalTokens.size())
+                  count++;
+               else
+                  System.out.println("Error: Unexpected end of command.");
+               
+               if (finalTokens.get(count).getToken().equals("FROM")){
+                  if(count+1 < finalTokens.size())
+                     count++;
+                  else
+                     System.out.println("Error: Unexpected end of command.");
+                  
+                  
+                  if (finalTokens.get(count).getToken().matches("[a-zA-Z0-9]*")){
+                     p2 = finalTokens.get(count).getToken();
+                     if(count+1 < finalTokens.size())
+                        count++;
+                     else
+                        System.out.println("Error: Unexpected end of command.");
+                        
+                     if(finalTokens.get(count).getToken().equals("WHERE")){
+                     }
+                     else if(finalTokens.get(count).getToken().equals(";")){
+                     }
+                     else
+                        System.out.println("Error: Issue at TSELECT command.");                     
+                  }
+                  else
+                     System.out.println("Error: Invalid table name.");
+               }
+               else
+                  System.out.println("Error: Expected 'FROM' following '*'");
+                  
+            }
+            else if (finalTokens.get(count).getToken().matches("[a-zA-Z0-9]*")) {
+               //System.out.println("CREATE TABLE");
+               CREATETABLE();
+            }
+            else {
+               System.out.println("Error: Invalid command following TSELECT.");
+            }
+
+            break;
          case "SELECT":
+            break;
          default:
-            //System.out.println("Error: Not a valid start to a command");
+            System.out.println("Error: Not a valid start to a command");
+            break;
       }      
    }
       
@@ -150,7 +232,7 @@ public class SQLParser {
       for (int i = 0; i < keywords1.length; i++) {
          if (finalTokens.get(count).getToken().equals(keywords1[i])){  
             System.out.println("Error: Illegal start of command.");
-               System.exit(0);
+            System.exit(0);
          }
       }      
    }
@@ -189,10 +271,9 @@ public class SQLParser {
          count++;
       //System.out.println(finalTokens.get(count).getToken());
       if (finalTokens.get(count).getToken().matches(";")) {
-         AttributeDefinitions s = new AttributeDefinitions(p1, p2, p3, p4, p5, p6, p7, p8, p9);
+         AttributeDefinitions s = new AttributeDefinitions(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
          allCommandObjects.add(s);  
-         System.out.println(allCommandObjects.get(0).getCommandType() + " named: " + allCommandObjects.get(0).getStructureName());
-         System.exit(0);
+         resetValues();
       }
       else {
          System.out.println("Error: Expected ';'");
@@ -202,8 +283,8 @@ public class SQLParser {
       
       
    public static void CREATETABLE() {
+      p1 = "CREATE TABLE";
       if(count+1 < finalTokens.size())
-         p1 = "CREATE TABLE";
          count++;
          
       //System.out.println(finalTokens.get(count).getToken());
@@ -211,39 +292,358 @@ public class SQLParser {
          //System.out.println("Its a valid Identifier");
          checkIllegalSOC();
          p2 = finalTokens.get(count).getToken();
-         firstFieldDef();
+         assignFieldDef();
       }
       else {
-         System.out.println("Error: Invalid token following DATABASE.");
+         System.out.println("Error: Invalid token following TABLE.");
       }
    }
 
-   public static void firstFieldDef() {
+   /*public static void firstFieldDef() {
+      //add check for parenthesis
       if(count+1 < finalTokens.size())
          count++;
       //System.out.println(finalTokens.get(count).getToken());      
       //assignFieldType();
-   }
+   }*/
    
-   /*public static void assignFieldType(){
+   public static void assignFieldDef(){
       if(count+1 < finalTokens.size())
          count++; 
+      
+      assignFieldName();   
+      //System.out.println(finalTokens.get(count).getToken()); 
+      /*if (finalTokens.get(count).getToken().matches("[a-zA-Z0-9]*")) {
+         //System.out.println("Its a valid Identifier");
+         checkIllegalSOC();
+         p2 = finalTokens.get(count).getToken();
          
+      }
+      else {
+         System.out.println("Error: Invalid token following DATABASE.");
+      }*/         
+   }  
+   public static void assignFieldName(){
+      if(count+1 < finalTokens.size())
+         count++; 
       //System.out.println(finalTokens.get(count).getToken()); 
       if (finalTokens.get(count).getToken().matches("[a-zA-Z0-9]*")) {
          //System.out.println("Its a valid Identifier");
          checkIllegalSOC();
-         p2 = finalTokens.get(count).getToken();
-         if(count+1 < finalTokens.size())
-            count++; 
-         if (finalTokens.get(count).getToken().matches("[a-zA-Z0-9]*"))
-         firstFieldDef();
+         p7 = finalTokens.get(count).getToken();
+         assignFieldType();        
       }
       else {
          System.out.println("Error: Invalid token following DATABASE.");
-      }         
-   }   */
-      
+      }
+   }   
+   
+   public static void assignFieldType(){
+      if(count+1 < finalTokens.size())
+         count++; 
+      //System.out.println(finalTokens.get(count).getToken()); 
+      String t = finalTokens.get(count).getToken();
+      switch(t) {
+         case "INTEGER":
+            p3 = t;
+            if(count+1 < finalTokens.size())
+               count++;
+               
+            if(finalTokens.get(count).getToken().equals("(")){
+               if(count+1 < finalTokens.size())
+                  count++;
+               else
+                  System.out.println("Error: Can not find max length.");
+               
+               assignTypeInteger();
+            }
+            else if(finalTokens.get(count).getToken().equals(",")){
+               endFieldDef();
+            }
+            else if(finalTokens.get(count).getToken().equals("NOT")){
+               endFieldDef();
+            }
+            else if(finalTokens.get(count).getToken().equals(")")){
+               if(count+1 < finalTokens.size())
+                  count++;
+         
+               //System.out.println(finalTokens.get(count).getToken());
+               if (finalTokens.get(count).getToken().matches(";")) {
+                  AttributeDefinitions s = new AttributeDefinitions(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
+                  allCommandObjects.add(s);  
+                  resetValues();
+               }
+               else {
+                  System.out.println("Error: Expected ';'");
+               }
+            }
+            else{
+               System.out.println("Error: Invalid entry post dataType declaration");
+            }
+
+            break;
+         case "NUMBER":
+            p3 = t;
+            if(count+1 < finalTokens.size())
+               count++;
+               
+            if(finalTokens.get(count).getToken().equals("(")){
+               if(count+1 < finalTokens.size())
+                  count++;
+               else
+                  System.out.println("Error: Can not find max length.");
+               
+               assignTypeNumber();
+            }
+            else if(finalTokens.get(count).getToken().equals(",")){
+               endFieldDef();
+            }
+            else if(finalTokens.get(count).getToken().equals("NOT")){
+               endFieldDef();
+            }
+            else if(finalTokens.get(count).getToken().equals(")")){
+               if(count+1 < finalTokens.size())
+                  count++;
+               endFieldDef();
+            }
+            else{
+               System.out.println("Error: Invalid entry post dataType declaration");
+            }
+
+            break;
+         case "CHARACTER":
+            p3 = t;
+            if(count+1 < finalTokens.size())
+               count++;
+            if(finalTokens.get(count).getToken().equals("(")){
+               if(count+1 < finalTokens.size())
+                  count++;
+               else
+                  System.out.println("Error: Can not find max length.");
+                  
+               if(finalTokens.get(count).getToken().matches("[0-9]*")){
+                  p5 = finalTokens.get(count).getToken();
+                     if(count+1 < finalTokens.size())
+                        count++;
+                     else
+                        System.out.println("Error: Invalid end to a statement.");
+                     
+                     if(finalTokens.get(count).getToken().equals(")")) {
+                        if(count+1 < finalTokens.size())
+                           count++;
+                         //System.out.println(finalTokens.get(count).getToken()); 
+                        endFieldDef();
+                     }
+                     else
+                        System.out.println("Error: Expected a ')'");
+               }
+               else{
+                  System.out.println("Error: Not a valid numeric value.");
+               }
+            }
+            else{
+               System.out.println("Error: Missing '('");
+            }
+            break;
+         case "DATE":
+            p3 = t;
+            if(count+1 < finalTokens.size())
+               count++;
+        
+            if(finalTokens.get(count).getToken().equals("(")){
+               if(count+1 < finalTokens.size())
+                  count++;
+               else
+                  System.out.println("Error: Can not find max length.");
+                  
+               assignDate();
+            }
+            else{
+               System.out.println("Error: Missing '('");
+            }
+            break;
+         default:
+            System.out.println("Error: Invalid data type entry.");
+            break;
+      }
+   }
+   public static void assignDate(){
+      String temporaryDate = "";
+      //make sure the month is number
+      if (finalTokens.get(count).getToken().matches("[0-9]*")){
+         //make sure the month value is between 0 and 12
+         int month = Integer.valueOf(finalTokens.get(count).getToken());
+         if(month > 0 && month < 13){
+            temporaryDate += finalTokens.get(count).getToken();
+            if(count+1 < finalTokens.size())
+               count++;
+               
+            if (finalTokens.get(count).getToken().equals("/")){
+               temporaryDate += finalTokens.get(count).getToken();
+               if(count+1 < finalTokens.size())
+               count++;
+               
+               if(finalTokens.get(count).getToken().matches("[0-9]*")){
+                  int day = Integer.valueOf(finalTokens.get(count).getToken());
+                  if(day > 0 && day < 32){
+                     temporaryDate+= finalTokens.get(count).getToken();
+                     if(count+1 < finalTokens.size())
+                        count++;
+                     
+                     if (finalTokens.get(count).getToken().equals("/")){
+                        temporaryDate += finalTokens.get(count).getToken();
+                        if (count+1 < finalTokens.size())
+                           count++;
+                           
+                        if(finalTokens.get(count).getToken().matches("[0-9]*")){
+                           if (finalTokens.get(count).getToken().length() == 2 || finalTokens.get(count).getToken().length() == 4){
+                              temporaryDate += finalTokens.get(count).getToken();
+                              if(count+1 < finalTokens.size())
+                                 count++;
+                              
+                              if(finalTokens.get(count).getToken().equals(")")){
+                                 if(count+1 < finalTokens.size())
+                                    count++;
+                                 p8 = temporaryDate;
+                                 endFieldDef();
+                              }
+                              else
+                                 System.out.println("Error: Expected ')'");
+                           }
+                           else
+                              System.out.println("Error: Invalid entry for year.");
+                        }
+                        else
+                           System.out.println("Error: Expected a numeric value for year.");
+                     }   
+                     else
+                        System.out.println("Error: Expected a '/'");
+                  }
+                  else
+                     System.out.println("Error: Invalid numeric range for the day."); 
+               }
+               else
+                  System.out.println("Error: Expected a numeric value for day.");    
+            }
+            else
+               System.out.println("Error: Expected a '/'");
+         }
+         else
+            System.out.println("Error: Invalid entry for month value.");
+      }
+      else
+         System.out.println("Error: Expected a numeric value.");
+   }
+   
+   public static void assignTypeNumber(){
+      if(finalTokens.get(count).getToken().matches("[0-9]*")){
+         p4 = finalTokens.get(count).getToken();
+         if(count+1 < finalTokens.size())
+            count++;
+         else
+            System.out.println("Error: Invalid end to a statement.");
+                     
+         if(finalTokens.get(count).getToken().equals(")")) {
+            if(count+1 < finalTokens.size())
+               count++;
+            endFieldDef();
+         }
+         else if(finalTokens.get(count).getToken().equals(",")){
+            if(count+1 < finalTokens.size())
+               count++;
+            else
+               System.out.println("Error: Invalid end to a statement.");
+            
+            //System.out.println(finalTokens.get(count).getToken());
+            if(finalTokens.get(count).getToken().matches("[0-9]*")){
+               p6 = finalTokens.get(count).getToken();
+               if(count+1 < finalTokens.size())
+                  count++;
+               else
+                  System.out.println("Error: Invalid end to a statement.");
+                    
+               if(finalTokens.get(count).getToken().equals(")")) {
+                  if(count+1 < finalTokens.size())
+                     count++;
+                     endFieldDef();
+                  }
+               else
+                  System.out.println("Error: Invalid end to a statement.");
+            }
+            else
+               System.out.println("Error: Expected a value for decimal.");
+         }
+         else 
+            System.out.println("Error: Expected a ')'");
+         }
+      else{
+         System.out.println("Error: Not a valid numeric value.");
+      }
+   }
+   public static void assignTypeInteger(){
+      if(finalTokens.get(count).getToken().matches("[0-9]*")){
+         p5 = finalTokens.get(count).getToken();
+         if(count+1 < finalTokens.size())
+            count++;
+         else
+            System.out.println("Error: Invalid end to a statement.");
+                   
+         if(finalTokens.get(count).getToken().equals(")")) {
+            if(count+1 < finalTokens.size())
+               count++;
+            endFieldDef();
+         }
+         else
+            System.out.println("Error: Expected a ')'");
+         }
+      else{
+         System.out.println("Error: Not a valid numeric value.");
+      }
+   }
+   public static void endFieldDef(){
+      //System.out.println(finalTokens.get(count).getToken());   
+      if(finalTokens.get(count).getToken().equals("NOT")) {
+         if(count+1 < finalTokens.size())
+            count++; 
+         else
+            System.out.println("Error: Invalid end to a statement");
+         
+         if (finalTokens.get(count).getToken().equals("NULL")){
+            p9 = false;
+            if(count+1 < finalTokens.size())
+               count++; 
+            else
+               System.out.println("Error: Invalid end to a statement");
+            endFieldDef();
+         }
+         else
+            System.out.println("Error: Expected 'NULL'");
+      }
+      else if(finalTokens.get(count).getToken().equals(")")){
+         if(count+1 < finalTokens.size())
+            count++;
+         //System.out.println(finalTokens.get(count).getToken());
+         if (finalTokens.get(count).getToken().matches(";")) {
+            AttributeDefinitions s = new AttributeDefinitions(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
+            allCommandObjects.add(s);  
+            resetValues();
+         }
+         else {
+            System.out.println("Error: Expected ';'");
+         }  
+   
+      }
+      else if(finalTokens.get(count).getToken().equals(",")){
+         AttributeDefinitions s = new AttributeDefinitions(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
+         allCommandObjects.add(s);  
+         resetValues();
+         assignFieldName();    
+      }   
+      else {
+         System.out.println("Error in endFieldDef function.");
+      }                
+   }
+
    public static void EndCreateDatabaseCommand(){
       p2 = finalTokens.get(count).getToken();
       if(count+1 < finalTokens.size())
@@ -252,28 +652,15 @@ public class SQLParser {
       //System.out.println(finalTokens.get(count).getToken());
       if (finalTokens.get(count).getToken().equals(";")) {
          p1 = "CREATE DATABASE";
-         AttributeDefinitions s = new AttributeDefinitions(p1, p2, p3, p4, p5, p6, p7, p8, p9);
+         AttributeDefinitions s = new AttributeDefinitions(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
          allCommandObjects.add(s);  
-         System.out.println(allCommandObjects.get(0).getCommandType() + " named: " + allCommandObjects.get(0).getStructureName());
-         System.exit(0);
+         resetValues();
       }
       else {
          System.out.println("Error: Invalid input after database name.");
       }          
    }
    
-   //gets the input from the scanner
-   public static String getCommand(){
-      System.out.println("Input command: ");
-      Scanner scan = new Scanner(System.in);
-      String input = scan.nextLine();
-      //need to fix command line entries with no letters/numbers/symbols
-      if (input.equals("")){
-         System.out.println("Error: Nothing entered.");
-         System.exit(0);
-      }
-      return input;
-   }
    //Uses tokenizer to break the string according to whitespaces and makes sure the token 
    //is further broken down to simple form and the keywords are all in a uniform case format
    public static void Lexical(String input) {
@@ -292,13 +679,13 @@ public class SQLParser {
          currentToken = token.getToken();
          if(currentToken != ""){
             //System.out.println(currentToken);
-            for(int i = 0; i < operands.length; i++){
+            /*for(int i = 0; i < operands.length; i++){
                char c = currentToken.charAt(0);
                boolean a = isOperand(c); 
                if(a != true) {
                   checkFirstChar(currentToken);
                }
-            }
+            }*/
             TransToken = convertUpperCase(currentToken);
             Token s = new Token(TransToken);
             finalTokens.add(s);
@@ -375,6 +762,19 @@ public class SQLParser {
       }
       return false;
    }
+   public static void resetValues(){
+      p1 = "NULL";
+      p2 = "NULL";
+      p3 = "NULL";
+      p4 = "NULL";
+      p5 = "NULL";
+      p6 = "NULL";
+      p7 = "NULL";
+      p8 = "NULL";
+      p9 = true;  
+      p10 = "NULL";
+      p11 = "NULL";
+   }
 }
 
 class Token{
@@ -399,8 +799,10 @@ class AttributeDefinitions {
     private String dataName;
     private String date;
     private boolean Nullable;
- 
-    public AttributeDefinitions(String commandType, String structureName, String dataType, String length, String max, String decimal, String dataName, String date, Boolean Nullable){
+    private String value;
+    private String condition;
+    
+    public AttributeDefinitions(String commandType, String structureName, String dataType, String length, String max, String decimal, String dataName, String date, Boolean Nullable, String value, String condition){
        this.commandType = commandType;
        this.structureName = structureName;
        this.dataName = dataName;
@@ -410,6 +812,8 @@ class AttributeDefinitions {
        this.decimal = decimal;
        this.date = date;
        this.Nullable = Nullable;
+       this.value = value;
+       this.condition = condition;
     }
     
     public String getCommandType(){
@@ -444,7 +848,15 @@ class AttributeDefinitions {
        return date;
     }
     
-    public Boolean Nullable(){
+    public Boolean isNullable(){
        return Nullable;
+    }
+    
+    public String getValue(){
+       return value;
+    }
+    
+    public String getCondition(){
+       return condition;
     }
 }
