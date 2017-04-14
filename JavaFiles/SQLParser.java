@@ -15,7 +15,9 @@ Current functions of the Syntax analyzer
 -Creates create database object
 
 Issues 
--command line entries with no letter/numbers/symbols
+-conditions are throwig illegal char error
+-arraylist isn't copied but referenced making it impossible to clear
+-need to add insert; need to look at the xml output
 */
  
 import java.io.*;
@@ -27,7 +29,7 @@ public class SQLParser {
    static ArrayList<Token> allTokens = new ArrayList<Token>();
    static ArrayList<Token> finalTokens = new ArrayList<Token>();
    static ArrayList<AttributeDefinitions> allCommandObjects = new ArrayList<AttributeDefinitions>();
-   static String[] keywords1 = {"CREATE", "DROP", "SAVE", "LOAD", "INSERT", "INPUT", "DELETE", "TSELECT", "SELECT", "COMMIT", "DATABASE", "TABLE", "INTO", "VALUES", "FROM", "INTEGER", "CHARACTER", "NUMBER", "DATE"};
+   static String[] keywords1 = {"CREATE", "DROP", "SAVE", "LOAD", "INSERT", "INPUT", "DELETE", "TSELECT", "SELECT", "COMMIT", "DATABASE", "TABLE", "INTO", "VALUES", "FROM", "INTEGER", "CHARACTER", "NUMBER", "DATE", "WHERE"};
    static String[] operands = {"*", "(", ")", ";", ",", "/"}; 
    static int count = 0;
    
@@ -42,6 +44,8 @@ public class SQLParser {
    static Boolean p9 = true;
    static String p10 = "NULL";
    static String p11 = "NULL";
+   static ArrayList<fieldLiterals> p12 = new ArrayList<fieldLiterals>();
+   static ArrayList<fieldLiterals> copyP12 = new ArrayList<fieldLiterals>();
    
    public static void main(String[] args) {
       executeSQLParser();
@@ -61,7 +65,8 @@ public class SQLParser {
             " max: " + allCommandObjects.get(i).getMax() + " decimal: " + allCommandObjects.get(i).getDecimal() +
             " dataName: " + allCommandObjects.get(i).getDataName() + " date: " + 
             allCommandObjects.get(i).getDate() + " Nullable: " + allCommandObjects.get(i).isNullable()
-            + " value: " + allCommandObjects.get(i).getValue());
+            + " value: " + allCommandObjects.get(i).getValue() + " condition: " + allCommandObjects.get(i).getCondition()
+            + " field and literals: " + allCommandObjects.get(i).getAllFieldLiterals().size());
       }
       
    }
@@ -149,7 +154,7 @@ public class SQLParser {
             if (finalTokens.get(count).getToken().equals(";")) {
                //System.out.println(finalTokens.get(count).getToken());
                p1 = "COMMIT";
-               AttributeDefinitions s = new AttributeDefinitions(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
+               AttributeDefinitions s = new AttributeDefinitions(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12);
                allCommandObjects.add(s);  
                resetValues();
             }
@@ -171,49 +176,23 @@ public class SQLParser {
          case "INSERT":
             break;
          case "DELETE":
+            p1 = t;    
+            count--;
+            fromFollowingSelect();
+
+
+
             break;
          case "TSELECT":
+            p1 = t;
             if (finalTokens.get(count).getToken().equals("*")) {
                //System.out.println(finalTokens.get(count).getToken());
-               p1 = t;
                p10 = finalTokens.get(count).getToken();
                
-               if(count+1 < finalTokens.size())
-                  count++;
-               else
-                  System.out.println("Error: Unexpected end of command.");
-               
-               if (finalTokens.get(count).getToken().equals("FROM")){
-                  if(count+1 < finalTokens.size())
-                     count++;
-                  else
-                     System.out.println("Error: Unexpected end of command.");
-                  
-                  
-                  if (finalTokens.get(count).getToken().matches("[a-zA-Z0-9]*")){
-                     p2 = finalTokens.get(count).getToken();
-                     if(count+1 < finalTokens.size())
-                        count++;
-                     else
-                        System.out.println("Error: Unexpected end of command.");
-                        
-                     if(finalTokens.get(count).getToken().equals("WHERE")){
-                     }
-                     else if(finalTokens.get(count).getToken().equals(";")){
-                     }
-                     else
-                        System.out.println("Error: Issue at TSELECT command.");                     
-                  }
-                  else
-                     System.out.println("Error: Invalid table name.");
-               }
-               else
-                  System.out.println("Error: Expected 'FROM' following '*'");
-                  
+               fromFollowingSelect();                  
             }
-            else if (finalTokens.get(count).getToken().matches("[a-zA-Z0-9]*")) {
-               //System.out.println("CREATE TABLE");
-               CREATETABLE();
+            else if (finalTokens.get(count).getToken().equals("(")) {
+               addFieldsToArrayList();
             }
             else {
                System.out.println("Error: Invalid command following TSELECT.");
@@ -221,11 +200,117 @@ public class SQLParser {
 
             break;
          case "SELECT":
+            p1 = t;
+            if (finalTokens.get(count).getToken().equals("*")) {
+               //System.out.println(finalTokens.get(count).getToken());
+               p10 = finalTokens.get(count).getToken();
+                  
+               fromFollowingSelect();
+                  
+            }
+            else if (finalTokens.get(count).getToken().equals("(")) {
+               addFieldsToArrayList();
+            }
+            else {
+               System.out.println("Error: Invalid command following SELECT.");
+            }
+
             break;
          default:
             System.out.println("Error: Not a valid start to a command");
             break;
       }      
+   }
+   public static void addFieldsToArrayList(){
+      if(count+1 < finalTokens.size())
+         count++;
+      else
+         System.out.println("Error: Unexpected end of command.");
+         
+      if(finalTokens.get(count).getToken().matches("[a-zA-Z0-9]*")){
+         fieldLiterals a = new fieldLiterals(finalTokens.get(count).getToken(), "NULL");
+         //System.out.println(a.getField());
+         p12.add(a);
+         addFieldsToArrayList();
+      }
+      else if(finalTokens.get(count).getToken().equals(",")){
+         addFieldsToArrayList();
+      }
+      else if(finalTokens.get(count).getToken().equals(")")){
+         copyP12.addAll(p12);
+         fromFollowingSelect();
+      }
+      else
+         System.out.println("Error: Invalid entry following a '('");
+   }
+   
+   public static void fromFollowingSelect(){
+                     
+      if(count+1 < finalTokens.size())
+         count++;
+      else
+         System.out.println("Error: Unexpected end of command.");
+         
+      if (finalTokens.get(count).getToken().equals("FROM")){
+         if(count+1 < finalTokens.size())
+            count++;
+         else
+            System.out.println("Error: Unexpected end of command.");
+                  
+                  
+         if (finalTokens.get(count).getToken().matches("[a-zA-Z0-9]*")){
+            p2 = finalTokens.get(count).getToken();
+            if(count+1 < finalTokens.size())
+               count++;
+            else
+               System.out.println("Error: Unexpected end of command.");
+                     
+            //System.out.println("We made it here.");   
+            assignCondition();                     
+         }
+         else
+            System.out.println("Error: Invalid table name.");
+      }
+      else
+         System.out.println("Error: Expected 'FROM' following '*' or fields");
+   }
+   
+   public static void assignCondition(){
+      //System.out.println("assignCondition is being executed.");
+      String temporaryCondition = "";
+      if(count+1 < finalTokens.size())
+         count++;
+      else 
+         System.out.println("Error: Illegal end to the statement");
+      
+      if(finalTokens.get(count).getToken().matches("[a-zA-Z0-9]*")){
+         temporaryCondition += " " + finalTokens.get(count).getToken();
+         //System.out.println(temporaryCondition);
+      }
+      else 
+         System.out.println("Error: Expected a condition statement");
+      
+      //System.out.println(allCommandObjects.size()); 
+      while (count + 1 < finalTokens.size()){
+         //System.out.println("in the while loop at : " + finalTokens.get(count).getToken());
+         if (count+1 < finalTokens.size()) 
+            count++;
+         else
+            System.out.println("Error: Unexpected end of the statement.");
+            
+         if (finalTokens.get(count).getToken().equals(";")){
+            p11 = temporaryCondition;
+            AttributeDefinitions s = new AttributeDefinitions(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12);
+            allCommandObjects.add(s);
+            resetValues();
+         }
+         else
+            temporaryCondition += " " + finalTokens.get(count).getToken();
+      }
+      if(finalTokens.get(count).getToken().equals(";")){
+      }
+      else
+         System.out.println("Error: Missing ';'");   
    }
       
    public static void checkIllegalSOC(){
@@ -271,7 +356,7 @@ public class SQLParser {
          count++;
       //System.out.println(finalTokens.get(count).getToken());
       if (finalTokens.get(count).getToken().matches(";")) {
-         AttributeDefinitions s = new AttributeDefinitions(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
+         AttributeDefinitions s = new AttributeDefinitions(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12);
          allCommandObjects.add(s);  
          resetValues();
       }
@@ -369,7 +454,7 @@ public class SQLParser {
          
                //System.out.println(finalTokens.get(count).getToken());
                if (finalTokens.get(count).getToken().matches(";")) {
-                  AttributeDefinitions s = new AttributeDefinitions(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
+                  AttributeDefinitions s = new AttributeDefinitions(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12);
                   allCommandObjects.add(s);  
                   resetValues();
                }
@@ -624,7 +709,7 @@ public class SQLParser {
             count++;
          //System.out.println(finalTokens.get(count).getToken());
          if (finalTokens.get(count).getToken().matches(";")) {
-            AttributeDefinitions s = new AttributeDefinitions(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
+            AttributeDefinitions s = new AttributeDefinitions(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12);
             allCommandObjects.add(s);  
             resetValues();
          }
@@ -634,7 +719,7 @@ public class SQLParser {
    
       }
       else if(finalTokens.get(count).getToken().equals(",")){
-         AttributeDefinitions s = new AttributeDefinitions(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
+         AttributeDefinitions s = new AttributeDefinitions(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12);
          allCommandObjects.add(s);  
          resetValues();
          assignFieldName();    
@@ -652,7 +737,7 @@ public class SQLParser {
       //System.out.println(finalTokens.get(count).getToken());
       if (finalTokens.get(count).getToken().equals(";")) {
          p1 = "CREATE DATABASE";
-         AttributeDefinitions s = new AttributeDefinitions(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11);
+         AttributeDefinitions s = new AttributeDefinitions(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12);
          allCommandObjects.add(s);  
          resetValues();
       }
@@ -774,6 +859,7 @@ public class SQLParser {
       p9 = true;  
       p10 = "NULL";
       p11 = "NULL";
+      //p12.clear();
    }
 }
 
@@ -789,6 +875,24 @@ class Token{
    }
 }
 
+class fieldLiterals{
+   private String field;
+   private String literal;
+   
+   public fieldLiterals(String field, String literal) {
+      this.field = field;
+      this.literal = literal;
+   }
+   
+   public String getField(){
+      return field;
+   }
+   
+   public String getLiteral(){
+      return literal;
+   }
+}
+
 class AttributeDefinitions {
     private String commandType;   
     private String structureName;
@@ -801,8 +905,9 @@ class AttributeDefinitions {
     private boolean Nullable;
     private String value;
     private String condition;
+    private ArrayList<fieldLiterals> allFieldLiterals = new ArrayList<fieldLiterals>();
     
-    public AttributeDefinitions(String commandType, String structureName, String dataType, String length, String max, String decimal, String dataName, String date, Boolean Nullable, String value, String condition){
+    public AttributeDefinitions(String commandType, String structureName, String dataType, String length, String max, String decimal, String dataName, String date, Boolean Nullable, String value, String condition, ArrayList<fieldLiterals> allFieldLiterals){
        this.commandType = commandType;
        this.structureName = structureName;
        this.dataName = dataName;
@@ -814,6 +919,7 @@ class AttributeDefinitions {
        this.Nullable = Nullable;
        this.value = value;
        this.condition = condition;
+       this.allFieldLiterals = allFieldLiterals;
     }
     
     public String getCommandType(){
@@ -858,5 +964,9 @@ class AttributeDefinitions {
     
     public String getCondition(){
        return condition;
+    }
+    
+    public ArrayList<fieldLiterals> getAllFieldLiterals(){
+       return allFieldLiterals;
     }
 }
