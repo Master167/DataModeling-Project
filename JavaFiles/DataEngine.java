@@ -70,6 +70,9 @@ public class DataEngine {
             else {
                 if (this.currentDatabase == "") {
                     // Pass data to Parser
+                    // Get SqlCommand Object
+                    // Call SqlCommand.execute()
+                    // Check if currentDatabase changes
                 }
                 else {
                     // Database Selected
@@ -91,6 +94,9 @@ public class DataEngine {
                     }
                     else {
                         // Pass data to Parser
+                        // Get SqlCommand Object
+                        // Call SqlCommand.execute()
+                        // Check if currentDatabase changes
                     }
                 }
             }
