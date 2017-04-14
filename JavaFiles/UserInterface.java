@@ -15,6 +15,12 @@ public class UserInterface {
         this.stackCount = 0;
     }
     
+    public void showProgramHeader() {
+        this.showUser("Welcome to the T-SQL Database Engine and XML to SQL Converter");
+        this.showUser("Type in 'HELP' for possible commands");
+        this.showUser("Or 'EXIT' to close program");
+    }
+    
     public String getInput() {
         this.stackCount++;
         String input;

@@ -47,7 +47,7 @@ public class DataEngine {
         boolean running = true;
         String userInput = "";
         
-        // Show a program header?
+        this.userInterface.showProgramHeader();
         while (running) {
             userInput = this.userInterface.getInput();
             
