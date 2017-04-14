@@ -14,13 +14,14 @@ import org.w3c.dom.Element;
  */
 public class XSDParser {
 
-    public void parseXSD(File xsdFile, XMLToSQLParser xmlToSQLParser ){
+    public void parseXSD(String xmlFilename, String xsdFilename, String outputFilename, XMLToSQLParser xmlToSQLParser){
+        //File inputFile = new File(xsdFilename);
         ArrayList<Schema> table = new ArrayList<>(1);
         try{
             DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder;
             docBuilder = docBuilderFactory.newDocumentBuilder();
-            Document doc = docBuilder.parse (new File("xsdTestFile.xsd"));
+            Document doc = docBuilder.parse (new File(xsdFilename));
             NodeList list = doc.getElementsByTagName("xsd:element");
 
             //RETRIEVE TABLE NAME FROM DOC
@@ -52,7 +53,7 @@ public class XSDParser {
                 }
 
             }
-            xmlToSQLParser.parse(table);
+            xmlToSQLParser.parse(table, xmlFilename, outputFilename);
 
         }
         catch (ParserConfigurationException e)
