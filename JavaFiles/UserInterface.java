@@ -67,7 +67,7 @@ public class UserInterface {
         this.showUser("CREATE TABLE tableName (fieldName fieldType(n)[ NOT NULL], ...);");
         this.showUser("DROP TABLE tableName;");
         this.showUser("INSERT INTO tableName[ (fieldName, ...)] VALUES (fieldValue, ...);");
-        this.showUser("CONVVERT XML xmlFilename, XSD filename AS sqlFile;");
+        this.showUser("CONVERT XML xmlFilename, XSD filename AS sqlFile;");
         this.showUser("INPUT sqlFile;");
         this.showUser("[t]SELECT [*|(field, ...)] FROM tableName [WHERE (field = value)]");
         this.showUser("SAVE DATABASE");

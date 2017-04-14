@@ -46,17 +46,10 @@ public class DataEngine {
         this.currentDatabase = "";
         boolean running = true;
         String userInput = "";
-        String firstToken;
-        StringTokenizer tokenGenerator;
         
         // Show a program header?
         while (running) {
             userInput = this.userInterface.getInput();
-            
-            /*
-            First: tokenGenerator.nextToken throws exception if no other token exists
-            Second: you need to javadoc your methods.
-            */
             
             if (userInput.equalsIgnoreCase("exit")) {
                 this.userInterface.showUser("Goodbye");
@@ -76,7 +69,16 @@ public class DataEngine {
                 }
                 else {
                     // Database Selected
-                    // Pass data to Parser
+                    // Check if convert or input
+                    if (userInput.matches("CONVERT XML (\\w)+(.\\w+)*, XSD (\\w)+(.\\w+)* AS (\\w)+(.\\w+)*;")) {
+                        this.userInterface.showUser("VALID CONVERT");
+                    }
+                    else if (userInput.matches("INPUT (\\w)+(.\\w+)*;")) {
+                        this.userInterface.showUser("VALID INPUT");
+                    }
+                    else {
+                        // Pass data to Parser
+                    }
                 }
             }
         }
@@ -86,6 +88,21 @@ public class DataEngine {
         this.fileReader.setInputFile();
         //modify to xml and xsd doc
         this.xsdParser.parseXSD(this.fileReader.getInputFile(), xmlToSqlParser);
+    }
+    
+    private void convertXmlToSql(String xmlFilename, String xsdFilename, String outputFilename) {
+        try {
+            // Passing xml, xsd, and outputFilename
+            // Make call here
+            //this.xsdParser.parseXSD(xmlFilename, xsdFilename, outputFilename, this.xmlToSqlParser);
+            this.userInterface.showUser("Conversion completed: " + outputFilename + " was created for INPUT");
+        }
+        catch (Exception e) {
+            this.userInterface.showUser("Error:");
+            this.userInterface.showUser(e.getMessage());
+        }
+        
+        return;
     }
 
     /**
