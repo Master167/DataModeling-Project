@@ -46,6 +46,10 @@ public class DataEngine {
         this.currentDatabase = "";
         boolean running = true;
         String userInput = "";
+        String temp;
+        
+        // For testing
+        this.currentDatabase = "JAG";
         
         this.userInterface.showProgramHeader();
         while (running) {
@@ -71,10 +75,19 @@ public class DataEngine {
                     // Database Selected
                     // Check if convert or input
                     if (userInput.matches("CONVERT XML (\\w)+(.\\w+)*, XSD (\\w)+(.\\w+)* AS (\\w)+(.\\w+)*;")) {
-                        this.userInterface.showUser("VALID CONVERT");
+                        //this.userInterface.showUser("VALID CONVERT");
+                        temp = userInput.replace("CONVERT XML ", "");
+                        temp = temp.replace(", XSD", "");
+                        temp = temp.replace(" AS", "");
+                        temp = temp.replace(";", "");
+                        String[] filenames = temp.split(" ");
+                        this.convertXmlToSql(filenames[0], filenames[1], filenames[2]);
                     }
                     else if (userInput.matches("INPUT (\\w)+(.\\w+)*;")) {
-                        this.userInterface.showUser("VALID INPUT");
+                        //this.userInterface.showUser("VALID INPUT");
+                        temp = userInput.replace("INPUT ", "");
+                        temp = temp.replace(";", "");
+                        this.inputFileIntoDatabase(temp);
                     }
                     else {
                         // Pass data to Parser
@@ -95,7 +108,8 @@ public class DataEngine {
             // Passing xml, xsd, and outputFilename
             // Make call here
             //this.xsdParser.parseXSD(xmlFilename, xsdFilename, outputFilename, this.xmlToSqlParser);
-            this.userInterface.showUser("Conversion completed: " + outputFilename + " was created for INPUT");
+            //this.userInterface.showUser(String.format("XML %s, XSD %s", xmlFilename, xsdFilename));
+            this.userInterface.showUser("Conversion completed: " + outputFilename + " was created for INPUT command");
         }
         catch (Exception e) {
             this.userInterface.showUser("Error:");
@@ -103,6 +117,11 @@ public class DataEngine {
         }
         
         return;
+    }
+    
+    private void inputFileIntoDatabase(String inputFilename) {
+        // Going to flush this out in integration
+        this.userInterface.showUser(inputFilename);
     }
 
     /**
