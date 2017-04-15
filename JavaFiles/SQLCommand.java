@@ -9,5 +9,9 @@ public abstract class SQLCommand {
         this.database = databaseName;
     }
     
+    public String getDatabaseName(){
+      return database;
+    }
+    
     public abstract void executeCommand();
 }

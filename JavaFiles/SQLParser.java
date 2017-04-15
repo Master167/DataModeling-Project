@@ -52,40 +52,23 @@ public class SQLParser {
    static int arrayCount = 0;
    static boolean notNull = false;
    
-   public static void main(String[] args) {
-      executeSQLParser();
-   }
+    //executes the parser
+    public SQLCommand[] executeSQLParser(String commandLine){   
+        SQLCommand commnad;
+        Lexical(commandLine);
+        Syntax();
+        SQLCommand[] commands = (SQLCommand[])this.allSQLCommands.toArray();
+        return commands;
+    }
    
-   //executes the parser
-   public static void executeSQLParser(){
-      String commandLine = "";
-      commandLine = getCommand();
-      
-      Lexical(commandLine);
-      Syntax();      
-   }
-   
-   //gets the input from the scanner
-   public static String getCommand(){
-      System.out.println("Input command: ");
-      Scanner scan = new Scanner(System.in);
-      String input = scan.nextLine();
-      //need to fix command line entries with no letters/numbers/symbols
-      if (input.equals("")){
-         System.out.println("Error: Nothing entered.");
-         System.exit(0);
-      }
-      return input;
-   }
-   
-   public static void Syntax(){
+   public void Syntax(){
       /*for (Token token: finalTokens) {
          System.out.println(token.getToken());
       }*/
       //if (count < finalTokens.size())
          Commands(finalTokens.get(count).getToken());
    } 
-   public static void Commands(String t){
+   public void Commands(String t){
       if(count+1 < finalTokens.size())
          count++;
       
@@ -180,7 +163,7 @@ public class SQLParser {
       }      
    }
    //checks for illegal keywords in the middle of a command
-   public static void checkIllegalSOC(){
+   public void checkIllegalSOC(){
       for (int i = 0; i < keywords1.length; i++) {
          if (finalTokens.get(count).getToken().equals(keywords1[i])){  
             System.out.println("Error: Illegal start of command.");
@@ -189,7 +172,7 @@ public class SQLParser {
       }      
    }
    
-     public static void CREATEDATABASE() {
+     public void CREATEDATABASE() {
       if(count+1 < finalTokens.size())
          count++;
       //System.out.println(finalTokens.get(count).getToken());
@@ -203,7 +186,7 @@ public class SQLParser {
       }
    }
    
-   public static void EndCreateDatabaseCommand(String databaseName){
+   public void EndCreateDatabaseCommand(String databaseName){
       if(count+1 < finalTokens.size())
          count++;
          
@@ -218,7 +201,7 @@ public class SQLParser {
    }
 
         
-   public static void CREATETABLE() {
+   public void CREATETABLE() {
       if(count+1 < finalTokens.size())
          count++;
          
@@ -234,7 +217,7 @@ public class SQLParser {
       }
    }
    
-   public static void assignFieldDef(){
+   public void assignFieldDef(){
       if(count+1 < finalTokens.size())
          count++; 
       
@@ -246,7 +229,7 @@ public class SQLParser {
       assignFieldName();
    }  
    
-   public static void assignFieldName(){
+   public void assignFieldName(){
       if(count+1 < finalTokens.size())
          count++; 
       
@@ -261,7 +244,7 @@ public class SQLParser {
       }
    }
    
-   public static void assignFieldType(){
+   public void assignFieldType(){
       if(count+1 < finalTokens.size())
          count++; 
       //System.out.println(finalTokens.get(count).getToken()); 
@@ -390,7 +373,7 @@ public class SQLParser {
       }
    }
 
-    public static void assignTypeInteger(){
+    public void assignTypeInteger(){
       //System.out.println(finalTokens.get(count).getToken());
       if(finalTokens.get(count).getToken().matches("[0-9]*")){
          tCollumnTypes[arrayCount][1] = finalTokens.get(count).getToken();
@@ -412,7 +395,7 @@ public class SQLParser {
       }
    }
    
-   public static void endFieldDef(){
+   public void endFieldDef(){
       //System.out.println(finalTokens.get(count).getToken());   
       if(finalTokens.get(count).getToken().equals("NOT")) {
          if(count+1 < finalTokens.size())
@@ -455,7 +438,7 @@ public class SQLParser {
    }
 
 
-   public static int countFieldDef(){ 
+   public int countFieldDef(){ 
       int count = 1;
       for(Token token: finalTokens){
          //System.out.println(token.getToken());
@@ -466,7 +449,7 @@ public class SQLParser {
       return count;  
    }
    
-   public static void SAVEDROPLOAD(String Command, String Structure) {
+   public void SAVEDROPLOAD(String Command, String Structure) {
       
       if(count+1 < finalTokens.size())
          count++;
@@ -481,7 +464,7 @@ public class SQLParser {
       }
    }
 
-      public static void endDatabaseCommand(String Command, String Structure){
+    public void endDatabaseCommand(String Command, String Structure){
       if(Structure.equals("DATABASE"))
          databaseName = finalTokens.get(count).getToken();
       else if(Structure.equals("TABLE"))
@@ -527,7 +510,7 @@ public class SQLParser {
 //Lexical Analyzer Classes------------------------------------------------------------------------------     
    //Uses tokenizer to break the string according to whitespaces and makes sure the token 
    //is further broken down to simple form and the keywords are all in a uniform case format
-   public static void Lexical(String input) {
+   public void Lexical(String input) {
       String currentToken = "";
       StringTokenizer tokenizer = new StringTokenizer(input);
       while(tokenizer.hasMoreElements()) {
@@ -560,7 +543,7 @@ public class SQLParser {
         
    }
    
-   public static void checkFirstChar(String t) {
+   public void checkFirstChar(String t) {
       char c = t.charAt(0);
       String s = Character.toString(c);   
       if(!s.matches("[a-zA-Z]*")) { 
@@ -568,7 +551,7 @@ public class SQLParser {
          System.exit(0);
       }
    }   
-   public static String convertUpperCase(String t) {
+   public String convertUpperCase(String t) {
       String returnToken = "";
       for(int i = 0; i < keywords1.length; i++) {            
          if (t.equalsIgnoreCase(keywords1[i])){
@@ -581,7 +564,7 @@ public class SQLParser {
       return t;
    }      
    //seperate IDs from operands and scan for illegal characters   
-   public static void seperateOperands(String t){
+   public void seperateOperands(String t){
       String buildToken = "";
       char c = ' ';
       boolean a = false;
@@ -607,7 +590,7 @@ public class SQLParser {
       Token s = new Token(buildToken);
       allTokens.add(s);
    }
-   public static void isLegal(char c) {
+   public void isLegal(char c) {
       String t = Character.toString(c);
       if(t.matches("[a-zA-Z0-9]*")) {   
          //System.out.println("Matches");
@@ -618,7 +601,7 @@ public class SQLParser {
       }
    }
    
-   public static boolean isOperand(char c) {
+   public boolean isOperand(char c) {
       //System.out.println(c);
       for (int j = 0; j < operands.length; j++){
          if (c == operands[j].charAt(0))
@@ -629,123 +612,14 @@ public class SQLParser {
 }
 
 //Object Classes ---------------------------------------------------------------------------------------
-class Token{
-   private String token;
+class Token {
+    private String token;
    
-   public Token(String token) {
-      this.token = token;
-   }
+    public Token(String token) {
+        this.token = token;
+    }
    
-   public String getToken(){
-      return token;
-   }
-}
-
-abstract class SQLCommand {
-    public String database;
-    
-    public SQLCommand(String databaseName) {
-        this.database = databaseName;
-    }
-    
-    public String getDatabaseName(){
-      return database;
-    }
-    
-    public abstract void executeCommand();
-}
-
-class CreateDatabase extends SQLCommand {
-    public CreateDatabase(String databaseName) {
-        super(databaseName);
-    }
-    
-    @Override
-    public void executeCommand() {
-    }
-}
-
-class CreateTable extends SQLCommand {
-    public String tableName;
-    public String[] columnNames;
-    public String[][] columnTypes;
-    public boolean[] Nullable;
-    
-    public CreateTable(String database, String tableName, String[] names, String[][] types, boolean[] nullable) {
-        super(database);
-        this.tableName = tableName;
-        this.columnNames = names;
-        this.columnTypes = types;
-        this.Nullable = nullable;
-    }
-    
-    @Override
-    public void executeCommand() {
-    }
-}
-
-class DropDatabase extends SQLCommand {
-    public DropDatabase(String databaseName) {
-        super(databaseName);
-    }
-    
-    @Override
-    public void executeCommand() {
-    }
-}
-
-class DropTable extends SQLCommand {
-    public String tableName;
-    
-    public DropTable(String database, String tableName) {
-        super(database);
-        this.tableName = tableName;
-    }
-    
-    @Override
-    public void executeCommand() {
-    }
-}
-
-class SaveDatabase extends SQLCommand {
-    public SaveDatabase(String databaseName) {
-        super(databaseName);
-    }
-    
-    @Override
-    public void executeCommand() {
-    }
-}
-
-class LoadDatabase extends SQLCommand {
-    public LoadDatabase(String databaseName) {
-        super(databaseName);
-    }
-    
-    @Override
-    public void executeCommand() {
-    }
-}
-
-class Commit extends SQLCommand {
-    public Commit(String databaseName) {
-        super(databaseName);
-    }
-    
-    @Override
-    public void executeCommand() {
-    }
-}
-
-class Input extends SQLCommand {
-    public String fileName;
-    
-    public Input(String database, String fileName) {
-        super(database);
-        this.fileName = fileName;
-    }
-    
-    @Override
-    public void executeCommand() {
+    public String getToken(){
+        return token;
     }
 }
