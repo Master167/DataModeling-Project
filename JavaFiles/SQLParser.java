@@ -2,8 +2,8 @@
  * SQLParser - This class is to check and generate commands from SQL statements.
  * @author Sean Domingo, Michael Frederick, Megan Molumby, Mai Huong Nguyen, Richard Pratt
  */
- 
-/* 
+
+/*
 Current functions of the SQL lexical
 -Creates Tokens
 -Checks for illegal chars such as *, &, !, etc
@@ -30,18 +30,18 @@ import java.util.*;
 public class SQLParser {
    ArrayList<Token> allTokens;
    ArrayList<Token> finalTokens;
-   
+
    String[] keywords = {"CREATE", "DROP", "SAVE", "LOAD", "INSERT", "INPUT", "DELETE", "TSELECT", "SELECT", "COMMIT", "DATABASE", "TABLE", "INTO", "VALUES", "FROM", "INTEGER", "CHARACTER", "NUMBER", "DATE", "WHERE"};
-   String[] operands = {"*", "(", ")", ";", ",", "=", ">", "<", ">=", "<=" }; 
+   String[] operands = {"*", "(", ")", ";", ",", "=", ">", "<", ">=", "<=" };
    int tokenCount;
    SQLCommand command;
-   
+
     //executes the parser
     public SQLCommand executeSQLParser(String commandLine) throws Exception {
         this.resetParser();
         this.generateTokens(commandLine);
         this.parseTokens();
-        
+
         // Check generateTokens
         Token token;
         for (int i = 0; i < this.finalTokens.size(); i++) {
@@ -51,7 +51,7 @@ public class SQLParser {
         System.out.printf("%n");
         return command;
     }
-    
+
     private void resetParser() {
         allTokens = new ArrayList<>();
         finalTokens = new ArrayList<>();
@@ -59,8 +59,8 @@ public class SQLParser {
         return;
     }
 
-    //Lexical Analyzer Classes------------------------------------------------------------------------------     
-    //Uses tokenizer to break the string according to whitespaces and makes sure the token 
+    //Lexical Analyzer Classes------------------------------------------------------------------------------
+    //Uses tokenizer to break the string according to whitespaces and makes sure the token
     //is further broken down to simple form and the keywords are all in a uniform case format
     public void generateTokens(String input) throws Exception {
         String currentToken = "";
@@ -77,7 +77,7 @@ public class SQLParser {
                 //System.out.println(currentToken);
                 /*for(int i = 0; i < operands.length; i++){
                    char c = currentToken.charAt(0);
-                   boolean a = isOperand(c); 
+                   boolean a = isOperand(c);
                    if(a != true) {
                       checkFirstChar(currentToken);
                    }
@@ -94,15 +94,15 @@ public class SQLParser {
 
     public void checkFirstChar(String t) throws Exception {
         char c = t.charAt(0);
-        String s = Character.toString(c);   
-        if(!s.matches("[a-zA-Z]*")) { 
+        String s = Character.toString(c);
+        if(!s.matches("[a-zA-Z]*")) {
             throw new Exception("Invalid ID name or Command.");
         }
     }
 
     public String convertUpperCase(String t) {
         String returnToken = "";
-        for(int i = 0; i < keywords.length; i++) {            
+        for(int i = 0; i < keywords.length; i++) {
             if (t.equalsIgnoreCase(keywords[i])){
                 returnToken = t.toUpperCase();
 
@@ -111,9 +111,9 @@ public class SQLParser {
         }
 
         return t;
-    } 
+    }
 
-    //seperate IDs from operands and scan for illegal characters   
+    //seperate IDs from operands and scan for illegal characters
     public void seperateOperands(String t) throws Exception {
         String buildToken = "";
         char c = ' ';
@@ -143,7 +143,7 @@ public class SQLParser {
 
     public void isLegal(char c) throws Exception {
         String t = Character.toString(c);
-        if(!t.matches("[a-zA-Z0-9]*")) {   
+        if(!t.matches("[a-zA-Z0-9]*")) {
             throw new Exception("Illegal char: " + t);
         }
     }
@@ -151,11 +151,11 @@ public class SQLParser {
     public boolean isOperand(char c) {
         for (int j = 0; j < operands.length; j++){
             if (c == operands[j].charAt(0))
-                return true;            
+                return true;
         }
         return false;
     }
-    
+
     private void parseTokens() throws Exception {
         switch (this.finalTokens.get(tokenCount++).getToken()) {
             case "CREATE":
@@ -207,31 +207,31 @@ public class SQLParser {
                 throw new Exception("Unrecognized Command Entered");
         }
     }
-    
+
     private void checkCreateTable() throws Exception {
         throw new Exception("Not implemented");
     }
-    
+
     private void checkCreateDatabase() throws Exception {
         throw new Exception("Not implemented");
     }
-    
+
     private void checkDropTable() throws Exception {
         throw new Exception("Not implemented");
     }
-    
+
     private void checkDropDatabase() throws Exception {
         throw new Exception("Not implemented");
     }
-    
+
     private void checkSaveDatabase() throws Exception {
         throw new Exception("Not implemented");
     }
-    
+
     private void checkLoadDatabase() throws Exception {
         throw new Exception("Not implemented");
     }
-    
+
     private void checkCommit() throws Exception {
         throw new Exception("Not implemented");
     }
@@ -239,11 +239,11 @@ public class SQLParser {
     private void checkSelect() throws Exception {
         throw new Exception("Not implemented");
     }
-    
+
     private void checkTSelect() throws Exception {
         throw new Exception("Not implemented");
     }
-    
+
     private void checkInsert() throws Exception {
         throw new Exception("Not implemented");
     }
@@ -251,7 +251,7 @@ public class SQLParser {
     private void checkDelete() throws Exception {
         throw new Exception("Not implemented");
     }
-    
+
 }
 
 //Object Classes ---------------------------------------------------------------------------------------
