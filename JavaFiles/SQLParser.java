@@ -12,12 +12,13 @@ Current functions of the SQL lexical
 Problem: Multiple character operands !=, >=, <=
 
 PARSER TO DO LIST:
--drop database
--save database
 -load database
 -commit
 -create table
 -delete
+
+WHERE FORMAT: { columnName, comparator, value }
+
 -insert
 -select
 -tselect
@@ -26,7 +27,8 @@ PARSER TO DO LIST:
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 public class SQLParser {
    ArrayList<Token> allTokens;
@@ -267,7 +269,15 @@ public class SQLParser {
     }
 
     private void generateSaveDatabase() throws Exception {
-        throw new Exception("Not implemented");
+        String databaseName = this.finalTokens.get(tokenCount++).getToken();
+        if (this.currentDatabase.equals(databaseName)) {
+            this.command = new SaveDatabase(databaseName);
+            this.command.database = "";
+        }
+        else {
+            // They are not in the database they are trying to save
+            throw new Exception("Unable to save " + databaseName);
+        }
     }
 
     private void generateLoadDatabase() throws Exception {
