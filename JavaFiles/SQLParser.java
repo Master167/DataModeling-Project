@@ -37,28 +37,28 @@ import java.text.*;
 import java.lang.*;
 
 public class SQLParser {
-   static ArrayList<Token> allTokens = new ArrayList<Token>();
-   static ArrayList<Token> finalTokens = new ArrayList<Token>();
-   static ArrayList<SQLCommand> allSQLCommands = new ArrayList<SQLCommand>();
-   static String[] keywords1 = {"CREATE", "DROP", "SAVE", "LOAD", "INSERT", "INPUT", "DELETE", "TSELECT", "SELECT", "COMMIT", "DATABASE", "TABLE", "INTO", "VALUES", "FROM", "INTEGER", "CHARACTER", "NUMBER", "DATE", "WHERE"};
-   static String[] operands = {"*", "(", ")", ";", ",", "/"}; 
-   static int count = 0;
+   ArrayList<Token> allTokens = new ArrayList<Token>();
+   ArrayList<Token> finalTokens = new ArrayList<Token>();
    
-   static String tableName = "NULL";
-   static String[] tCollumnNames;
-   static String[][] tCollumnTypes;
-   static boolean[] tNullable;
-   static String databaseName = "NULL";
-   static int arrayCount = 0;
-   static boolean notNull = false;
+   String[] keywords1 = {"CREATE", "DROP", "SAVE", "LOAD", "INSERT", "INPUT", "DELETE", "TSELECT", "SELECT", "COMMIT", "DATABASE", "TABLE", "INTO", "VALUES", "FROM", "INTEGER", "CHARACTER", "NUMBER", "DATE", "WHERE"};
+   String[] operands = {"*", "(", ")", ";", ",", "/"}; 
+   int count = 0;
+   
+   String tableName = "NULL";
+   String[] tCollumnNames;
+   String[][] tCollumnTypes;
+   boolean[] tNullable;
+   String databaseName = "NULL";
+   int arrayCount = 0;
+   boolean notNull = false;
+   
+   SQLCommand command;
    
     //executes the parser
-    public SQLCommand[] executeSQLParser(String commandLine){   
-        SQLCommand commnad;
+    public SQLCommand executeSQLParser(String commandLine){
         Lexical(commandLine);
         Syntax();
-        SQLCommand[] commands = (SQLCommand[])this.allSQLCommands.toArray();
-        return commands;
+        return command;
     }
    
    public void Syntax(){
