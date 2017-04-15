@@ -10,6 +10,4 @@ public class CreateDatabase extends SQLCommand {
     @Override
     public void executeCommand() {
     }
-    
-    // THIS IS A CHANGE ON THE FILE
 }
