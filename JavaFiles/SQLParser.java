@@ -281,7 +281,18 @@ public class SQLParser {
     }
 
     private void generateLoadDatabase() throws Exception {
-        throw new Exception("Not implemented");
+        String databaseName = this.finalTokens.get(tokenCount++).getToken();
+        if (this.checkIfFileExists("databases\\" + databaseName + ".xml")) {
+            if (this.checkEndOfCommand()) {
+                this.command = new LoadDatabase(databaseName);
+            }
+            else {
+                this.badEndOfCommand();
+            }
+        }
+        else {
+            throw new Exception(databaseName + " does not exist");
+        }
     }
 
     private void generateCommit() throws Exception {
