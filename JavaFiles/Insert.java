@@ -3,8 +3,12 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * Insert
@@ -23,6 +27,8 @@ public class Insert extends SQLCommand {
     public Insert(String database, String tableName, String[] names, String[] values) {
           	
         super(database);
+        domUtil = new DOMUtility(); 
+        WriteDOMtoFile writer = new WriteDOMtoFile();
         tablePath = Paths.get("tables", database, tableName + ".xml");
         this.tableName = tableName;
         this.columnNames = names;
@@ -37,16 +43,24 @@ public class Insert extends SQLCommand {
     			System.out.println("ERROR: File found");
     			return;
     		}
-    		DOMUtility domUtil = new DOMUtility();
-    		//System.out.print(tablePath.getFileName());
-    		tableDOM = domUtil.XMLtoDOM(new File(tablePath.toString()));// load 
-    		//Document tableInfo// table info to verify types 
-    		/*
-    		 * Find table by element name
-    		 * Insert stuff in loop
-    		 * Append to table 
-    		 */
-    		//writer.write(doc, outputFile);// write altered DOM object to file
+    		
+    		tableDOM = domUtil.XMLtoDOM(new File(tablePath.toString()));
+    		Element root = tableDOM.getDocumentElement();
+    		Element tableElem = tableDOM.createElement(tableName);
+    		Element time = tableDOM.createElement("TIME");
+    		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+    		Date date = new Date();
+    		time.setTextContent(dateFormat.format(date));
+    		tableElem.appendChild(time);
+    		for (int i = 0; i < columnNames.length; i++) {
+    			Element columnElem = tableDOM.createElement(columnNames[i]);
+    			columnElem.setTextContent(columnValues[i]);
+    			tableElem.appendChild(columnElem);
+    		}
+    		root.appendChild(tableElem);
+    		writer.write(tableDOM, new File(tablePath.toString()));
+    		System.out.println("Succesfully inserted into " + tableName + " table. ");
+  
     }
     
     private boolean fileExist(Path tablePath) {
