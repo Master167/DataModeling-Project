@@ -19,7 +19,6 @@ PARSER TO DO LIST:
 -save database
 -load database
 -commit
--input
 -delete
 -select
 -tselect
@@ -34,14 +33,16 @@ public class SQLParser {
    
    String[] keywords = {"CREATE", "DROP", "SAVE", "LOAD", "INSERT", "INPUT", "DELETE", "TSELECT", "SELECT", "COMMIT", "DATABASE", "TABLE", "INTO", "VALUES", "FROM", "INTEGER", "CHARACTER", "NUMBER", "DATE", "WHERE"};
    String[] operands = {"*", "(", ")", ";", ",", "=", ">", "<", ">=", "<=" }; 
-   int count;
+   int tokenCount;
    SQLCommand command;
    
     //executes the parser
     public SQLCommand executeSQLParser(String commandLine) throws Exception {
         this.resetParser();
-        Lexical(commandLine);
+        this.generateTokens(commandLine);
+        this.parseTokens();
         
+        // Check generateTokens
         Token token;
         for (int i = 0; i < this.finalTokens.size(); i++) {
             token = this.finalTokens.get(i);
@@ -54,14 +55,14 @@ public class SQLParser {
     private void resetParser() {
         allTokens = new ArrayList<>();
         finalTokens = new ArrayList<>();
-        count = 0;
+        tokenCount = 0;
         return;
     }
 
     //Lexical Analyzer Classes------------------------------------------------------------------------------     
     //Uses tokenizer to break the string according to whitespaces and makes sure the token 
     //is further broken down to simple form and the keywords are all in a uniform case format
-    public void Lexical(String input) throws Exception {
+    public void generateTokens(String input) throws Exception {
         String currentToken = "";
         StringTokenizer tokenizer = new StringTokenizer(input);
         while(tokenizer.hasMoreElements()) {
@@ -97,7 +98,8 @@ public class SQLParser {
         if(!s.matches("[a-zA-Z]*")) { 
             throw new Exception("Invalid ID name or Command.");
         }
-    }   
+    }
+
     public String convertUpperCase(String t) {
         String returnToken = "";
         for(int i = 0; i < keywords.length; i++) {            
@@ -109,7 +111,8 @@ public class SQLParser {
         }
 
         return t;
-    }      
+    } 
+
     //seperate IDs from operands and scan for illegal characters   
     public void seperateOperands(String t) throws Exception {
         String buildToken = "";
@@ -137,6 +140,7 @@ public class SQLParser {
         Token s = new Token(buildToken);
         allTokens.add(s);
     }
+
     public void isLegal(char c) throws Exception {
         String t = Character.toString(c);
         if(!t.matches("[a-zA-Z0-9]*")) {   
@@ -150,6 +154,42 @@ public class SQLParser {
                 return true;            
         }
         return false;
+    }
+    
+    private void parseTokens() throws Exception {
+        switch (this.finalTokens.get(0).getToken()) {
+            case "CREATE":
+//            create table
+//            create database
+                break;
+            case "DROP":
+//            drop table
+//            drop database
+                break;
+            case "SAVE":
+//            save database
+                break;
+            case "LOAD":
+//            load database
+                break;
+            case "COMMIT":
+//            commit
+                break;
+            case "DELETE":
+//            delete
+                break;
+            case "SELECT":
+//            select
+                break;
+            case "TSELECT":
+//            tselect
+                break;
+            case "INSERT":
+//            insert
+                break;
+            default:
+                throw new Exception("Unrecognized Command Entered");
+        }
     }
 }
 
