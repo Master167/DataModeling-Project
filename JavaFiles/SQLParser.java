@@ -125,8 +125,7 @@ public class SQLParser {
             //System.out.println(finalTokens.get(count).getToken());
             if (finalTokens.get(count).getToken().equals(";")) {
                //System.out.println(finalTokens.get(count).getToken());
-               SQLCommand sql = new Commit(databaseName);
-               allSQLCommands.add(sql);
+               command = new Commit(databaseName);
             }
             else {
                System.out.println("Error: Invalid string following COMMIT.");
@@ -191,8 +190,7 @@ public class SQLParser {
          count++;
          
       if (finalTokens.get(count).getToken().equals(";")) {
-         SQLCommand sqlCommand = new CreateDatabase(databaseName);
-         allSQLCommands.add(sqlCommand);
+         command = new CreateDatabase(databaseName);
          //System.out.println(allSQLCommands.get(0).getDatabaseName());
       }
       else {
@@ -275,8 +273,7 @@ public class SQLParser {
          
                //System.out.println(finalTokens.get(count).getToken());
                if (finalTokens.get(count).getToken().matches(";")) {
-                  SQLCommand sqlCommand = new CreateTable(databaseName, tableName, tCollumnNames, tCollumnTypes, tNullable);
-                  allSQLCommands.add(sqlCommand);
+                  command = new CreateTable(databaseName, tableName, tCollumnNames, tCollumnTypes, tNullable);
                }
                else {
                   System.out.println("Error: Expected ';'");
@@ -420,8 +417,7 @@ public class SQLParser {
             
          //System.out.println(finalTokens.get(count).getToken());
          if (finalTokens.get(count).getToken().matches(";")) {
-            SQLCommand sqlCommand = new CreateTable(databaseName, tableName, tCollumnNames, tCollumnTypes, tNullable);
-            allSQLCommands.add(sqlCommand);
+            command = new CreateTable(databaseName, tableName, tCollumnNames, tCollumnTypes, tNullable);
          }
          else {
             System.out.println("Error: Expected ';'");
@@ -478,27 +474,24 @@ public class SQLParser {
          switch(Command){
             case "DROP":
                if(Structure.equals("TABLE")){
-                  SQLCommand sqlCommand0 = new DropTable(databaseName, tableName);
-                  allSQLCommands.add(sqlCommand0);
+                  command = new DropTable(databaseName, tableName);
                }
                else if (Structure.equals("DATABASE")){
-                  SQLCommand sqlCommand1 = new DropDatabase(databaseName);
-                  allSQLCommands.add(sqlCommand1);
+                  command = new DropDatabase(databaseName);
                }
-               else
+               else {
                   System.out.println("Error: Invalid entry following the command.");
-                  
+               }
                break;
             case "SAVE":
-               SQLCommand sqlCommand2 = new SaveDatabase(databaseName);
-               allSQLCommands.add(sqlCommand2);
+               command = new SaveDatabase(databaseName);
                break;
             case "LOAD":
-               SQLCommand sqlCommand3 = new LoadDatabase(databaseName);
-               allSQLCommands.add(sqlCommand3);
+               command = new LoadDatabase(databaseName);
                break;
             default:
                System.out.println("Error: No commands.");
+               break;
          }
       }
       else {
