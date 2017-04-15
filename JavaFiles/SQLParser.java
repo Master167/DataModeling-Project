@@ -12,17 +12,15 @@ Current functions of the SQL lexical
 Problem: Multiple character operands !=, >=, <=
 
 PARSER TO DO LIST:
--create table
--create database
--drop table
 -drop database
 -save database
 -load database
 -commit
+-create table
 -delete
+-insert
 -select
 -tselect
--insert
 */
 
 import java.nio.file.Files;
@@ -37,21 +35,25 @@ public class SQLParser {
    String[] keywords = {"CREATE", "DROP", "SAVE", "LOAD", "INSERT", "INPUT", "DELETE", "TSELECT", "SELECT", "COMMIT", "DATABASE", "TABLE", "INTO", "VALUES", "FROM", "INTEGER", "CHARACTER", "NUMBER", "DATE", "WHERE"};
    String[] operands = {"*", "(", ")", ";", ",", "=", ">", "<", ">=", "<=" };
    int tokenCount;
+   String currentDatabase;
    SQLCommand command;
 
     //executes the parser
-    public SQLCommand executeSQLParser(String commandLine) throws Exception {
+    public SQLCommand executeSQLParser(String commandLine, String currentDatabase) throws Exception {
         this.resetParser();
+        this.currentDatabase = currentDatabase;
         this.generateTokens(commandLine);
         this.parseTokens();
 
         // Check generateTokens
+        /*
         Token token;
         for (int i = 0; i < this.finalTokens.size(); i++) {
             token = this.finalTokens.get(i);
             System.out.printf("%s, ", token.getToken());
         }
         System.out.printf("%n");
+        */
         return command;
     }
 
@@ -234,11 +236,34 @@ public class SQLParser {
     }
 
     private void generateDropTable() throws Exception {
-        throw new Exception("Not implemented");
+        String tableName = this.finalTokens.get(tokenCount++).getToken();
+        if (this.checkIfFileExists("tables\\" + this.currentDatabase + tableName + ".xml")) {
+            if (this.checkEndOfCommand()) {
+                this.command = new DropTable(this.currentDatabase, tableName);
+            }
+            else {
+                this.badEndOfCommand();
+            }
+        }
+        else {
+            throw new Exception(tableName + " does not exist");
+        }
     }
 
     private void generateDropDatabase() throws Exception {
-        throw new Exception("Not implemented");
+        String databaseName = this.finalTokens.get(tokenCount++).getToken();
+        if (this.checkIfFileExists("databases\\" + databaseName + ".xml")) {
+            if (this.checkEndOfCommand()) {
+                this.command = new DropDatabase(databaseName);
+                this.command.database = "";
+            }
+            else {
+                this.badEndOfCommand();
+            }
+        }
+        else {
+            throw new Exception(databaseName + " database does not exist");
+        }
     }
 
     private void generateSaveDatabase() throws Exception {

@@ -115,10 +115,11 @@ public class DataEngine {
     private void parseCommand(String input) {
         SQLCommand command;
         try {
-            command = this.sqlParser.executeSQLParser(input);
-            // Get SqlCommand Object
-            // Call SqlCommand.execute()
-            // Check if currentDatabase changes
+            command = this.sqlParser.executeSQLParser(input, currentDatabase);
+            if (command.database == null ? this.currentDatabase != null : !command.database.equals(this.currentDatabase)) {
+                this.currentDatabase = command.database;
+            }
+            command.executeCommand();
         }
         catch (Exception e) {
             this.userInterface.showUser("Error:");
