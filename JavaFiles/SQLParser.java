@@ -25,6 +25,9 @@ PARSER TO DO LIST:
 -insert
 */
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class SQLParser {
@@ -157,14 +160,16 @@ public class SQLParser {
     }
 
     private void parseTokens() throws Exception {
+        // Determine which parse path to follow
+        // See methods for implementations
         switch (this.finalTokens.get(tokenCount++).getToken()) {
             case "CREATE":
                 switch (this.finalTokens.get(tokenCount++).getToken()) {
                     case "TABLE":
-                        this.checkCreateTable();
+                        this.generateCreateTable();
                         break;
                     case "DATABASE":
-                        this.checkCreateDatabase();
+                        this.generateCreateDatabase();
                         break;
                     default:
                         throw new Exception("Invalid Create command");
@@ -173,83 +178,109 @@ public class SQLParser {
             case "DROP":
                 switch (this.finalTokens.get(tokenCount++).getToken()) {
                     case "TABLE":
-                        this.checkDropTable();
+                        this.generateDropTable();
                         break;
                     case "DATABASE":
-                        this.checkDropDatabase();
+                        this.generateDropDatabase();
                         break;
                     default:
                         throw new Exception("Invalid Drop command");
                 }
                 break;
             case "SAVE":
-                this.checkSaveDatabase();
+                this.generateSaveDatabase();
                 break;
             case "LOAD":
-                this.checkLoadDatabase();
+                this.generateLoadDatabase();
                 break;
             case "COMMIT":
-                this.checkCommit();
+                this.generateCommit();
                 break;
             case "DELETE":
-                this.checkDelete();
+                this.generateDelete();
                 break;
             case "SELECT":
-                this.checkSelect();
+                this.generateSelect();
                 break;
             case "TSELECT":
-                this.checkTSelect();
+                this.generateTSelect();
                 break;
             case "INSERT":
-                this.checkInsert();
+                this.generateInsert();
                 break;
             default:
                 throw new Exception("Unrecognized Command Entered");
         }
     }
 
-    private void checkCreateTable() throws Exception {
+    private void generateCreateTable() throws Exception {
         throw new Exception("Not implemented");
     }
 
-    private void checkCreateDatabase() throws Exception {
+    private void generateCreateDatabase() throws Exception {
+        // Check if database exists
+        String databaseName = this.finalTokens.get(tokenCount++).getToken();
+        if (!this.checkIfFileExists("databases\\" + databaseName + ".xml")) {
+            if (this.checkEndOfCommand()) {
+                this.command = new CreateDatabase(databaseName);
+            }
+            else {
+                this.badEndOfCommand();
+            }
+        }
+        else {
+            throw new Exception(databaseName + " database already exists");
+        }
+    }
+
+    private void generateDropTable() throws Exception {
         throw new Exception("Not implemented");
     }
 
-    private void checkDropTable() throws Exception {
+    private void generateDropDatabase() throws Exception {
         throw new Exception("Not implemented");
     }
 
-    private void checkDropDatabase() throws Exception {
+    private void generateSaveDatabase() throws Exception {
         throw new Exception("Not implemented");
     }
 
-    private void checkSaveDatabase() throws Exception {
+    private void generateLoadDatabase() throws Exception {
         throw new Exception("Not implemented");
     }
 
-    private void checkLoadDatabase() throws Exception {
+    private void generateCommit() throws Exception {
         throw new Exception("Not implemented");
     }
 
-    private void checkCommit() throws Exception {
+    private void generateSelect() throws Exception {
         throw new Exception("Not implemented");
     }
 
-    private void checkSelect() throws Exception {
+    private void generateTSelect() throws Exception {
         throw new Exception("Not implemented");
     }
 
-    private void checkTSelect() throws Exception {
+    private void generateInsert() throws Exception {
         throw new Exception("Not implemented");
     }
 
-    private void checkInsert() throws Exception {
+    private void generateDelete() throws Exception {
         throw new Exception("Not implemented");
     }
-
-    private void checkDelete() throws Exception {
-        throw new Exception("Not implemented");
+    
+    private boolean checkIfFileExists(String filepath) {
+        Path path = Paths.get(filepath);
+        boolean a = Files.exists(path);
+        return a;
+    }
+    
+    private boolean checkEndOfCommand() {
+        return (this.finalTokens.get(tokenCount).getToken().equals(";"));
+    }
+    
+    private void badEndOfCommand() throws Exception {
+        throw new Exception("Unable to determine end of command");
     }
 
 }
