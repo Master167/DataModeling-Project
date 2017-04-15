@@ -15,7 +15,7 @@ PARSER TO DO LIST:
 -create table
 -delete
 
-WHERE FORMAT: { columnName, comparator, value }
+WHERE FORMAT: { temp, comparator, value }
 
 -insert
 -select
@@ -31,9 +31,14 @@ import java.util.StringTokenizer;
 public class SQLParser {
    ArrayList<Token> allTokens;
    ArrayList<Token> finalTokens;
+   
+   ArrayList<String> columnNames;
+   ArrayList<String> columnTypes;
+   ArrayList<String> columnLength;
+   ArrayList<Boolean> columnNullable;
 
    String[] keywords = {"CREATE", "DROP", "SAVE", "LOAD", "INSERT", "INPUT", "DELETE", "TSELECT", "SELECT", "COMMIT", "DATABASE", "TABLE", "INTO", "VALUES", "FROM", "INTEGER", "CHARACTER", "NUMBER", "DATE", "WHERE"};
-   String[] operands = {"*", "(", ")", ";", ",", "=", ">", "<", ">=", "<=" };
+   String[] operands = {"*", "(", ")", ";", ",", "/", "=", ">", "<", ">=", "<=" };
    int tokenCount;
    String currentDatabase;
    SQLCommand command;
@@ -43,10 +48,8 @@ public class SQLParser {
         this.resetParser();
         this.currentDatabase = currentDatabase;
         this.generateTokens(commandLine);
-        this.parseTokens();
-
-        // Check generateTokens
         /*
+        // Check generateTokens
         Token token;
         for (int i = 0; i < this.finalTokens.size(); i++) {
             token = this.finalTokens.get(i);
@@ -54,12 +57,18 @@ public class SQLParser {
         }
         System.out.printf("%n");
         */
+        this.parseTokens();
+
         return command;
     }
 
     private void resetParser() {
         allTokens = new ArrayList<>();
         finalTokens = new ArrayList<>();
+        columnNames = new ArrayList<>();
+        columnTypes = new ArrayList<>();
+        columnLength = new ArrayList<>();
+        columnNullable = new ArrayList<>();
         tokenCount = 0;
         return;
     }
@@ -101,7 +110,7 @@ public class SQLParser {
         char c = t.charAt(0);
         String s = Character.toString(c);
         if(!s.matches("[a-zA-Z]*")) {
-            throw new Exception("Invalid ID name or Command.");
+            throw new Exception(t + " is an Invalid ID name or Command.");
         }
     }
 
@@ -216,7 +225,37 @@ public class SQLParser {
     }
 
     private void generateCreateTable() throws Exception {
-        throw new Exception("Not implemented");
+        String tableName = this.finalTokens.get(tokenCount++).getToken();
+        this.checkFirstChar(tableName);
+        if (this.finalTokens.get(tokenCount++).getToken().equals("(")) {
+            this.getColumnDefinition();
+            if (this.finalTokens.get(tokenCount++).getToken().equals(")")) {
+                if (this.checkEndOfCommand()) {
+                    this.command = new CreateTable(this.currentDatabase,
+                                                tableName,
+                                                this.convertObjectArrayString(this.columnNames.toArray()),
+                                                this.convertObjectArrayString(this.columnTypes.toArray()),
+                                                this.convertObjectArrayString(this.columnLength.toArray()),
+                                                this.convertObjectArrayBoolean(this.columnNullable.toArray())
+                                            );
+                    /*
+                    System.out.printf("Database: %s Table: %s%n", this.currentDatabase, tableName);
+                    for (int i = 0; i < this.columnNames.size(); i++) {
+                        System.out.printf("%s %s %s %s%n", this.columnNames.get(i), this.columnTypes.get(i), this.columnLength.get(i), this.columnNullable.get(i).toString());
+                    }
+                    */
+                }
+                else {
+                    this.badEndOfCommand();
+                }
+            }
+            else {
+                throw new Exception("Unable to find end of table columns");
+            }
+        }
+        else {
+            throw new Exception("Unable to find start of table columns");
+        }
     }
 
     private void generateCreateDatabase() throws Exception {
@@ -325,6 +364,86 @@ public class SQLParser {
     
     private void badEndOfCommand() throws Exception {
         throw new Exception("Unable to determine end of command");
+    }
+    
+    private void getColumnDefinition() throws Exception {
+        String lengthTemp;
+        String temp = this.finalTokens.get(tokenCount++).getToken();
+        //Check column name
+        this.checkFirstChar(temp);
+        this.columnNames.add(temp);
+        temp = this.finalTokens.get(tokenCount++).getToken();
+        // Check column type
+        if (temp.equals("INTEGER") || temp.equals("CHARACTER")) {
+            this.columnTypes.add(temp);
+            if (this.finalTokens.get(tokenCount++).getToken().equals("(")) {
+                temp = this.finalTokens.get(tokenCount++).getToken();
+                if (temp.matches("[0-9]*")) {
+                    this.columnLength.add(temp);
+                }
+                else {
+                    throw new Exception("Missing Number for column length");
+                }
+                // Check for closing )
+                if (!this.finalTokens.get(tokenCount++).getToken().equals(")")) {
+                    throw new Exception("Missing )");
+                }
+            }
+            else {
+                throw new Exception("Missing (");
+            }
+        }
+        else if (temp.equals("NUMBER")) {
+            
+        }
+        else if (temp.equals("DATE")) {
+            
+        }
+        else {
+            throw new Exception("Unknown Datatype");
+        }
+        
+        // Check for nullable
+        temp = this.finalTokens.get(tokenCount).getToken();
+        if (temp.equals("NOT")) {
+            tokenCount++;
+            if (this.finalTokens.get(tokenCount++).getToken().equals("NULL")) {
+                this.columnNullable.add(Boolean.FALSE);
+            }
+            else {
+                throw new Exception("Unknown NOT");
+            }
+        }
+        else {
+            this.columnNullable.add(Boolean.TRUE);
+        }
+        
+        // Check if , then call this function otherwise return
+        if (this.finalTokens.get(tokenCount).getToken().equals(",")) {
+            // Only Increment tokenCount if nextToken is a ','
+            tokenCount++;
+            this.getColumnDefinition();
+        }
+        return;
+    }
+    
+    private String[] convertObjectArrayString(Object[] objs) {
+        String[] strs = new String[objs.length];
+        for (int i = 0; i < strs.length; i++) {
+            strs[i] = (String)objs[i];
+        }
+        return strs;
+    }
+    
+    private boolean[] convertObjectArrayBoolean(Object[] objs) {
+        boolean[] bools = new boolean[objs.length];
+        Object tempObj;
+        for (int i = 0; i < bools.length; i++) {
+            tempObj = objs[i];
+            bools[i] = (Boolean)tempObj;
+            
+        }
+        return bools;
     }
 
 }

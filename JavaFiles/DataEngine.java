@@ -121,9 +121,14 @@ public class DataEngine {
             }
             command.executeCommand();
         }
+        catch (IndexOutOfBoundsException e) {
+            this.userInterface.showUser("Error:");
+            this.userInterface.showUser("Missing unknown set of characters");
+        }
         catch (Exception e) {
             this.userInterface.showUser("Error:");
             this.userInterface.showUser(e.getMessage());
+            e.printStackTrace(System.out);
         }
         
         return;
