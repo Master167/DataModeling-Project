@@ -18,14 +18,13 @@ class WriteDOMtoFile {
 	private StreamResult result;
 	private TransformerFactory factory;
 	private Transformer transformer;
-	private File outputFile;
 	
 	WriteDOMtoFile() {
 		transformer = null;
 	}
 	
-	public void write(Document doc, String outFileName) {
-		outputFile = new File(outFileName);
+	public void write(Document doc, File outputFile) {
+	
 		source = new DOMSource(doc);
 		writer = new StringWriter();
 		result = new StreamResult(outputFile);

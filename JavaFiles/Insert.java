@@ -23,12 +23,13 @@ public class Insert extends SQLCommand {
     private DOMUtility domUtil;
     private Path tablePath;
     private Document tableDOM;
+    private File outputFile;
     
     public Insert(String database, String tableName, String[] names, String[] values) {
           	
         super(database);
         domUtil = new DOMUtility(); 
-        WriteDOMtoFile writer = new WriteDOMtoFile();
+        writer = new WriteDOMtoFile();
         tablePath = Paths.get("tables", database, tableName + ".xml");
         this.tableName = tableName;
         this.columnNames = names;

@@ -24,7 +24,10 @@ public class DOMUtility {
 		}
 	}
 	
-	public Document XMLtoDOM(File xmlFile) {// parses XML file and returns DOM object
+	/*
+	 *  Returns Document object with xml file already parsed into it
+	 */
+	public Document XMLtoDOM(File xmlFile) {
 		
 		doc = dBuilder.newDocument();
 		try {
@@ -33,12 +36,15 @@ public class DOMUtility {
 			e.printStackTrace();
 		} 
 		return doc;
-	}
+	}// end XMLtoDOM()
 	
-	public Document createDOM() {// returns empty DOM Document object
+	/* 
+	 * Returns empty DOM Document object
+	 */
+	public Document createDOM() {
 		
 		doc = dBuilder.newDocument();
 		return doc;
-	}
+	}// end createDOM()
 	
 }
