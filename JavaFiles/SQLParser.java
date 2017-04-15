@@ -12,8 +12,6 @@ Current functions of the SQL lexical
 Problem: Multiple character operands !=, >=, <=
 
 PARSER TO DO LIST:
--load database
--commit
 -create table
 -delete
 
@@ -296,7 +294,7 @@ public class SQLParser {
     }
 
     private void generateCommit() throws Exception {
-        throw new Exception("Not implemented");
+        this.command = new Commit(this.currentDatabase);
     }
 
     private void generateSelect() throws Exception {
