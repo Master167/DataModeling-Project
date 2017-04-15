@@ -173,10 +173,10 @@ public class SQLParser {
             case "DROP":
                 switch (this.finalTokens.get(tokenCount++).getToken()) {
                     case "TABLE":
-                        this.checkCreateTable();
+                        this.checkDropTable();
                         break;
                     case "DATABASE":
-                        this.checkCreateDatabase();
+                        this.checkDropDatabase();
                         break;
                     default:
                         throw new Exception("Invalid Drop command");
