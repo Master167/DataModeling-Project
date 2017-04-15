@@ -47,9 +47,7 @@ public class DataEngine {
         boolean running = true;
         String userInput = "";
         String temp;
-        
-        // For testing
-        this.currentDatabase = "JAG";
+        SQLCommand command;
         
         this.userInterface.showProgramHeader();
         while (running) {
@@ -70,6 +68,7 @@ public class DataEngine {
             else {
                 if (this.currentDatabase == "") {
                     // Pass data to Parser
+                    command = this.sqlParser.executeSQLParser(userInput);
                     // Get SqlCommand Object
                     // Call SqlCommand.execute()
                     // Check if currentDatabase changes
