@@ -157,40 +157,101 @@ public class SQLParser {
     }
     
     private void parseTokens() throws Exception {
-        switch (this.finalTokens.get(0).getToken()) {
+        switch (this.finalTokens.get(tokenCount++).getToken()) {
             case "CREATE":
-//            create table
-//            create database
+                switch (this.finalTokens.get(tokenCount++).getToken()) {
+                    case "TABLE":
+                        this.checkCreateTable();
+                        break;
+                    case "DATABASE":
+                        this.checkCreateDatabase();
+                        break;
+                    default:
+                        throw new Exception("Invalid Create command");
+                }
                 break;
             case "DROP":
-//            drop table
-//            drop database
+                switch (this.finalTokens.get(tokenCount++).getToken()) {
+                    case "TABLE":
+                        this.checkCreateTable();
+                        break;
+                    case "DATABASE":
+                        this.checkCreateDatabase();
+                        break;
+                    default:
+                        throw new Exception("Invalid Drop command");
+                }
                 break;
             case "SAVE":
-//            save database
+                this.checkSaveDatabase();
                 break;
             case "LOAD":
-//            load database
+                this.checkLoadDatabase();
                 break;
             case "COMMIT":
-//            commit
+                this.checkCommit();
                 break;
             case "DELETE":
-//            delete
+                this.checkDelete();
                 break;
             case "SELECT":
-//            select
+                this.checkSelect();
                 break;
             case "TSELECT":
-//            tselect
+                this.checkTSelect();
                 break;
             case "INSERT":
-//            insert
+                this.checkInsert();
                 break;
             default:
                 throw new Exception("Unrecognized Command Entered");
         }
     }
+    
+    private void checkCreateTable() throws Exception {
+        throw new Exception("Not implemented");
+    }
+    
+    private void checkCreateDatabase() throws Exception {
+        throw new Exception("Not implemented");
+    }
+    
+    private void checkDropTable() throws Exception {
+        throw new Exception("Not implemented");
+    }
+    
+    private void checkDropDatabase() throws Exception {
+        throw new Exception("Not implemented");
+    }
+    
+    private void checkSaveDatabase() throws Exception {
+        throw new Exception("Not implemented");
+    }
+    
+    private void checkLoadDatabase() throws Exception {
+        throw new Exception("Not implemented");
+    }
+    
+    private void checkCommit() throws Exception {
+        throw new Exception("Not implemented");
+    }
+
+    private void checkSelect() throws Exception {
+        throw new Exception("Not implemented");
+    }
+    
+    private void checkTSelect() throws Exception {
+        throw new Exception("Not implemented");
+    }
+    
+    private void checkInsert() throws Exception {
+        throw new Exception("Not implemented");
+    }
+
+    private void checkDelete() throws Exception {
+        throw new Exception("Not implemented");
+    }
+    
 }
 
 //Object Classes ---------------------------------------------------------------------------------------
