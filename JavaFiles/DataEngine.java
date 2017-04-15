@@ -97,24 +97,18 @@ public class DataEngine {
                         // Get SqlCommand Object
                         // Call SqlCommand.execute()
                         // Check if currentDatabase changes
+                        this.userInterface.showUserError();
                     }
                 }
             }
         }
-    }
-
-    public void xsdParser() {
-        this.fileReader.setInputFile();
-        //modify to xml and xsd doc
-        this.xsdParser.parseXSD(this.fileReader.getInputFile(), xmlToSqlParser);
     }
     
     private void convertXmlToSql(String xmlFilename, String xsdFilename, String outputFilename) {
         try {
             // Passing xml, xsd, and outputFilename
             // Make call here
-            //this.xsdParser.parseXSD(xmlFilename, xsdFilename, outputFilename, this.xmlToSqlParser);
-            //this.userInterface.showUser(String.format("XML %s, XSD %s", xmlFilename, xsdFilename));
+            this.xsdParser.parseXSD(xmlFilename, xsdFilename, outputFilename, this.xmlToSqlParser);
             this.userInterface.showUser("Conversion completed: " + outputFilename + " was created for INPUT command");
         }
         catch (Exception e) {
