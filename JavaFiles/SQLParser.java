@@ -12,7 +12,6 @@ Current functions of the SQL lexical
 Problem: Multiple character operands !=, >=, <=
 
 PARSER TO DO LIST:
--create table
 -delete
 
 WHERE FORMAT: { temp, comparator, value }
@@ -36,6 +35,7 @@ public class SQLParser {
    ArrayList<String> columnTypes;
    ArrayList<String> columnLength;
    ArrayList<Boolean> columnNullable;
+   String[] whereConditional;
 
    String[] keywords = {"CREATE", "DROP", "SAVE", "LOAD", "INSERT", "INPUT", "DELETE", "TSELECT", "SELECT", "COMMIT", "DATABASE", "TABLE", "INTO", "VALUES", "FROM", "INTEGER", "CHARACTER", "NUMBER", "DATE", "WHERE"};
    String[] operands = {"*", "(", ")", ";", ",", "/", "=", ">", "<", ">=", "<=" };
@@ -69,6 +69,7 @@ public class SQLParser {
         columnTypes = new ArrayList<>();
         columnLength = new ArrayList<>();
         columnNullable = new ArrayList<>();
+        whereConditional = new String[3];
         tokenCount = 0;
         return;
     }
@@ -349,7 +350,40 @@ public class SQLParser {
     }
 
     private void generateDelete() throws Exception {
-        throw new Exception("Not implemented");
+        String tableName;
+        String column;
+        String conditional;
+        String value;
+        if (this.finalTokens.get(tokenCount++).getToken().equals("FROM")) {
+            tableName = this.finalTokens.get(tokenCount++).getToken();
+            this.checkFirstChar(tableName);
+            if (this.makeTableCheck(this.currentDatabase, tableName)) {
+                if (this.finalTokens.get(tokenCount).getToken().equals("WHERE")) {
+                    tokenCount++;
+                    this.makeWhereConditional(tableName);
+                    if (this.checkEndOfCommand()) {
+                        this.command = new Delete(this.currentDatabase, tableName, this.whereConditional);
+                    }
+                    else {
+                        this.badEndOfCommand();
+                    }
+                }
+                else {
+                    if (this.checkEndOfCommand()) {
+                        this.command = new Delete(this.currentDatabase, tableName, null);
+                    }
+                    else {
+                        this.badEndOfCommand();
+                    }
+                }
+            }
+            else {
+                throw new Exception(tableName + " does not exist in " + this.currentDatabase + " database");
+            }
+        }
+        else {
+            throw new Exception("No FROM in Delete");
+        }
     }
     
     private boolean checkIfFileExists(String filepath) {
@@ -444,6 +478,59 @@ public class SQLParser {
             
         }
         return bools;
+    }
+    
+    // Just a strach board for now.
+    private boolean makeDatatypeCheck(String database, String table, String column, String value) {
+        // Get Database Catalog and Type.
+        
+        // Check Type
+        
+        // Check Length or format
+         
+        //Return true if the value is valid for that column
+        return true;
+    }
+    
+    private boolean makeColumnCheck(String database, String table, String column) {
+        // Get database catalog
+        // Check if column exists in catalog
+        // return true if it does
+        return true;
+    }
+    
+    private boolean makeTableCheck(String database, String table) {
+        // Get database catalog
+        // Check if table exists in catalog
+        return true;
+    }
+    
+    private void makeWhereConditional(String tableName) throws Exception {
+        String column;
+        String conditional;
+        String value;
+
+        column = this.finalTokens.get(tokenCount++).getToken();
+        if (this.makeColumnCheck(this.currentDatabase, tableName, column)) {
+            conditional = this.finalTokens.get(tokenCount++).getToken();
+            if (conditional.equals("=") || conditional.equals(">=") || conditional.equals("<=") || conditional.equals("!=") || conditional.equals(">") || conditional.equals("<")) {
+                value = this.finalTokens.get(tokenCount++).getToken();
+                if (this.makeDatatypeCheck(this.currentDatabase, tableName, column, value)) {
+                    this.whereConditional[0] = column;
+                    this.whereConditional[1] = conditional;
+                    this.whereConditional[2] = value;
+                }
+                else {
+                    throw new Exception("Invalid Datatype");
+                }
+            }
+            else {
+                throw new Exception("Invalid conditional");
+            }
+        }
+        else {
+            throw new Exception(column + " does not exist in " + tableName + " table");
+        }
     }
 
 }
