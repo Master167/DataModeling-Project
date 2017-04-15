@@ -9,6 +9,8 @@ Current functions of the SQL lexical
 -Checks for illegal chars such as *, &, !, etc
 -Converts keywords into uppercase
 
+Problem: Multiple character operands !=, >=, <=
+
 PARSER TO DO LIST:
 -create table
 -create database
