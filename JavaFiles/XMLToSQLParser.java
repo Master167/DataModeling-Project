@@ -6,7 +6,8 @@
  */
  
  /*CATCHES
-/* } catch (ParserConfigurationException e) {
+/* 
+catch (ParserConfigurationException e) {
             System.out.print("ERROR:Parser Configuration error");
             //e.printStackTrace();
             return;
@@ -21,8 +22,7 @@
         } catch (SAXException e) {
             return;
             //e.printStackTrace();
-        }*/
-
+    }
 */
 import org.w3c.dom.*;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -36,9 +36,9 @@ import java.util.ArrayList;
 
 public class XMLToSQLParser {
 
-    public void parse(ArrayList<Schema> table, String xmlFilename, String outputFilename) {
+    public void parse(ArrayList<Schema> table, String xmlFilename, String outputFilename) throws IOException, UnsupportedEncodingException, ParserConfigurationException, SAXException {
         boolean error = false;
-       try {
+        //try {
             //CREATE file to write SQL commands to
             if(!outputFilename.contains(".txt")){
                 System.out.print("Error: please specify the output file extension type(ex: output.txt)");

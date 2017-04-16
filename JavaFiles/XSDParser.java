@@ -33,7 +33,7 @@ import org.w3c.dom.Element;
  * Created by Megan on 4/3/2017.
  */
 public class XSDParser {
-       public void parseXSD(String xmlFilename, String xsdFilename, String outputFilename, XMLToSQLParser xmlToSQLParser){
+       public void parseXSD(String xmlFilename, String xsdFilename, String outputFilename, XMLToSQLParser xmlToSQLParser) throws ParserConfigurationException, org.xml.sax.SAXException, IOException {
     
         //File inputFile = new File(xsdFilename);
         ArrayList<Schema> table = new ArrayList<>(1);
@@ -95,6 +95,7 @@ public class XSDParser {
             //e.printStackTrace();
             return;        }
         //return table;
-    }*/
+        */
+    }
 
 }
