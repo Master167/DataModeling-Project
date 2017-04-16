@@ -402,7 +402,7 @@ public class SQLParser {
             tableName = temp;
         }
         else {
-            throw new Exception("No Table selected using FROM");
+            throw new Exception(temp + " does not exists in " + this.currentDatabase + " database");
         }
         
         if (selectedColumns.size() == 0) {
@@ -845,24 +845,60 @@ public class SQLParser {
     
     // Just a strach board for now.
     private boolean makeColumnCheck(String database, String table, String column) throws Exception {
-        // Get database catalog
-        // Check if column exists in catalog
-        // return true if it does
-        return true;
+        boolean columnExists = false;
+        Document catalog;
+        Element tableElement;
+        Element columnElement;
+        Node tempNode;
+        if (makeTableCheck(database, table)) {
+            // Get database catalog
+            catalog = this.getDatabase(database);
+            // Working on the tables level
+            tempNode = catalog.getFirstChild();
+            for (Node tableNode = tempNode.getFirstChild(); (tableNode != null) && !columnExists; tableNode = tableNode.getNextSibling()) {
+                if (tableNode.getNodeType() == Node.ELEMENT_NODE) {
+                    //Check table name
+                    tableElement = (Element) tableNode;
+                    if (tableElement.getNodeName().equals(table)) {
+                        // Now the Column Level
+                        for (Node columnNode = tableNode.getFirstChild(); (columnNode != null) && !columnExists; columnNode = columnNode.getNextSibling()) {
+                            // Check if column exists in this table
+                            if (columnNode.getNodeType() == Node.ELEMENT_NODE) {
+                                columnElement = (Element) columnNode;
+                                if (columnElement.getNodeName().equals(column)) {
+                                    columnExists = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+             
+        }
+        return columnExists;
     }
 
-    // Just a strach board for now.
     private boolean makeTableCheck(String database, String table) throws Exception {
         boolean tableExists = false;
         // Get database catalog
         Document catalog = this.getDatabase(database);
         // Check if table exists in catalog
-        NodeList tableList = catalog.getElementsByTagName("tables");
+        Node tempNode = catalog.getFirstChild();
         NodeList childList;
-        Node tempNode;
         Element tempElement;
-        for (int i = 0; i < tableList.getLength(); i++) {
-            tempNode = tableList.item(i);
+        // Check first child
+        if (tempNode.getNodeType() == Node.ELEMENT_NODE) {
+            tempElement = (Element) tempNode;
+            if (tempElement.hasChildNodes()) {
+                childList = tempElement.getElementsByTagName(table);
+                if (childList.getLength() == 1) {
+                    tableExists = true;
+                }
+            }
+        }
+        while (tempNode.getNextSibling() != null && !tableExists) {
+            tempNode = tempNode.getNextSibling();
             if (tempNode.getNodeType() == Node.ELEMENT_NODE) {
                 tempElement = (Element) tempNode;
                 if (tempElement.hasChildNodes()) {
