@@ -890,12 +890,19 @@ public class SQLParser {
                             else if (columnDataType.equalsIgnoreCase("NUMBER")) {
                                 tempNode = columnElement.getElementsByTagName("length").item(0);
                                 tempElement = (Element) tempNode;
-                                columnLength = tempElement.getElementsByTagName("digits").item(0).getTextContent();
-                                // Check for empty decimal
-                                if (tempElement.getElementsByTagName("decimals").item(0).getTextContent().length() >= 1) {
-                                    columnDecimal = Integer.parseInt(tempElement.getElementsByTagName("decimals").item(0).getTextContent());
+                                tempElement.getElementsByTagName("digits").item(0);
+                                if (tempElement.getElementsByTagName("digits").item(0) != null) {
+                                    columnLength = tempElement.getElementsByTagName("digits").item(0).getTextContent();
+                                    // Check for empty decimal
+                                    if (tempElement.getElementsByTagName("decimals").item(0).getTextContent().length() >= 1) {
+                                        columnDecimal = Integer.parseInt(tempElement.getElementsByTagName("decimals").item(0).getTextContent());
+                                    }
+                                    else {
+                                        columnDecimal = 0;
+                                    }
                                 }
                                 else {
+                                    columnLength = tempElement.getTextContent();
                                     columnDecimal = 0;
                                 }
                                 columnDataTypeFound = true;
