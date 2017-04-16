@@ -14,7 +14,7 @@
 			<length>20</length>
 		</CITY>
 		<time>
-			<type>date</type>
+			<type>time</type>
 			<format>mm/dd/yyyy hh:mm:ss</format>
 		</time>
 	</CUST>
@@ -36,7 +36,7 @@
 			<length>20</length>
 		</CITY>
 		<time>
-			<type>date</type>
+			<type>time</type>
 			<format>mm/dd/yyyy hh:mm:ss</format>
 		</time>
 	</S>
@@ -61,7 +61,7 @@
 			<length>10</length>
 		</AVLQTY>
 		<time>
-			<type>date</type>
+			<type>time</type>
 			<format>mm/dd/yyyy hh:mm:ss</format>
 		</time>
 	</PRODCT>
@@ -83,7 +83,7 @@
 			<length>10</length>
 		</TTLQTY>
 		<time>
-			<type>date</type>
+			<type>time</type>
 			<format>mm/dd/yyyy hh:mm:ss</format>
 		</time>
 	</ORDERS>
