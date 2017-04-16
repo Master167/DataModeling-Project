@@ -36,6 +36,6 @@ public class CreateDatabase extends SQLCommand {
 		Node dbRoot = dbFileDOM.createElement("tables");
 		dbFileDOM.appendChild(dbRoot);
 		writer.write(dbFileDOM, databaseFile);
-		System.out.println("Successfully create " + super.database + " database.");
+		System.out.println("Successfully created " + super.database + " database.");
     }
 }
