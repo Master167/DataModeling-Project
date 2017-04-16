@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Scanner;
 import java.util.StringTokenizer;
 
 
@@ -123,20 +124,41 @@ public class DataEngine {
         catch (IndexOutOfBoundsException e) {
             this.userInterface.showUser("Error:");
             this.userInterface.showUser("Missing unknown set of characters");
-            e.printStackTrace(System.out);
+            //e.printStackTrace(System.out);
         }
         catch (Exception e) {
             this.userInterface.showUser("Error:");
             this.userInterface.showUser(e.getMessage());
-            e.printStackTrace(System.out);
+            //e.printStackTrace(System.out);
         }
         
         return;
     }
     
     private void inputFileIntoDatabase(String inputFilename) {
-        // Going to flush this out in integration
-        this.userInterface.showUser(inputFilename);
+        File inputFile;
+        Scanner fileScanner;
+        SQLCommand command;
+        boolean inputSuccess = true;
+        String tempString;
+        try {
+            inputFile = new File(inputFilename);
+            fileScanner = new Scanner(inputFile);
+            while (fileScanner.hasNext()) {
+                tempString = fileScanner.nextLine();
+                command = this.sqlParser.executeSQLParser(tempString, this.currentDatabase);
+                command.executeCommand();
+            }
+        }
+        catch (Exception ex) {
+            inputSuccess = false;
+            this.userInterface.showUser("Error:");
+            this.userInterface.showUser(ex.getMessage());
+        }
+        if (inputSuccess) {
+            this.userInterface.showUser("File: " + inputFilename + " was successfully commited to database: " + this.currentDatabase);
+        }
+        return;
     }
 
     /**
