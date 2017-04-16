@@ -22,7 +22,7 @@ public class Select extends SQLCommand {
 
     public Select(String database, String tableName, String[] names,String[] whereCond){
             super(database);
-            domUtil = DOMUtility();
+            domUtil = new DOMUtility();
             tablePath = Paths.get("tables", database, tableName+".xml");
             this.tableName = tableName;
             this.columnNames = names;
