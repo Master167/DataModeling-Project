@@ -38,7 +38,7 @@ public class SQLParser {
         this.resetParser();
         this.currentDatabase = currentDatabase;
         this.generateTokens(commandLine);
-        
+        /*
         // Check generateTokens
         Token token;
         for (int i = 0; i < this.finalTokens.size(); i++) {
@@ -46,8 +46,8 @@ public class SQLParser {
             System.out.printf("%s%n", token.getToken());
         }
         System.out.printf("%n");
-        
-        //this.parseTokens();
+        */
+        this.parseTokens();
 
         return command;
     }
@@ -106,14 +106,14 @@ public class SQLParser {
     }
 
     public String convertUpperCase(String t) {
-        String returnToken = "";
-        for(int i = 0; i < keywords.length; i++) {
-            if (t.equalsIgnoreCase(keywords[i])){
-                returnToken = t.toUpperCase();
-
-                return returnToken;
-            }
-        }
+        String returnToken;
+       for (String keyword : keywords) {
+           if (t.equalsIgnoreCase(keyword)) {
+               returnToken = t.toUpperCase();
+               
+               return returnToken;
+           }
+       }
 
         return t;
     }
@@ -170,10 +170,11 @@ public class SQLParser {
     }
 
     public boolean isOperand(char c) {
-        for (int j = 0; j < operands.length; j++){
-            if (c == operands[j].charAt(0))
-                return true;
-        }
+       for (String operand : operands) {
+           if (c == operand.charAt(0)) {
+               return true;
+           }
+       }
         return false;
     }
     

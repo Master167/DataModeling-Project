@@ -47,7 +47,6 @@ public class DataEngine {
         boolean running = true;
         String userInput = "";
         String temp;
-        SQLCommand command;
         
         this.userInterface.showProgramHeader();
         while (running) {
@@ -58,7 +57,7 @@ public class DataEngine {
                 running = false;
             }
             else if (userInput.equalsIgnoreCase("help")) {
-                if (this.currentDatabase == "") {
+                if (this.currentDatabase.equals("")) {
                     this.userInterface.showDatabaseHelp();
                 }
                 else {
@@ -66,7 +65,7 @@ public class DataEngine {
                 }
             }
             else {
-                if (this.currentDatabase == "") {
+                if (this.currentDatabase.equals("")) {
                     // Pass data to Parser
                     this.parseCommand(userInput);
                 }
@@ -124,12 +123,12 @@ public class DataEngine {
         catch (IndexOutOfBoundsException e) {
             this.userInterface.showUser("Error:");
             this.userInterface.showUser("Missing unknown set of characters");
-            e.printStackTrace(System.out);
+            //e.printStackTrace(System.out);
         }
         catch (Exception e) {
             this.userInterface.showUser("Error:");
             this.userInterface.showUser(e.getMessage());
-            e.printStackTrace(System.out);
+            //e.printStackTrace(System.out);
         }
         
         return;
