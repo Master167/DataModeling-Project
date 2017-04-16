@@ -2,15 +2,6 @@
  * SQLParser - This class is to check and generate commands from SQL statements.
  * @author Sean Domingo, Michael Frederick, Megan Molumby, Mai Huong Nguyen, Richard Pratt
  */
-
-/*
-PARSER TO DO LIST:
-Implement makeDatatypeCheck
-Implement makeColumnCheck
-Implement makeTableCheck
-Implement isColumnNullable
-*/
-
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -541,7 +532,7 @@ public class SQLParser {
                     if (temp.equals(",")) {
                         temp = this.finalTokens.get(tokenCount++).getToken();
                     }
-                    if (this.makeColumnCheck(this.currentDatabase, tableName, temp)) {
+                    if (this.makeColumnCheck(this.currentDatabase, tableName, temp) && !temp.equals("time")) {
                         selectedColumns.add(temp);
                         temp = this.finalTokens.get(tokenCount++).getToken();
                     }
@@ -553,6 +544,9 @@ public class SQLParser {
             else {
                 selectedColumns = this.getTableColumns(this.currentDatabase, tableName);
             }
+            // No insert on time
+            selectedColumns.remove("time");
+
             // check if VALUES
             if (this.finalTokens.get(tokenCount++).getToken().equals("VALUES")) {
                 temp = this.finalTokens.get(tokenCount).getToken();
@@ -587,6 +581,7 @@ public class SQLParser {
             
             // Make nullable check
             tableColumns = this.getTableColumns(this.currentDatabase, tableName);
+            tableColumns.remove("time");
             if (tableColumns.size() > selectedColumns.size()) {
                 for (int i = 0; i < tableColumns.size(); i++) {
                     foundColumn = false;
@@ -1091,8 +1086,25 @@ public class SQLParser {
     }
     
     private boolean isColumnNullable(String databaseName, String tableName, String column) throws Exception {
-        // Return true if the column is nullable
-        return true;
+        boolean nullable = false;
+        Node tempNode;
+        Element tempElement;
+        Document catalog = this.getDatabase(databaseName);
+        Node tablesNode = catalog.getFirstChild();
+        for (Node tableNode = tablesNode.getFirstChild(); (tableNode != null); tableNode = tableNode.getNextSibling()) {
+            if (tableNode.getNodeType() == Node.ELEMENT_NODE && tableNode.getNodeName().equals(tableName)) {
+                for (Node columnNode = tableNode.getFirstChild(); (columnNode != null); columnNode = columnNode.getNextSibling()) {
+                    if (columnNode.getNodeType() == Node.ELEMENT_NODE && columnNode.getNodeName().equals(column)) {
+                        tempElement = (Element) columnNode;
+                        tempNode = tempElement.getElementsByTagName("isnullable").item(0);
+                        if (tempNode.getTextContent().equals("true")) {
+                            nullable = true;
+                        }
+                    }
+                }
+            }
+        }
+        return nullable;
     }
     
     // Checks if catalog has already been loaded, if not builds it.
