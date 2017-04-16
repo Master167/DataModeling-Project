@@ -1074,13 +1074,19 @@ public class SQLParser {
         }
     }
     
-    // DEFINE ME MORE
     private ArrayList<String> getTableColumns(String database, String table) throws Exception {
         ArrayList<String> array = new ArrayList<>();
-        array.add("name");
-        array.add("wage");
-        array.add("something");
-        array.add("else");
+        Document catalog = this.getDatabase(database);
+        Node tablesNode = catalog.getFirstChild();
+        for (Node tableNode = tablesNode.getFirstChild(); (tableNode != null); tableNode = tableNode.getNextSibling()) {
+            if (tableNode.getNodeType() == Node.ELEMENT_NODE && tableNode.getNodeName().equals(table)) {
+                for (Node columnNode = tableNode.getFirstChild(); (columnNode != null); columnNode = columnNode.getNextSibling()) {
+                    if (columnNode.getNodeType() == Node.ELEMENT_NODE) {
+                        array.add(columnNode.getNodeName());
+                    }
+                }
+            }
+        }
         return array;
     }
     
