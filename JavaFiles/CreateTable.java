@@ -48,8 +48,11 @@ public class CreateTable extends SQLCommand {
     public void executeCommand() {
     		
     		tableFileDOM = domUtil.createDOM();//
+    		Node tblRoot = tableFileDOM.createElement(tableName);
+    		tableFileDOM.appendChild(tblRoot);
+    		writer.write(tableFileDOM, tableFile);
     		dbFileDOM = domUtil.XMLtoDOM(databaseFile);
-		Node root = dbFileDOM.getDocumentElement();//tableFileDOM.createElement("tables"); 
+    		Node dbRoot = dbFileDOM.getDocumentElement();//tableFileDOM.createElement("tables"); 
 		Element tableElem = dbFileDOM.createElement(tableName);// create table name tag
 		Element time = dbFileDOM.createElement("time");// create time tag for insertion time
 		Element timeType = dbFileDOM.createElement("type");// create nested time type tag
@@ -69,22 +72,22 @@ public class CreateTable extends SQLCommand {
 			Element columnLen = dbFileDOM.createElement("length");
 			if(columnLength[i].contains(",")) {
 				String[] numLengths = columnLength[i].split("\\,");
-				Element numberWidth = dbFileDOM.createElement("width");
+				Element numberWidth = dbFileDOM.createElement("digits");
 				numberWidth.setTextContent(numLengths[0]);
-				Element numberDeci = dbFileDOM.createElement("decimal");
+				Element numberDeci = dbFileDOM.createElement("decimals");
 				numberDeci.setTextContent(numLengths[1]);
 				columnName.appendChild(numberWidth);
 				columnName.appendChild(numberDeci);
+				columnLen.appendChild(numberWidth);
+				columnLen.appendChild(numberDeci);
 			} else if(columnLength[i].contains("\\/")) {
 				// not sure I need to do anything special with date like instead of length call is format?
 			} else if(columnLength[i].isEmpty()) {
 				columnLen.setTextContent("255");
-				columnName.appendChild(columnLen);// append length to column name element
 			} else {
 				columnLen.setTextContent(columnLength[i]);
-				columnName.appendChild(columnLen);// append length to column name element
 			}
-			
+			columnName.appendChild(columnLen);// append length to column name element
 			// create column isNullable element
 			Element colNullType = dbFileDOM.createElement("isnullable");
 			colNullType.setTextContent(String.valueOf(isNullable[i]));
@@ -92,7 +95,7 @@ public class CreateTable extends SQLCommand {
 			// append to table element
 			tableElem.appendChild(columnName);
 		}
-		root.appendChild(tableElem);
+		dbRoot.appendChild(tableElem);
 		writer.write(dbFileDOM, databaseFile);
 		System.out.println("Succesfully inserted into " + tableName + " table.");
     }
