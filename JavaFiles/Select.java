@@ -55,7 +55,6 @@ public class Select extends SQLCommand {
                     if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                         Element eElement = (Element) nNode;
                         
-
                         while (arrayCounter < columnNames.length) {
                             NodeList nodeList = eElement.getElementsByTagName(columnNames[arrayCounter]);
 
@@ -82,8 +81,7 @@ public class Select extends SQLCommand {
                     boolean printCurrent = false;
                     //ITERATES THROUGH EACH RECORD
                     Node nNode = nList.item(temp);
-                 
-                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                        if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                         Element eElement = (Element) nNode;
 
                         while (arrayCounter < columnNames.length) {
