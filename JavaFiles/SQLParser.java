@@ -237,36 +237,43 @@ public class SQLParser {
     }
 
     private void generateCreateTable() throws Exception {
+        this.checkDatabase();
         String tableName = this.finalTokens.get(tokenCount++).getToken();
         this.checkFirstChar(tableName);
-        if (this.finalTokens.get(tokenCount++).getToken().equals("(")) {
-            this.getColumnDefinition();
-            if (this.finalTokens.get(tokenCount++).getToken().equals(")")) {
-                if (this.checkEndOfCommand()) {
-                    this.command = new CreateTable(this.currentDatabase,
-                                                tableName,
-                                                this.convertObjectArrayString(this.columnNames.toArray()),
-                                                this.convertObjectArrayString(this.columnTypes.toArray()),
-                                                this.convertObjectArrayString(this.columnLength.toArray()),
-                                                this.convertObjectArrayBoolean(this.columnNullable.toArray())
-                                            );
-                    /*
-                    System.out.printf("Database: %s Table: %s%n", this.currentDatabase, tableName);
-                    for (int i = 0; i < this.columnNames.size(); i++) {
-                        System.out.printf("%s %s %s %s%n", this.columnNames.get(i), this.columnTypes.get(i), this.columnLength.get(i), this.columnNullable.get(i).toString());
+        // Check if table exists already
+        if (!this.makeTableCheck(this.currentDatabase, tableName)) {
+            if (this.finalTokens.get(tokenCount++).getToken().equals("(")) {
+                this.getColumnDefinition();
+                if (this.finalTokens.get(tokenCount++).getToken().equals(")")) {
+                    if (this.checkEndOfCommand()) {
+                        this.command = new CreateTable(this.currentDatabase,
+                                                    tableName,
+                                                    this.convertObjectArrayString(this.columnNames.toArray()),
+                                                    this.convertObjectArrayString(this.columnTypes.toArray()),
+                                                    this.convertObjectArrayString(this.columnLength.toArray()),
+                                                    this.convertObjectArrayBoolean(this.columnNullable.toArray())
+                                                );
+                        /*
+                        System.out.printf("Database: %s Table: %s%n", this.currentDatabase, tableName);
+                        for (int i = 0; i < this.columnNames.size(); i++) {
+                            System.out.printf("%s %s %s %s%n", this.columnNames.get(i), this.columnTypes.get(i), this.columnLength.get(i), this.columnNullable.get(i).toString());
+                        }
+                        */
                     }
-                    */
+                    else {
+                        this.badEndOfCommand();
+                    }
                 }
                 else {
-                    this.badEndOfCommand();
+                    throw new Exception("Unable to find end of table columns");
                 }
             }
             else {
-                throw new Exception("Unable to find end of table columns");
+                throw new Exception("Unable to find start of table columns");
             }
         }
         else {
-            throw new Exception("Unable to find start of table columns");
+            throw new Exception(tableName + " already exists in " + this.currentDatabase + " database");
         }
     }
 
@@ -287,8 +294,9 @@ public class SQLParser {
     }
 
     private void generateDropTable() throws Exception {
+        this.checkDatabase();
         String tableName = this.finalTokens.get(tokenCount++).getToken();
-        if (this.checkIfFileExists("tables\\" + this.currentDatabase + tableName + ".xml")) {
+        if (this.checkIfFileExists("tables\\" + this.currentDatabase + "\\" + tableName + ".xml")) {
             if (this.checkEndOfCommand()) {
                 this.command = new DropTable(this.currentDatabase, tableName);
             }
@@ -318,6 +326,7 @@ public class SQLParser {
     }
 
     private void generateSaveDatabase() throws Exception {
+        this.checkDatabase();
         String databaseName;
         if (this.finalTokens.get(tokenCount++).getToken().equals("DATABASE")) {
             databaseName = this.finalTokens.get(tokenCount++).getToken();
@@ -370,6 +379,9 @@ public class SQLParser {
         ArrayList<String> selectedColumns = new ArrayList<>();
         String temp = this.finalTokens.get(tokenCount++).getToken();
         boolean checkIfWhere;
+        
+        this.checkDatabase();
+        
         if (!temp.equals("*")) {
             // Get all the columns and iterate through them
             selectedColumns.add(temp);
@@ -442,6 +454,9 @@ public class SQLParser {
         ArrayList<String> selectedColumns = new ArrayList<>();
         String temp = this.finalTokens.get(tokenCount++).getToken();
         boolean checkIfWhere;
+        
+        this.checkDatabase();
+        
         if (!temp.equals("*")) {
             // Get all the columns and iterate through them
             selectedColumns.add(temp);
@@ -516,6 +531,8 @@ public class SQLParser {
         ArrayList<String> selectedColumns = new ArrayList<>();
         ArrayList<String> values = new ArrayList<>();
         ArrayList<String> tableColumns = new ArrayList<>();
+        
+        this.checkDatabase();
         
         if (!this.finalTokens.get(tokenCount++).getToken().equals("INTO")) {
             throw new Exception("Missing INTO");
@@ -1116,6 +1133,12 @@ public class SQLParser {
             this.databaseCatalog = doc;
         }
         return this.databaseCatalog;
+    }
+    
+    private void checkDatabase() throws Exception {
+        if (this.currentDatabase == "") {
+            throw new Exception("No Database Selected");
+        }
     }
 
 }
