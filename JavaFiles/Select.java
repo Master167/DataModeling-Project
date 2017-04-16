@@ -50,11 +50,15 @@ public class Select extends SQLCommand {
                 int arrayCounter = 0;
                 for (int temp = 0; temp < nList.getLength(); temp++) {
                     Node nNode = nList.item(temp);
-                    System.out.print("\nCurrent Element: ");
-                    System.out.println(nNode.getNodeName());
+                   System.out.println("----------------------");
+                   System.out.println("Current Record: ");
+                   System.out.println("----------------------");
+                    
                     if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                         Element eElement = (Element) nNode;
-                        
+                        //System.out.print("record");
+                        // System.out.println(eElement.getAttribute(columnNames[arrayCounter]));
+
                         while (arrayCounter < columnNames.length) {
                             NodeList nodeList = eElement.getElementsByTagName(columnNames[arrayCounter]);
 
@@ -81,7 +85,9 @@ public class Select extends SQLCommand {
                     boolean printCurrent = false;
                     //ITERATES THROUGH EACH RECORD
                     Node nNode = nList.item(temp);
-                        if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                   // System.out.print("\nCurrent Element: ");
+                   // System.out.println(nNode.getNodeName());
+                    if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                         Element eElement = (Element) nNode;
 
                         while (arrayCounter < columnNames.length) {

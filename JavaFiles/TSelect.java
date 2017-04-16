@@ -3,7 +3,7 @@ import javax.xml.parsers.DocumentBuilder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import com.sun.org.apache.xml.internal.serializer.ElemDesc;
+//import com.sun.org.apache.xml.internal.serializer.ElemDesc;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
@@ -24,18 +24,18 @@ public class tSelect extends SQLCommand {
     public tSelect(String database, String tableName, String[] columnNames, String[] whereCond) {
         super(database);
         domUtil= new DOMUtility();
-        tablePath = Paths.get("tables", database, tableName, +".xml");
+        tablePath = Paths.get("tables", database, tableName+ ".xml");
         this.tableName  = tableName;
         this.columnNames = columnNames;
         this.whereCond = whereCond;
-        columnNames = names;
+        columnNames = columnNames;
 
     }
     @Override
     public void executeCommand() {
 
             if(!fileExist(tablePath)){
-                Systme.out.println("ERROR: File not found");
+                System.out.println("ERROR: File not found");
                 return;
             }
         //try {
