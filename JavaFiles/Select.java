@@ -10,7 +10,9 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
+ /* } catch (Exception e) {
+            e.printStackTrace();
+        }*/
 
 public class Select extends SQLCommand {
     private String[] columnNames;
@@ -36,7 +38,7 @@ public class Select extends SQLCommand {
         }
         doc = domUtil.XMLtoDOM(new File(tablePath.toString()));
 
-        try {
+        //try {
             //--------------------------------------------
             System.out.print("Table: ");
             System.out.println(doc.getDocumentElement().getNodeName());
@@ -154,9 +156,9 @@ public class Select extends SQLCommand {
                     arrayCounter = 0;
                 }
             }
-        } catch (Exception e) {
+       /* } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
     private boolean fileExist(Path tablePath){
         if(Files.notExists(tablePath)){
