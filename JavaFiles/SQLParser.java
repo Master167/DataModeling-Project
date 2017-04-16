@@ -424,7 +424,70 @@ public class SQLParser {
     }
 
     private void generateTSelect() throws Exception {
-        throw new Exception("Not implemented");
+        String tableName;
+        ArrayList<String> selectedColumns = new ArrayList<>();
+        String temp = this.finalTokens.get(tokenCount++).getToken();
+        boolean checkIfWhere;
+        if (!temp.equals("*")) {
+            // Get all the columns and iterate through them
+            selectedColumns.add(temp);
+            temp = this.finalTokens.get(tokenCount++).getToken();
+            while (!temp.equals("FROM") && !temp.equals(";")) {
+                if (temp.equals(",")) {
+                    temp = this.finalTokens.get(tokenCount++).getToken();
+                }
+                selectedColumns.add(temp);
+                temp = this.finalTokens.get(tokenCount++).getToken();
+            }
+            if (!temp.equals("FROM")) {
+                throw new Exception("No Table selected using FROM");
+            }
+        }
+        
+        temp = this.finalTokens.get(tokenCount++).getToken();
+        if (this.makeTableCheck(this.currentDatabase, temp)) {
+            tableName = temp;
+        }
+        else {
+            throw new Exception("No Table selected using FROM");
+        }
+        
+        if (selectedColumns.size() == 0) {
+            selectedColumns = this.getTableColumns(this.currentDatabase, tableName);
+        }
+        
+        // Check for where
+        if (this.finalTokens.get(tokenCount).getToken().equals("WHERE")) {
+            tokenCount++;
+            // If so, make whereConditional and check if whereColumn is one of the columns selected
+            this.makeWhereConditional(tableName);
+            checkIfWhere = false;
+            for (int i = 0; i < selectedColumns.size(); i++) {
+                if (selectedColumns.get(i).equals(this.whereConditional[0])) {
+                    checkIfWhere = true;
+                }
+            }
+            if (checkIfWhere) {
+                if (this.checkEndOfCommand()) {
+                    this.command = new TSelect(this.currentDatabase, tableName, this.convertObjectArrayString(selectedColumns.toArray()), this.whereConditional);
+                }
+                else {
+                    this.badEndOfCommand();
+                }
+            }
+            else {
+                throw new Exception("Unknown Column in WHERE");
+            }
+        }
+        else {
+            if (this.checkEndOfCommand()) {
+                this.command = new Select(this.currentDatabase, tableName, this.convertObjectArrayString(selectedColumns.toArray()), null);
+            }
+            else {
+                this.badEndOfCommand();
+            }
+        }
+        
     }
 
     private void generateInsert() throws Exception {
