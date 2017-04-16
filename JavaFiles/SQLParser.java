@@ -4,19 +4,11 @@
  */
 
 /*
-Current functions of the SQL lexical
--Creates Tokens
--Checks for illegal chars such as *, &, !, etc
--Converts keywords into uppercase
-
-Problem: Multiple character operands !=, >=, <=
-
 PARSER TO DO LIST:
--insert
--select
--tselect
-
-WHERE FORMAT: { temp, comparator, value }
+Implement makeDatatypeCheck
+Implement makeColumnCheck
+Implement makeTableCheck
+Implement isColumnNullable
 */
 
 import java.nio.file.Files;
@@ -46,7 +38,7 @@ public class SQLParser {
         this.resetParser();
         this.currentDatabase = currentDatabase;
         this.generateTokens(commandLine);
-        /*
+        
         // Check generateTokens
         Token token;
         for (int i = 0; i < this.finalTokens.size(); i++) {
@@ -54,8 +46,8 @@ public class SQLParser {
             System.out.printf("%s%n", token.getToken());
         }
         System.out.printf("%n");
-        */
-        this.parseTokens();
+        
+        //this.parseTokens();
 
         return command;
     }
@@ -129,22 +121,36 @@ public class SQLParser {
     //seperate IDs from operands and scan for illegal characters
     public void seperateOperands(String t) throws Exception {
         String buildToken = "";
-        char c = ' ';
-        boolean a = false;
+        Token s;
+        Token r;
+        char c;
+        boolean a;
 
         for (int i = 0; i < t.length(); i++){
             c = t.charAt(i);
             a = isOperand(c);
 
             if (a == true) {
-                Token s = new Token(buildToken);
-                Token r = new Token(String.valueOf(c));
+                if ((t.length() > i + 1) && t.charAt(i + 1) == '=' && (c == '>' || c == '<' || c == '!')) {
+                    s = new Token(Character.toString(c) + Character.toString(t.charAt(i + 1)));
+                    i++;
+                    allTokens.add(s);
+                }
+                else {
+                    s = new Token(buildToken);
+                    r = new Token(String.valueOf(c));
 
-                allTokens.add(s);
-                allTokens.add(r);
-                buildToken = "";
+                    allTokens.add(s);
+                    allTokens.add(r);
+                    buildToken = "";
+                }
              }
-             else{
+            else if ((t.length() > i + 1) && t.charAt(i + 1) == '=' && c == '!') {
+                s = new Token(Character.toString(c) + Character.toString(t.charAt(i + 1)));
+                i++;
+                allTokens.add(s);
+            }
+            else{
                 isLegal(c);
                 if (c !='\'' && c != '.') {
                     buildToken += c;
@@ -152,13 +158,13 @@ public class SQLParser {
              }
              a = false;
         }
-        Token s = new Token(buildToken);
+        s = new Token(buildToken);
         allTokens.add(s);
     }
 
     public void isLegal(char c) throws Exception {
         String t = Character.toString(c);
-        if(!t.matches("[a-zA-Z0-9]*|'|.")) {
+        if(!t.matches("[a-zA-Z0-9]*|'|.|!")) {
             throw new Exception("Illegal char: " + t);
         }
     }
@@ -502,6 +508,7 @@ public class SQLParser {
             throw new Exception("Missing INTO");
         }
         tableName = this.finalTokens.get(tokenCount++).getToken();
+        // Check if the table exists in the database
         if (this.makeTableCheck(this.currentDatabase, tableName)) {
             // get Columns
             temp = this.finalTokens.get(tokenCount).getToken();
