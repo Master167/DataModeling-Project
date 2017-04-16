@@ -51,7 +51,7 @@ public class SQLParser {
         Token token;
         for (int i = 0; i < this.finalTokens.size(); i++) {
             token = this.finalTokens.get(i);
-            System.out.printf("%s, ", token.getToken());
+            System.out.printf("%s ", token.getToken());
         }
         System.out.printf("%n");
         */
@@ -487,7 +487,27 @@ public class SQLParser {
         this.columnNames.add(temp);
         temp = this.finalTokens.get(tokenCount++).getToken();
         // Check column type
-        if (temp.equals("INTEGER") || temp.equals("CHARACTER")) {
+        if (temp.equals("INTEGER")) {
+            this.columnTypes.add(temp);
+            if (this.finalTokens.get(tokenCount).getToken().equals("(")) {
+                tokenCount++;
+                temp = this.finalTokens.get(tokenCount++).getToken();
+                if (temp.matches("[0-9]+")) {
+                    this.columnLength.add(temp);
+                }
+                else {
+                    throw new Exception("Missing Number for column length");
+                }
+                // Check for closing )
+                if (!this.finalTokens.get(tokenCount++).getToken().equals(")")) {
+                    throw new Exception("Missing )");
+                }
+            }
+            else {
+                this.columnLength.add("");
+            }
+        }
+        else if (temp.equals("CHARACTER")) {
             this.columnTypes.add(temp);
             if (this.finalTokens.get(tokenCount++).getToken().equals("(")) {
                 temp = this.finalTokens.get(tokenCount++).getToken();
@@ -508,11 +528,14 @@ public class SQLParser {
         }
         else if (temp.equals("NUMBER")) {
             this.columnTypes.add(temp);
-            if (this.finalTokens.get(tokenCount++).getToken().equals("(")) {
-                temp = this.finalTokens.get(tokenCount++).getToken();
+            if (this.finalTokens.get(tokenCount).getToken().equals("(")) {
+                tokenCount++;
+                temp = this.finalTokens.get(tokenCount).getToken();
                 if (temp.matches("[0-9]+")) {
+                    tokenCount++;
                     lengthTemp = temp;
-                    if (this.finalTokens.get(tokenCount++).getToken().equals(",")) {
+                    if (this.finalTokens.get(tokenCount).getToken().equals(",")) {
+                        tokenCount++;
                         lengthTemp += ",";
                         temp = this.finalTokens.get(tokenCount++).getToken();
                         if (temp.matches("[0-9]+")) {
@@ -535,7 +558,7 @@ public class SQLParser {
                 }
             }
             else {
-                throw new Exception("Missing (");
+                this.columnLength.add("");
             }
         }
         else if (temp.equals("DATE")) {
