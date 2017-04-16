@@ -46,9 +46,12 @@ public class DataEngine {
         this.currentDatabase = "";
         boolean running = true;
         String userInput = "";
-        String firstToken;
-        StringTokenizer tokenGenerator;
+        String temp;
         
+        // For testing
+        this.currentDatabase = "JAG";
+        
+        this.userInterface.showProgramHeader();
         while (running) {
             userInput = this.userInterface.getInput();
             
@@ -65,52 +68,60 @@ public class DataEngine {
                 }
             }
             else {
-                tokenGenerator = new StringTokenizer(userInput, " ");
-                firstToken = tokenGenerator.nextToken();
                 if (this.currentDatabase == "") {
-                    // No Database selected
-                    if (firstToken.equalsIgnoreCase("create")) {
-                        firstToken = tokenGenerator.nextToken();
-                        if (firstToken.equalsIgnoreCase("database")) {
-                            // Pass userInput to sql parser
-                            
-                            // Set database name when the object comes out
-                        }
-                        else {
-                            this.userInterface.showUserError();
-                        }
-                    }
-                    else if (firstToken.equalsIgnoreCase("load")) {
-                        // Pass userInput to sql parser
-                            
-                        // Set database name when the object comes out
-                    }
-                    else if (firstToken.equalsIgnoreCase("drop")) {
-                        firstToken = tokenGenerator.nextToken();
-                        if (firstToken.equalsIgnoreCase("database")) {
-                            // Pass userInput to sql parser
-                            
-                            // Set database name when the object comes out
-                        }
-                        else {
-                            this.userInterface.showUserError();
-                        }
-                    }
-                    else {
-                        this.userInterface.showUserError();
-                    }
+                    // Pass data to Parser
+                    // Get SqlCommand Object
+                    // Call SqlCommand.execute()
+                    // Check if currentDatabase changes
                 }
                 else {
                     // Database Selected
+                    // Check if convert or input
+                    if (userInput.matches("CONVERT XML (\\w)+(.\\w+)*, XSD (\\w)+(.\\w+)* AS (\\w)+(.\\w+)*;")) {
+                        //this.userInterface.showUser("VALID CONVERT");
+                        temp = userInput.replace("CONVERT XML ", "");
+                        temp = temp.replace(", XSD", "");
+                        temp = temp.replace(" AS", "");
+                        temp = temp.replace(";", "");
+                        String[] filenames = temp.split(" ");
+                        this.convertXmlToSql(filenames[0], filenames[1], filenames[2]);
+                    }
+                    else if (userInput.matches("INPUT (\\w)+(.\\w+)*;")) {
+                        //this.userInterface.showUser("VALID INPUT");
+                        temp = userInput.replace("INPUT ", "");
+                        temp = temp.replace(";", "");
+                        this.inputFileIntoDatabase(temp);
+                    }
+                    else {
+                        // Pass data to Parser
+                        // Get SqlCommand Object
+                        // Call SqlCommand.execute()
+                        // Check if currentDatabase changes
+                        this.userInterface.showUserError();
+                    }
                 }
             }
         }
     }
-
-    public void xsdParser() {
-        this.fileReader.setInputFile();
-        //modify to xml and xsd doc
-        this.xsdParser.parseXSD(this.fileReader.getInputFile(), xmlToSqlParser);
+    
+    private void convertXmlToSql(String xmlFilename, String xsdFilename, String outputFilename) {
+        try {
+            // Passing xml, xsd, and outputFilename
+            // Make call here
+            this.xsdParser.parseXSD(xmlFilename, xsdFilename, outputFilename, this.xmlToSqlParser);
+            this.userInterface.showUser("Conversion completed: " + outputFilename + " was created for INPUT command");
+        }
+        catch (Exception e) {
+            this.userInterface.showUser("Error:");
+            this.userInterface.showUser(e.getMessage());
+        }
+        
+        return;
+    }
+    
+    private void inputFileIntoDatabase(String inputFilename) {
+        // Going to flush this out in integration
+        this.userInterface.showUser(inputFilename);
     }
 
     /**

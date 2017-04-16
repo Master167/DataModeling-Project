@@ -15,6 +15,12 @@ public class UserInterface {
         this.stackCount = 0;
     }
     
+    public void showProgramHeader() {
+        this.showUser("Welcome to the T-SQL Database Engine and XML to SQL Converter");
+        this.showUser("Type in 'HELP' for possible commands");
+        this.showUser("Or 'EXIT' to close program");
+    }
+    
     public String getInput() {
         this.stackCount++;
         String input;
@@ -67,7 +73,7 @@ public class UserInterface {
         this.showUser("CREATE TABLE tableName (fieldName fieldType(n)[ NOT NULL], ...);");
         this.showUser("DROP TABLE tableName;");
         this.showUser("INSERT INTO tableName[ (fieldName, ...)] VALUES (fieldValue, ...);");
-        this.showUser("CONVVERT XML xmlFilename, XSD filename AS sqlFile;");
+        this.showUser("CONVERT XML xmlFilename, XSD filename AS sqlFile;");
         this.showUser("INPUT sqlFile;");
         this.showUser("[t]SELECT [*|(field, ...)] FROM tableName [WHERE (field = value)]");
         this.showUser("SAVE DATABASE");
@@ -75,6 +81,6 @@ public class UserInterface {
     }
     
     public void showUserError() {
-        this.showUser("Unrecognized Command. Type 'HELP' if needed");
+        this.showUser("Invalid or Unrecognized Command. Type 'HELP' if needed");
     }
 }
