@@ -158,7 +158,7 @@ public class SQLParser {
 
     public void isLegal(char c) throws Exception {
         String t = Character.toString(c);
-        if(!t.matches("[a-zA-Z0-9]*|'")) {
+        if(!t.matches("[a-zA-Z0-9]*|'|.")) {
             throw new Exception("Illegal char: " + t);
         }
     }
