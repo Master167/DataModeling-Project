@@ -10,6 +10,8 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
+import java.text.SimpleDateFormat;
  /* } catch (Exception e) {
             e.printStackTrace();
         }*/
@@ -58,8 +60,6 @@ public class Select extends SQLCommand {
                     
                     if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                         Element eElement = (Element) nNode;
-                        //System.out.print("record");
-                        // System.out.println(eElement.getAttribute(columnNames[arrayCounter]));
 
                         while (arrayCounter < columnNames.length) {
                             NodeList nodeList = eElement.getElementsByTagName(columnNames[arrayCounter]);
@@ -106,32 +106,89 @@ public class Select extends SQLCommand {
                                         NodeList condList = eElement.getElementsByTagName(whereCond[0]);
                                         Node condNode1 = condList.item(0);
                                         Element condElement = (Element) condNode1;
-
+                                        boolean printIt = false;
                                         // =, >, <, <=, >=, !=
                                         String comparator = whereCond[1];
-                                        boolean printIt = false;
-                                        switch(comparator){
-                                            case "=":if(condElement.getTextContent().equals(whereCond[2])){
+                                        //CHECK if compare value is date------------------
+                                        String regex = "^(0[0-9]||1[0-2])/([0-2][0-9]||3[0-1])/([0-9][0-9])?[0-9][0-9]$";
+                                        if(whereCond[2].matches(regex)){
+                                            //check which variation mm/dd/yy[yy]
+                                            String yyyyRegex ="^(0[0-9]||1[0-2])/([0-2][0-9]||3[0-1])/[0-9][0-9][0-9][0-9]$";
+                                            String yyRegex ="^(0[0-9]||1[0-2])/([0-2][0-9]||3[0-1])/[0-9][0-9]$";
+                                           Date whereCondDate;
+                                           Date elementDate;
+                                            if(whereCond[2].matches(yyyyRegex)){
+                                                SimpleDateFormat fourYearDf = new SimpleDateFormat("MM/dd/yyyy");
+                                                 whereCondDate = fourYearDf.parse(whereCond[2]);
+                                                elementDate = fourYearDf.parse(condElement.getTextContent());
+                                            }else{
+                                                SimpleDateFormat twoYearDf = new SimpleDateFormat("MM/dd/yy");
+                                                whereCondDate = (twoYearDf.parse(whereCond[2]));
+                                                elementDate = twoYearDf.parse(condElement.getTextContent());
+                                            }
+                                            switch(comparator){
+                                                case "=": if(whereCondDate.equals(elementDate)){
+                                                                printIt=true;
+                                                            }break;
+                                                case ">": if(elementDate.after(whereCondDate)){
                                                             printIt = true;
-                                                        }
-                                                        break;
-                                            case ">": if(Integer.parseInt(condElement.getTextContent()) > Integer.parseInt(whereCond[2])){
-                                                            printIt = true;
-                                                        }
-                                                        break;
-                                            case "<":if(Integer.parseInt(condElement.getTextContent())< Integer.parseInt(whereCond[2])){
+                                                            }break;
+                                                case "<": if(elementDate.before(whereCondDate)){
                                                             printIt =true;
+                                                    }break;
+                                                case "<=":if(elementDate.equals(whereCondDate) || elementDate.before(whereCondDate)){
+                                                    printIt=true;
+                                                }break;
+                                                case ">=": if(elementDate.equals(whereCondDate) || elementDate.after(whereCondDate)){
+                                                                printIt=true;
                                                         }break;
-                                            case "<=":if(Integer.parseInt(condElement.getTextContent())<= Integer.parseInt(whereCond[2])){
-                                                                printIt =true;
-                                                        }break;
-                                            case ">=":if(Integer.parseInt(condElement.getTextContent()) > Integer.parseInt(whereCond[2])){
-                                                            printIt = true;
-                                                        }break;
-                                            case "!=":if(!condElement.getTextContent().equals(whereCond[2])){
-                                                            printIt = true;
-                                                        }break;
-                                            default: System.out.println("ERROR: this is not a valide comparator");
+                                                case "!=":if(!elementDate.equals(whereCondDate)){
+                                                        printIt=true;
+                                                }break;
+                                                default:
+                                                        System.out.print("Error:compare value is not a valid comparator");
+
+                                            }
+                                        }else {
+
+                                            //all other values besides date. 
+                                            //-----------------------------------
+
+
+                                            switch (comparator) {
+                                                case "=":
+                                                    if (condElement.getTextContent().equals(whereCond[2])) {
+                                                        printIt = true;
+                                                    }
+                                                    break;
+                                                case ">":
+                                                    if (Integer.parseInt(condElement.getTextContent()) > Integer.parseInt(whereCond[2])) {
+                                                        printIt = true;
+                                                    }
+                                                    break;
+                                                case "<":
+                                                    if (Integer.parseInt(condElement.getTextContent()) < Integer.parseInt(whereCond[2])) {
+                                                        printIt = true;
+                                                    }
+                                                    break;
+                                                case "<=":
+                                                    if (Integer.parseInt(condElement.getTextContent()) <= Integer.parseInt(whereCond[2])) {
+                                                        printIt = true;
+                                                    }
+                                                    break;
+                                                case ">=":
+                                                    if (Integer.parseInt(condElement.getTextContent()) > Integer.parseInt(whereCond[2])) {
+                                                        printIt = true;
+                                                    }
+                                                    break;
+                                                case "!=":
+                                                    if (!condElement.getTextContent().equals(whereCond[2])) {
+                                                        printIt = true;
+                                                    }
+                                                    break;
+                                                default:
+                                                    System.out.println("ERROR: this is not a valide comparator");
+                                            }
                                         }
 
                                             if(printIt) {
@@ -156,7 +213,7 @@ public class Select extends SQLCommand {
                     arrayCounter = 0;
                 }
             }
-       /* } catch (Exception e) {
+        /*} catch (Exception e) {
             e.printStackTrace();
         }*/
     }
