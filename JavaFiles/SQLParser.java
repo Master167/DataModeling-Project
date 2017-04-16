@@ -146,7 +146,9 @@ public class SQLParser {
              }
              else{
                 isLegal(c);
-                buildToken += c;
+                if (c !='\'') {
+                    buildToken += c;
+                }
              }
              a = false;
         }
@@ -156,7 +158,7 @@ public class SQLParser {
 
     public void isLegal(char c) throws Exception {
         String t = Character.toString(c);
-        if(!t.matches("[a-zA-Z0-9]*")) {
+        if(!t.matches("[a-zA-Z0-9]*|'")) {
             throw new Exception("Illegal char: " + t);
         }
     }
@@ -355,6 +357,69 @@ public class SQLParser {
     }
 
     private void generateSelect() throws Exception {
+        String tableName;
+        ArrayList<String> selectedColumns = new ArrayList<>();
+        String temp = this.finalTokens.get(tokenCount++).getToken();
+        boolean checkIfWhere;
+        if (!temp.equals("*")) {
+            // Get all the columns and iterate through them
+            selectedColumns.add(temp);
+            temp = this.finalTokens.get(tokenCount++).getToken();
+            while (!temp.equals("FROM") && !temp.equals(";")) {
+                if (temp.equals(",")) {
+                    temp = this.finalTokens.get(tokenCount++).getToken();
+                }
+                selectedColumns.add(temp);
+                temp = this.finalTokens.get(tokenCount++).getToken();
+            }
+            if (!temp.equals("FROM")) {
+                throw new Exception("No Table selected using FROM");
+            }
+        }
+        
+        temp = this.finalTokens.get(tokenCount++).getToken();
+        if (this.makeTableCheck(this.currentDatabase, temp)) {
+            tableName = temp;
+        }
+        else {
+            throw new Exception("No Table selected using FROM");
+        }
+        
+        if (selectedColumns.size() == 0) {
+            selectedColumns = this.getTableColumns(this.currentDatabase, tableName);
+        }
+        
+        // Check for where
+        if (this.finalTokens.get(tokenCount).getToken().equals("WHERE")) {
+            tokenCount++;
+            // If so, make whereConditional and check if whereColumn is one of the columns selected
+            this.makeWhereConditional(tableName);
+            checkIfWhere = false;
+            for (int i = 0; i < selectedColumns.size(); i++) {
+                if (selectedColumns.get(i).equals(this.whereConditional[0])) {
+                    checkIfWhere = true;
+                }
+            }
+            if (checkIfWhere) {
+                if (this.checkEndOfCommand()) {
+                    this.command = new Select(this.currentDatabase, tableName, this.convertObjectArrayString(selectedColumns.toArray()), this.whereConditional);
+                }
+                else {
+                    this.badEndOfCommand();
+                }
+            }
+            else {
+                throw new Exception("Unknown Column in WHERE");
+            }
+        }
+        else {
+            if (this.checkEndOfCommand()) {
+                this.command = new Select(this.currentDatabase, tableName, this.convertObjectArrayString(selectedColumns.toArray()), null);
+            }
+            else {
+                this.badEndOfCommand();
+            }
+        }
         
     }
 
@@ -569,12 +634,9 @@ public class SQLParser {
     
     // Just a strach board for now.
     private boolean makeDatatypeCheck(String database, String table, String column, String value) {
-        // Get Database Catalog and Type.
-        
-        // Check Type
-        
-        // Check Length or format
-         
+        // Get Database Catalog and column Type.
+        // Check Type of value
+        // Check Length or format of value
         //Return true if the value is valid for that column
         return true;
     }
@@ -620,6 +682,16 @@ public class SQLParser {
         else {
             throw new Exception(column + " does not exist in " + tableName + " table");
         }
+    }
+    
+    // DEFINE ME MORE
+    private ArrayList<String> getTableColumns(String database, String table) {
+        ArrayList<String> array = new ArrayList<>();
+        array.add("name");
+        array.add("wage");
+        array.add("something");
+        array.add("else");
+        return array;
     }
 
 }
