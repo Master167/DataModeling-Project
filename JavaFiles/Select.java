@@ -3,17 +3,15 @@
  * @author Sean Domingo, Michael Frederick, Megan Molumby, Mai Huong Nguyen, Richard Pratt
  */
 public class Select extends SQLCommand {
-    public String tableName;
-    public String[] columnNames;
-    public String[] whereColumns;
-    public String[] whereValues;
+    private String[] columnNames;
+    private String tableName;
+    private String[] whereCond;
     
-    public Select(String database, String tableName, String[] columns, String[] whereColumns, String[] values) {
+    public Select(String database, String tableName, String[] names,String[] whereCond){
         super(database);
         this.tableName = tableName;
-        this.columnNames = columns;
-        this.whereColumns = whereColumns;
-        this.whereValues = values;
+        this.columnNames = names;
+        this.whereCond = whereCond;
     }
     
     @Override

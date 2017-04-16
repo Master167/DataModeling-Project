@@ -47,9 +47,7 @@ public class DataEngine {
         boolean running = true;
         String userInput = "";
         String temp;
-        
-        // For testing
-        this.currentDatabase = "JAG";
+        SQLCommand command;
         
         this.userInterface.showProgramHeader();
         while (running) {
@@ -70,9 +68,7 @@ public class DataEngine {
             else {
                 if (this.currentDatabase == "") {
                     // Pass data to Parser
-                    // Get SqlCommand Object
-                    // Call SqlCommand.execute()
-                    // Check if currentDatabase changes
+                    this.parseCommand(userInput);
                 }
                 else {
                     // Database Selected
@@ -94,10 +90,7 @@ public class DataEngine {
                     }
                     else {
                         // Pass data to Parser
-                        // Get SqlCommand Object
-                        // Call SqlCommand.execute()
-                        // Check if currentDatabase changes
-                        this.userInterface.showUserError();
+                        this.parseCommand(userInput);
                     }
                 }
             }
@@ -114,6 +107,29 @@ public class DataEngine {
         catch (Exception e) {
             this.userInterface.showUser("Error:");
             this.userInterface.showUser(e.getMessage());
+        }
+        
+        return;
+    }
+    
+    private void parseCommand(String input) {
+        SQLCommand command;
+        try {
+            command = this.sqlParser.executeSQLParser(input, currentDatabase);
+            if (command.database == null ? this.currentDatabase != null : !command.database.equals(this.currentDatabase)) {
+                this.currentDatabase = command.database;
+            }
+            command.executeCommand();
+        }
+        catch (IndexOutOfBoundsException e) {
+            this.userInterface.showUser("Error:");
+            this.userInterface.showUser("Missing unknown set of characters");
+            e.printStackTrace(System.out);
+        }
+        catch (Exception e) {
+            this.userInterface.showUser("Error:");
+            this.userInterface.showUser(e.getMessage());
+            e.printStackTrace(System.out);
         }
         
         return;

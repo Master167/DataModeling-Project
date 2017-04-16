@@ -4,14 +4,12 @@
  */
 public class Delete extends SQLCommand {
     public String tableName;
-    public String[] whereColumns;
-    public String[] whereValues;
+    public String[] whereConditional;
     
-    public Delete(String database, String tableName, String[] columns, String[] values) {
+    public Delete(String database, String tableName, String[] whereConditional) {
         super(database);
         this.tableName = tableName;
-        this.whereColumns = columns;
-        this.whereValues = values;
+        this.whereConditional = whereConditional;
     }
     
     @Override
