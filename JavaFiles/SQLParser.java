@@ -2,20 +2,19 @@
  * SQLParser - This class is to check and generate commands from SQL statements.
  * @author Sean Domingo, Michael Frederick, Megan Molumby, Mai Huong Nguyen, Richard Pratt
  */
-
-/*
-PARSER TO DO LIST:
-Implement makeDatatypeCheck
-Implement makeColumnCheck
-Implement makeTableCheck
-Implement isColumnNullable
-*/
-
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.StringTokenizer;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class SQLParser {
    ArrayList<Token> allTokens;
@@ -32,6 +31,8 @@ public class SQLParser {
    int tokenCount;
    String currentDatabase;
    SQLCommand command;
+   
+   Document databaseCatalog;
 
     //executes the parser
     public SQLCommand executeSQLParser(String commandLine, String currentDatabase) throws Exception {
@@ -60,6 +61,7 @@ public class SQLParser {
         columnLength = new ArrayList<>();
         columnNullable = new ArrayList<>();
         whereConditional = new String[3];
+        databaseCatalog = null;
         tokenCount = 0;
         return;
     }
@@ -152,7 +154,7 @@ public class SQLParser {
             }
             else{
                 isLegal(c);
-                if (c !='\'' && c != '.') {
+                if (c !='\'') {
                     buildToken += c;
                 }
              }
@@ -383,13 +385,18 @@ public class SQLParser {
                 throw new Exception("No Table selected using FROM");
             }
         }
+        else {
+            if (!this.finalTokens.get(tokenCount++).getToken().equals("FROM")) {
+                throw new Exception("No Table selected using FROM");
+            }
+        }
         
         temp = this.finalTokens.get(tokenCount++).getToken();
         if (this.makeTableCheck(this.currentDatabase, temp)) {
             tableName = temp;
         }
         else {
-            throw new Exception("No Table selected using FROM");
+            throw new Exception(temp + " does not exists in " + this.currentDatabase + " database");
         }
         
         if (selectedColumns.size() == 0) {
@@ -447,8 +454,13 @@ public class SQLParser {
                 temp = this.finalTokens.get(tokenCount++).getToken();
             }
             if (!temp.equals("FROM")) {
-                throw new Exception("No Table selected using FROM");
+                throw new Exception("No columns Selected");
             }
+        }
+        else {      
+            if (!this.finalTokens.get(tokenCount++).getToken().equals("FROM")) {        
+                throw new Exception("No Table selected using FROM");        
+            }       
         }
         
         temp = this.finalTokens.get(tokenCount++).getToken();
@@ -520,7 +532,7 @@ public class SQLParser {
                     if (temp.equals(",")) {
                         temp = this.finalTokens.get(tokenCount++).getToken();
                     }
-                    if (this.makeColumnCheck(this.currentDatabase, tableName, temp)) {
+                    if (this.makeColumnCheck(this.currentDatabase, tableName, temp) && !temp.equals("time")) {
                         selectedColumns.add(temp);
                         temp = this.finalTokens.get(tokenCount++).getToken();
                     }
@@ -532,6 +544,9 @@ public class SQLParser {
             else {
                 selectedColumns = this.getTableColumns(this.currentDatabase, tableName);
             }
+            // No insert on time
+            selectedColumns.remove("time");
+
             // check if VALUES
             if (this.finalTokens.get(tokenCount++).getToken().equals("VALUES")) {
                 temp = this.finalTokens.get(tokenCount).getToken();
@@ -566,6 +581,7 @@ public class SQLParser {
             
             // Make nullable check
             tableColumns = this.getTableColumns(this.currentDatabase, tableName);
+            tableColumns.remove("time");
             if (tableColumns.size() > selectedColumns.size()) {
                 for (int i = 0; i < tableColumns.size(); i++) {
                     foundColumn = false;
@@ -822,27 +838,207 @@ public class SQLParser {
     }
     
     // Just a strach board for now.
-    private boolean makeDatatypeCheck(String database, String table, String column, String value) {
+    private boolean makeDatatypeCheck(String database, String table, String column, String value) throws Exception {
+        boolean dataTypeCorrect = false;
+        boolean columnDataTypeFound = false;
+        String columnDataType = "";
+        String columnLength = "";
+        int columnDecimal = 0;
+        int valueLength;
+        int valueDecimalLength;
+        Document catalog;
+        Node tempNode;
+        Element columnElement;
+        Element tempElement;
+        
         // Get Database Catalog and column Type.
-        // Check Type of value
-        // Check Length or format of value
-        // Return true if the value is valid for that column
-        return true;
+        if (this.makeColumnCheck(database, table, column)) {
+            catalog = this.getDatabase(database);
+            tempNode = catalog.getFirstChild();
+            // Find the right table
+            for (Node tableNode = tempNode.getFirstChild(); (tableNode != null) && !columnDataTypeFound; tableNode = tableNode.getNextSibling()) {
+                if (tableNode.getNodeType() == Node.ELEMENT_NODE && tableNode.getNodeName().equals(table)) {
+                    // Find the right Column
+                    for (Node columnNode = tableNode.getFirstChild(); (columnNode != null) && !columnDataTypeFound; columnNode = columnNode.getNextSibling()) {
+                        // Get the info about the column
+                        if (columnNode.getNodeType() == Node.ELEMENT_NODE && columnNode.getNodeName().equals(column)) {
+                            columnElement = (Element) columnNode;
+                            tempNode = columnElement.getElementsByTagName("type").item(0);
+                            columnDataType = tempNode.getTextContent();
+                            if (columnDataType.equalsIgnoreCase("CHARACTER") || columnDataType.equalsIgnoreCase("INTEGER") || columnDataType.equalsIgnoreCase("DATE") || columnDataType.equalsIgnoreCase("TIME")) {
+                                tempNode = columnElement.getElementsByTagName("length").item(0);
+                                columnLength = tempNode.getTextContent();
+                                columnDataTypeFound = true;
+                            }
+                            else if (columnDataType.equalsIgnoreCase("NUMBER")) {
+                                tempNode = columnElement.getElementsByTagName("length").item(0);
+                                tempElement = (Element) tempNode;
+                                columnLength = tempElement.getElementsByTagName("digits").item(0).getTextContent();
+                                // Check for empty decimal
+                                if (tempElement.getElementsByTagName("decimals").item(0).getTextContent().length() >= 1) {
+                                    columnDecimal = Integer.parseInt(tempElement.getElementsByTagName("decimals").item(0).getTextContent());
+                                }
+                                else {
+                                    columnDecimal = 0;
+                                }
+                                columnDataTypeFound = true;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Check if we found the column datatype
+            if (columnDataTypeFound) {
+                // Check Type of value is compatible with columnDatatype
+                if (columnDataType.equalsIgnoreCase("INTEGER")) {
+                    if (value.matches("[0-9]+")) {
+                        if (value.length() <= Integer.parseInt(columnLength)) {
+                            dataTypeCorrect = true;
+                        }
+                    }
+                }
+                else if (columnDataType.equalsIgnoreCase("NUMBER")) {
+                    // Check if value has decimal
+                    if (value.matches("[0-9]+\\.[0-9]+")) {
+                        valueDecimalLength = value.replaceAll("[0-9]+\\.", "").length();
+                        valueLength = value.replaceAll("\\.[0-9]+", "").length() + valueDecimalLength;
+                        if (valueLength <= Integer.parseInt(columnLength) && valueDecimalLength <= columnDecimal) {
+                            dataTypeCorrect = true;
+                        }
+                    }
+                    // Ok no decimal, does the column need a decimal?
+                    else if (columnDecimal == 0 && value.matches("[0-9]+")) {
+                        if (value.length() <= Integer.parseInt(columnLength)) {
+                            dataTypeCorrect = true;
+                        }
+                    }
+                }
+                else if (columnDataType.equalsIgnoreCase("CHARACTER")) {
+                    if (value.length() <= Integer.parseInt(columnLength)) {
+                        dataTypeCorrect = true;
+                    }
+                }
+                else if (columnDataType.equalsIgnoreCase("DATE")) {
+                    // Get the rest of the date
+                    for (int i = 0; i < 4; i++) {
+                        value += this.finalTokens.get(tokenCount++).getToken();
+                    }
+                    // Determine Java dateformat
+                    String dateFormat;
+                    if (columnLength.length() > "mm/dd/yy".length()) {
+                        dateFormat = "MM/dd/yyyy";
+                    }
+                    else {
+                        dateFormat = "MM/dd/yy";
+                    }
+                    // Simliar to: http://stackoverflow.com/questions/20231539/java-check-the-date-format-of-current-string-is-according-to-required-format-or
+                    Date date;
+                    try {
+                        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+                        date = sdf.parse(value);
+                        if (!value.equals(sdf.format(date))) {
+                            date = null;
+                        }
+                    } catch (ParseException e) {
+                        date = null;
+                    }
+                    dataTypeCorrect = (date != null);
+                }
+                else if (columnDataType.equalsIgnoreCase("TIME")) {
+                    // Get the rest of the date
+                    for (int i = 0; i < 4; i++) {
+                        value += this.finalTokens.get(tokenCount++).getToken();
+                    }
+                    value += " " + this.finalTokens.get(tokenCount++).getToken();
+                    // Determine Java dateformat
+                    String dateFormat = "MM/dd/yyyy HH:mm:ss";
+                    // Simliar to: http://stackoverflow.com/questions/20231539/java-check-the-date-format-of-current-string-is-according-to-required-format-or
+                    Date date;
+                    try {
+                        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+                        date = sdf.parse(value);
+                        if (!value.equals(sdf.format(date))) {
+                            date = null;
+                        }
+                    } catch (ParseException e) {
+                        date = null;
+                    }
+                    dataTypeCorrect = (date != null);
+                }
+            }
+        }
+        return dataTypeCorrect;
     }
     
     // Just a strach board for now.
-    private boolean makeColumnCheck(String database, String table, String column) {
-        // Get database catalog
-        // Check if column exists in catalog
-        // return true if it does
-        return true;
+    private boolean makeColumnCheck(String database, String table, String column) throws Exception {
+        boolean columnExists = false;
+        Document catalog;
+        Element tableElement;
+        Element columnElement;
+        Node tempNode;
+        if (makeTableCheck(database, table)) {
+            // Get database catalog
+            catalog = this.getDatabase(database);
+            // Working on the tables level
+            tempNode = catalog.getFirstChild();
+            for (Node tableNode = tempNode.getFirstChild(); (tableNode != null) && !columnExists; tableNode = tableNode.getNextSibling()) {
+                if (tableNode.getNodeType() == Node.ELEMENT_NODE) {
+                    //Check table name
+                    tableElement = (Element) tableNode;
+                    if (tableElement.getNodeName().equals(table)) {
+                        // Now the Column Level
+                        for (Node columnNode = tableNode.getFirstChild(); (columnNode != null) && !columnExists; columnNode = columnNode.getNextSibling()) {
+                            // Check if column exists in this table
+                            if (columnNode.getNodeType() == Node.ELEMENT_NODE) {
+                                columnElement = (Element) columnNode;
+                                if (columnElement.getNodeName().equals(column)) {
+                                    columnExists = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+             
+        }
+        return columnExists;
     }
 
-    // Just a strach board for now.
-    private boolean makeTableCheck(String database, String table) {
+    private boolean makeTableCheck(String database, String table) throws Exception {
+        boolean tableExists = false;
         // Get database catalog
+        Document catalog = this.getDatabase(database);
         // Check if table exists in catalog
-        return true;
+        Node tempNode = catalog.getFirstChild();
+        NodeList childList;
+        Element tempElement;
+        // Check first child
+        if (tempNode.getNodeType() == Node.ELEMENT_NODE) {
+            tempElement = (Element) tempNode;
+            if (tempElement.hasChildNodes()) {
+                childList = tempElement.getElementsByTagName(table);
+                if (childList.getLength() == 1) {
+                    tableExists = true;
+                }
+            }
+        }
+        while (tempNode.getNextSibling() != null && !tableExists) {
+            tempNode = tempNode.getNextSibling();
+            if (tempNode.getNodeType() == Node.ELEMENT_NODE) {
+                tempElement = (Element) tempNode;
+                if (tempElement.hasChildNodes()) {
+                    childList = tempElement.getElementsByTagName(table);
+                    if (childList.getLength() == 1) {
+                        tableExists = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return tableExists;
     }
     
     private void makeWhereConditional(String tableName) throws Exception {
@@ -861,7 +1057,7 @@ public class SQLParser {
                     this.whereConditional[2] = value;
                 }
                 else {
-                    throw new Exception("Invalid Datatype");
+                    throw new Exception("Invalid Datatype in WHERE");
                 }
             }
             else {
@@ -873,19 +1069,53 @@ public class SQLParser {
         }
     }
     
-    // DEFINE ME MORE
-    private ArrayList<String> getTableColumns(String database, String table) {
+    private ArrayList<String> getTableColumns(String database, String table) throws Exception {
         ArrayList<String> array = new ArrayList<>();
-        array.add("name");
-        array.add("wage");
-        array.add("something");
-        array.add("else");
+        Document catalog = this.getDatabase(database);
+        Node tablesNode = catalog.getFirstChild();
+        for (Node tableNode = tablesNode.getFirstChild(); (tableNode != null); tableNode = tableNode.getNextSibling()) {
+            if (tableNode.getNodeType() == Node.ELEMENT_NODE && tableNode.getNodeName().equals(table)) {
+                for (Node columnNode = tableNode.getFirstChild(); (columnNode != null); columnNode = columnNode.getNextSibling()) {
+                    if (columnNode.getNodeType() == Node.ELEMENT_NODE) {
+                        array.add(columnNode.getNodeName());
+                    }
+                }
+            }
+        }
         return array;
     }
     
-    private boolean isColumnNullable(String databaseName, String tableName, String column) {
-        // Return true if the column is nullable
-        return true;
+    private boolean isColumnNullable(String databaseName, String tableName, String column) throws Exception {
+        boolean nullable = false;
+        Node tempNode;
+        Element tempElement;
+        Document catalog = this.getDatabase(databaseName);
+        Node tablesNode = catalog.getFirstChild();
+        for (Node tableNode = tablesNode.getFirstChild(); (tableNode != null); tableNode = tableNode.getNextSibling()) {
+            if (tableNode.getNodeType() == Node.ELEMENT_NODE && tableNode.getNodeName().equals(tableName)) {
+                for (Node columnNode = tableNode.getFirstChild(); (columnNode != null); columnNode = columnNode.getNextSibling()) {
+                    if (columnNode.getNodeType() == Node.ELEMENT_NODE && columnNode.getNodeName().equals(column)) {
+                        tempElement = (Element) columnNode;
+                        tempNode = tempElement.getElementsByTagName("isnullable").item(0);
+                        if (tempNode.getTextContent().equals("true")) {
+                            nullable = true;
+                        }
+                    }
+                }
+            }
+        }
+        return nullable;
+    }
+    
+    // Checks if catalog has already been loaded, if not builds it.
+    private Document getDatabase(String database) throws Exception {
+        if (this.databaseCatalog == null) {
+            String databaseLocation = "databases\\" + database + ".xml";
+            DOMUtility util = new DOMUtility();
+            Document doc = util.XMLtoDOM(new File(databaseLocation));
+            this.databaseCatalog = doc;
+        }
+        return this.databaseCatalog;
     }
 
 }
