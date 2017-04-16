@@ -1,6 +1,4 @@
 import java.io.File;
-import java.io.Writer;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
@@ -23,8 +21,7 @@ public class Insert extends SQLCommand {
     private DOMUtility domUtil;
     private Path tablePath;
     private Document tableDOM;
-    private File outputFile;
-    
+  
     public Insert(String database, String tableName, String[] names, String[] values) {
           	
         super(database);
@@ -34,22 +31,16 @@ public class Insert extends SQLCommand {
         this.tableName = tableName;
         this.columnNames = names;
         this.columnValues = values;
-        
     }
     
     @Override
     public void executeCommand() {
     		
-    		if(!fileExist(tablePath)) {
-    			System.out.println("ERROR: File found");
-    			return;
-    		}
-    		
     		tableDOM = domUtil.XMLtoDOM(new File(tablePath.toString()));
     		Element root = tableDOM.getDocumentElement();
-    		Element tableElem = tableDOM.createElement(tableName);
-    		Element time = tableDOM.createElement("TIME");
-    		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+    		Element tableElem = tableDOM.createElement("record");// create record tag
+    		Element time = tableDOM.createElement("time");// create time tag for insertion time
+    		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");// form
     		Date date = new Date();
     		time.setTextContent(dateFormat.format(date));
     		tableElem.appendChild(time);
@@ -64,12 +55,4 @@ public class Insert extends SQLCommand {
   
     }
     
-    private boolean fileExist(Path tablePath) {
-    	
-    		if(Files.notExists(tablePath)) {
-			return false;
-		} else {
-			return true;
-		}
-	}
 }
