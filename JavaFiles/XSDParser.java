@@ -7,17 +7,37 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Element;
+/*catches catch (ParserConfigurationException e)
+        { 
+         System.out.print("ERROR:Parser Configuration error");
+            //e.printStackTrace();
+            return;       
+            
+        }
 
+        catch (org.xml.sax.SAXException e)
+        { //System.out.print("ERROR:Parser Configuration error");
+            //e.printStackTrace();
+            return;        }
+        catch (IOException ed )
+        {
+             System.out.print("ERROR:IO Error");
+            //e.printStackTrace();
+            return;        }
+        //return table;
+    }
+    @Michael CHECK XMLTOSQLPARSER for its catches!! 
+    */
 
 /**
  * Created by Megan on 4/3/2017.
  */
 public class XSDParser {
-
-    public void parseXSD(String xmlFilename, String xsdFilename, String outputFilename, XMLToSQLParser xmlToSQLParser){
+       public void parseXSD(String xmlFilename, String xsdFilename, String outputFilename, XMLToSQLParser xmlToSQLParser){
+    
         //File inputFile = new File(xsdFilename);
         ArrayList<Schema> table = new ArrayList<>(1);
-        try{
+       // try{
             DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder;
             docBuilder = docBuilderFactory.newDocumentBuilder();
@@ -52,25 +72,29 @@ public class XSDParser {
                     table.add(attribute);
                 }
 
-            }
-            xmlToSQLParser.parse(table, xmlFilename, outputFilename);
-
-        }
+               }
+               
+               xmlToSQLParser.parse(table, xmlFilename, outputFilename);
+               
+       /* }
         catch (ParserConfigurationException e)
-        {
-            e.printStackTrace();
+        { 
+         System.out.print("ERROR:Parser Configuration error");
+            //e.printStackTrace();
+            return;       
+            
         }
 
         catch (org.xml.sax.SAXException e)
-        {
-            e.printStackTrace();
-        }
+        { //System.out.print("ERROR:Parser Configuration error");
+            //e.printStackTrace();
+            return;        }
         catch (IOException ed )
         {
-            ed.printStackTrace();
-        }
+             System.out.print("ERROR:IO Error");
+            //e.printStackTrace();
+            return;        }
         //return table;
-    }
+    }*/
 
 }
-
