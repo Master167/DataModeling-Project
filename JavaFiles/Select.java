@@ -20,7 +20,7 @@ public class Select extends SQLCommand {
     private Path tablePath;
     private Document doc;
 
-    public void Select(String database, String tableName, String[] names,String[] whereCond){
+    public Select(String database, String tableName, String[] names,String[] whereCond){
             super(database);
             domUtil = DOMUtility();
             tablePath = Paths.get("tables", database, tableName+".xml");
@@ -54,8 +54,7 @@ public class Select extends SQLCommand {
                     System.out.println(nNode.getNodeName());
                     if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                         Element eElement = (Element) nNode;
-                        //System.out.print("record");
-                        // System.out.println(eElement.getAttribute(columnNames[arrayCounter]));
+                        
 
                         while (arrayCounter < columnNames.length) {
                             NodeList nodeList = eElement.getElementsByTagName(columnNames[arrayCounter]);
@@ -83,8 +82,7 @@ public class Select extends SQLCommand {
                     boolean printCurrent = false;
                     //ITERATES THROUGH EACH RECORD
                     Node nNode = nList.item(temp);
-                   // System.out.print("\nCurrent Element: ");
-                   // System.out.println(nNode.getNodeName());
+                 
                     if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                         Element eElement = (Element) nNode;
 
