@@ -11,11 +11,16 @@ Implement makeTableCheck
 Implement isColumnNullable
 */
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class SQLParser {
    ArrayList<Token> allTokens;
@@ -32,6 +37,8 @@ public class SQLParser {
    int tokenCount;
    String currentDatabase;
    SQLCommand command;
+   
+   Document databaseCatalog;
 
     //executes the parser
     public SQLCommand executeSQLParser(String commandLine, String currentDatabase) throws Exception {
@@ -60,6 +67,7 @@ public class SQLParser {
         columnLength = new ArrayList<>();
         columnNullable = new ArrayList<>();
         whereConditional = new String[3];
+        databaseCatalog = null;
         tokenCount = 0;
         return;
     }
@@ -380,6 +388,11 @@ public class SQLParser {
                 temp = this.finalTokens.get(tokenCount++).getToken();
             }
             if (!temp.equals("FROM")) {
+                throw new Exception("No Table selected using FROM");
+            }
+        }
+        else {
+            if (!this.finalTokens.get(tokenCount++).getToken().equals("FROM")) {
                 throw new Exception("No Table selected using FROM");
             }
         }
@@ -822,7 +835,7 @@ public class SQLParser {
     }
     
     // Just a strach board for now.
-    private boolean makeDatatypeCheck(String database, String table, String column, String value) {
+    private boolean makeDatatypeCheck(String database, String table, String column, String value) throws Exception {
         // Get Database Catalog and column Type.
         // Check Type of value
         // Check Length or format of value
@@ -831,7 +844,7 @@ public class SQLParser {
     }
     
     // Just a strach board for now.
-    private boolean makeColumnCheck(String database, String table, String column) {
+    private boolean makeColumnCheck(String database, String table, String column) throws Exception {
         // Get database catalog
         // Check if column exists in catalog
         // return true if it does
@@ -839,10 +852,29 @@ public class SQLParser {
     }
 
     // Just a strach board for now.
-    private boolean makeTableCheck(String database, String table) {
+    private boolean makeTableCheck(String database, String table) throws Exception {
+        boolean tableExists = false;
         // Get database catalog
+        Document catalog = this.getDatabase(database);
         // Check if table exists in catalog
-        return true;
+        NodeList tableList = catalog.getElementsByTagName("tables");
+        NodeList childList;
+        Node tempNode;
+        Element tempElement;
+        for (int i = 0; i < tableList.getLength(); i++) {
+            tempNode = tableList.item(i);
+            if (tempNode.getNodeType() == Node.ELEMENT_NODE) {
+                tempElement = (Element) tempNode;
+                if (tempElement.hasChildNodes()) {
+                    childList = tempElement.getElementsByTagName(table);
+                    if (childList.getLength() == 1) {
+                        tableExists = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return tableExists;
     }
     
     private void makeWhereConditional(String tableName) throws Exception {
@@ -874,7 +906,7 @@ public class SQLParser {
     }
     
     // DEFINE ME MORE
-    private ArrayList<String> getTableColumns(String database, String table) {
+    private ArrayList<String> getTableColumns(String database, String table) throws Exception {
         ArrayList<String> array = new ArrayList<>();
         array.add("name");
         array.add("wage");
@@ -883,9 +915,20 @@ public class SQLParser {
         return array;
     }
     
-    private boolean isColumnNullable(String databaseName, String tableName, String column) {
+    private boolean isColumnNullable(String databaseName, String tableName, String column) throws Exception {
         // Return true if the column is nullable
         return true;
+    }
+    
+    // Checks if catalog has already been loaded, if not builds it.
+    private Document getDatabase(String database) throws Exception {
+        if (this.databaseCatalog == null) {
+            String databaseLocation = "databases\\" + database + ".xml";
+            DOMUtility util = new DOMUtility();
+            Document doc = util.XMLtoDOM(new File(databaseLocation));
+            this.databaseCatalog = doc;
+        }
+        return this.databaseCatalog;
     }
 
 }

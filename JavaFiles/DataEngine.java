@@ -123,12 +123,12 @@ public class DataEngine {
         catch (IndexOutOfBoundsException e) {
             this.userInterface.showUser("Error:");
             this.userInterface.showUser("Missing unknown set of characters");
-            //e.printStackTrace(System.out);
+            e.printStackTrace(System.out);
         }
         catch (Exception e) {
             this.userInterface.showUser("Error:");
             this.userInterface.showUser(e.getMessage());
-            //e.printStackTrace(System.out);
+            e.printStackTrace(System.out);
         }
         
         return;
