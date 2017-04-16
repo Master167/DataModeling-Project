@@ -51,7 +51,7 @@ public class SQLParser {
         Token token;
         for (int i = 0; i < this.finalTokens.size(); i++) {
             token = this.finalTokens.get(i);
-            System.out.printf("%s ", token.getToken());
+            System.out.printf("%s%n", token.getToken());
         }
         System.out.printf("%n");
         */
@@ -146,7 +146,7 @@ public class SQLParser {
              }
              else{
                 isLegal(c);
-                if (c !='\'') {
+                if (c !='\'' && c != '.') {
                     buildToken += c;
                 }
              }
@@ -491,7 +491,102 @@ public class SQLParser {
     }
 
     private void generateInsert() throws Exception {
-        throw new Exception("Not implemented");
+        boolean foundColumn;
+        String tableName;
+        String temp;
+        ArrayList<String> selectedColumns = new ArrayList<>();
+        ArrayList<String> values = new ArrayList<>();
+        ArrayList<String> tableColumns = new ArrayList<>();
+        
+        if (!this.finalTokens.get(tokenCount++).getToken().equals("INTO")) {
+            throw new Exception("Missing INTO");
+        }
+        tableName = this.finalTokens.get(tokenCount++).getToken();
+        if (this.makeTableCheck(this.currentDatabase, tableName)) {
+            // get Columns
+            temp = this.finalTokens.get(tokenCount).getToken();
+            if (temp.equals("(")) {
+                tokenCount++;
+                temp = this.finalTokens.get(tokenCount++).getToken();
+                while (!temp.equals("VALUES") && !temp.equals(";") && !temp.equals(")")) {
+                    if (temp.equals(",")) {
+                        temp = this.finalTokens.get(tokenCount++).getToken();
+                    }
+                    if (this.makeColumnCheck(this.currentDatabase, tableName, temp)) {
+                        selectedColumns.add(temp);
+                        temp = this.finalTokens.get(tokenCount++).getToken();
+                    }
+                    else {
+                        throw new Exception(temp + " does not exist in the " + tableName + " table");
+                    }
+                }
+            }
+            else {
+                selectedColumns = this.getTableColumns(this.currentDatabase, tableName);
+            }
+            // check if VALUES
+            if (this.finalTokens.get(tokenCount++).getToken().equals("VALUES")) {
+                temp = this.finalTokens.get(tokenCount).getToken();
+                if (temp.equals("(")) {
+                    tokenCount++;
+                    for (int i = 0; i < selectedColumns.size(); i++) {
+                        temp = this.finalTokens.get(tokenCount++).getToken();
+                        if (temp.equals(",")) {
+                            temp = this.finalTokens.get(tokenCount++).getToken();
+                        }
+                        if (this.makeDatatypeCheck(this.currentDatabase, tableName, selectedColumns.get(i), temp)) {
+                            values.add(temp);
+                        }
+                        else {
+                            throw new Exception("Invalid Input for Column " + selectedColumns.get(i));
+                        }
+                    }
+                    if (!this.finalTokens.get(tokenCount++).getToken().equals(")")) {
+                        throw new Exception("Missing )");
+                    }
+                    if (selectedColumns.size() != values.size()) {
+                        throw new Exception("Invalid number of values");
+                    }
+                }
+                else {
+                    throw new Exception("Unable to determine start of values");
+                }
+            }
+            else {
+                throw new Exception("Missing VALUES");
+            }
+            
+            // Make nullable check
+            tableColumns = this.getTableColumns(this.currentDatabase, tableName);
+            if (tableColumns.size() > selectedColumns.size()) {
+                for (int i = 0; i < tableColumns.size(); i++) {
+                    foundColumn = false;
+                    for (String selectedColumn : selectedColumns) {
+                        if (tableColumns.get(i).equals(selectedColumn)) {
+                            foundColumn = true;
+                            break;
+                        }
+                    }
+                    if (!foundColumn && !this.isColumnNullable(this.currentDatabase, tableName, tableColumns.get(i))) {
+                        throw new Exception("Column " + tableColumns.get(i) + " does not have a value");
+                    }
+                }
+            }
+            else if (tableColumns.size() < selectedColumns.size()) {
+                throw new Exception("Invalid number of columns");
+            }
+            
+            // Command should be good
+            if (this.checkEndOfCommand()) {
+                this.command = new Insert(this.currentDatabase, tableName, this.convertObjectArrayString(selectedColumns.toArray()), this.convertObjectArrayString(values.toArray()));
+            }
+            else {
+                this.badEndOfCommand();
+            }
+        }
+        else {
+            throw new Exception(tableName + " does not exist in " + this.currentDatabase);
+        }
     }
 
     private void generateDelete() throws Exception {
@@ -723,7 +818,7 @@ public class SQLParser {
         // Get Database Catalog and column Type.
         // Check Type of value
         // Check Length or format of value
-        //Return true if the value is valid for that column
+        // Return true if the value is valid for that column
         return true;
     }
     
@@ -778,6 +873,11 @@ public class SQLParser {
         array.add("something");
         array.add("else");
         return array;
+    }
+    
+    private boolean isColumnNullable(String databaseName, String tableName, String column) {
+        // Return true if the column is nullable
+        return true;
     }
 
 }
