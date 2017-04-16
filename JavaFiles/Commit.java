@@ -5,5 +5,6 @@ public class Commit extends SQLCommand {
     
     @Override
     public void executeCommand() {
+        System.out.printf("Changes Commited to database %s%n", this.database);
     }
 }

@@ -12,13 +12,11 @@ Current functions of the SQL lexical
 Problem: Multiple character operands !=, >=, <=
 
 PARSER TO DO LIST:
--delete
-
-WHERE FORMAT: { temp, comparator, value }
-
 -insert
 -select
 -tselect
+
+WHERE FORMAT: { temp, comparator, value }
 */
 
 import java.nio.file.Files;
@@ -170,6 +168,8 @@ public class SQLParser {
         }
         return false;
     }
+    
+    // End Lexical Analzyer Methods---------------------------------------------------------------------------
 
     private void parseTokens() throws Exception {
         // Determine which parse path to follow
@@ -351,9 +351,6 @@ public class SQLParser {
 
     private void generateDelete() throws Exception {
         String tableName;
-        String column;
-        String conditional;
-        String value;
         if (this.finalTokens.get(tokenCount++).getToken().equals("FROM")) {
             tableName = this.finalTokens.get(tokenCount++).getToken();
             this.checkFirstChar(tableName);
@@ -412,7 +409,7 @@ public class SQLParser {
             this.columnTypes.add(temp);
             if (this.finalTokens.get(tokenCount++).getToken().equals("(")) {
                 temp = this.finalTokens.get(tokenCount++).getToken();
-                if (temp.matches("[0-9]*")) {
+                if (temp.matches("[0-9]+")) {
                     this.columnLength.add(temp);
                 }
                 else {
@@ -428,10 +425,83 @@ public class SQLParser {
             }
         }
         else if (temp.equals("NUMBER")) {
-            
+            this.columnTypes.add(temp);
+            if (this.finalTokens.get(tokenCount++).getToken().equals("(")) {
+                temp = this.finalTokens.get(tokenCount++).getToken();
+                if (temp.matches("[0-9]+")) {
+                    lengthTemp = temp;
+                    if (this.finalTokens.get(tokenCount++).getToken().equals(",")) {
+                        lengthTemp += ",";
+                        temp = this.finalTokens.get(tokenCount++).getToken();
+                        if (temp.matches("[0-9]+")) {
+                            this.columnLength.add(lengthTemp + temp);
+                        }
+                        else {
+                            throw new Exception("Missing Number for column length");
+                        }
+                    }
+                    else {
+                        this.columnLength.add(lengthTemp);
+                    }
+                }
+                else {
+                    throw new Exception("Missing Number for column length");
+                }
+                // Check for closing )
+                if (!this.finalTokens.get(tokenCount++).getToken().equals(")")) {
+                    throw new Exception("Missing )");
+                }
+            }
+            else {
+                throw new Exception("Missing (");
+            }
         }
         else if (temp.equals("DATE")) {
-            
+            this.columnTypes.add(temp);
+            if (this.finalTokens.get(tokenCount++).getToken().equals("(")) {
+                // Check Each token of the Date Datatype
+                temp = this.finalTokens.get(tokenCount++).getToken();
+                if (temp.equals("mm")) {
+                    temp = this.finalTokens.get(tokenCount++).getToken();
+                    if (temp.equals("/")) {
+                        temp = this.finalTokens.get(tokenCount++).getToken();
+                        if (temp.equals("dd")) {
+                            temp = this.finalTokens.get(tokenCount++).getToken();
+                            if (temp.equals("/")) {
+                                temp = this.finalTokens.get(tokenCount++).getToken();
+                                if (temp.equals("yy")) {
+                                    this.columnLength.add("mm/dd/yy");
+                                }
+                                else if (temp.equals("yyyy")) {
+                                    this.columnLength.add("mm/dd/yyyy");
+                                }
+                                else {
+                                    throw new Exception("Invalid DATE definition");
+                                }
+                            }
+                            else {
+                                throw new Exception("Invalid DATE definition");
+                            }
+                        }
+                        else {
+                            throw new Exception("Invalid DATE definition");
+                        }
+                    }
+                    else {
+                        throw new Exception("Invalid DATE definition");
+                    }
+                }
+                else {
+                    throw new Exception("Invalid DATE definition");
+                }
+            }
+            else {
+                throw new Exception("Missing (");
+            }
+            // Check for closing )
+            if (!this.finalTokens.get(tokenCount++).getToken().equals(")")) {
+                throw new Exception("Missing )");
+            }
         }
         else {
             throw new Exception("Unknown Datatype");
