@@ -1,6 +1,4 @@
 import java.io.File;
-import java.io.Writer;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
@@ -33,16 +31,10 @@ public class Insert extends SQLCommand {
         this.tableName = tableName;
         this.columnNames = names;
         this.columnValues = values;
-        
     }
     
     @Override
     public void executeCommand() {
-    		
-    		if(!fileExist(tablePath)) {// Check if table file exists
-    			System.out.println("ERROR: Table file found");
-    			return;
-    		}
     		
     		tableDOM = domUtil.XMLtoDOM(new File(tablePath.toString()));
     		Element root = tableDOM.getDocumentElement();
@@ -63,12 +55,4 @@ public class Insert extends SQLCommand {
   
     }
     
-    private boolean fileExist(Path tablePath) {// Check is table file exists
-    	
-    		if(Files.notExists(tablePath)) {
-			return false;
-		} else {
-			return true;
-		}
-	}
 }
