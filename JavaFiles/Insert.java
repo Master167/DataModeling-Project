@@ -23,8 +23,7 @@ public class Insert extends SQLCommand {
     private DOMUtility domUtil;
     private Path tablePath;
     private Document tableDOM;
-    private File outputFile;
-    
+  
     public Insert(String database, String tableName, String[] names, String[] values) {
           	
         super(database);
@@ -40,16 +39,16 @@ public class Insert extends SQLCommand {
     @Override
     public void executeCommand() {
     		
-    		if(!fileExist(tablePath)) {
-    			System.out.println("ERROR: File found");
+    		if(!fileExist(tablePath)) {// Check if table file exists
+    			System.out.println("ERROR: Table file found");
     			return;
     		}
     		
     		tableDOM = domUtil.XMLtoDOM(new File(tablePath.toString()));
     		Element root = tableDOM.getDocumentElement();
-    		Element tableElem = tableDOM.createElement(tableName);
-    		Element time = tableDOM.createElement("TIME");
-    		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+    		Element tableElem = tableDOM.createElement("record");// create record tag
+    		Element time = tableDOM.createElement("time");// create time tag for insertion time
+    		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");// form
     		Date date = new Date();
     		time.setTextContent(dateFormat.format(date));
     		tableElem.appendChild(time);
@@ -64,7 +63,7 @@ public class Insert extends SQLCommand {
   
     }
     
-    private boolean fileExist(Path tablePath) {
+    private boolean fileExist(Path tablePath) {// Check is table file exists
     	
     		if(Files.notExists(tablePath)) {
 			return false;
