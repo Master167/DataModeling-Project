@@ -11,6 +11,8 @@ import org.w3c.dom.Element;
 import java.io.File;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
  /*} catch (Exception e) {
             e.printStackTrace();
@@ -42,7 +44,7 @@ public class tSelect extends SQLCommand {
                 System.out.println("ERROR: File not found");
                 return;
             }
-        //try {
+       // try {
             doc = domUtil.XMLtoDOM(new File(tablePath.toString()));
             //--------------------------------------------
             System.out.print("Table: ");
@@ -95,6 +97,7 @@ public class tSelect extends SQLCommand {
                     arrayCounter = 0;
                 }
             }else{ // WHERE CONDITION
+
             int arrayCounter = 0;
 
             for (int temp = 0; temp < nList.getLength(); temp++) {
@@ -122,9 +125,74 @@ public class tSelect extends SQLCommand {
                                 Element condElement = (Element) condNode1;
 
                                 // =, >, <, <=, >=, !=
-                                String comparator = whereCond[1];
                                 boolean printIt = false;
-                                switch(comparator){
+                                // =, >, <, <=, >=, !=
+                                String comparator = whereCond[1];
+                                //CHECK if compare value is date------------------
+                                String dateRegex = "^(0[0-9]||1[0-2])/([0-2][0-9]||3[0-1])/([0-9][0-9])?[0-9][0-9]$";
+                                //mm/dd/yyy hh:mm:ss
+                                String timeRegex ="^(0[0-9]||1[0-2])/([0-2][0-9]||3[0-1])/[0-9][0-9][0-9][0-9]\\s+([0-1]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$";
+                                Date whereCondDate;
+                                Date elementDate;
+                                ///IF IT IS A TIME STAMP
+                                if(whereCond[2].matches(timeRegex)|| whereCond[2].matches(dateRegex)) {
+                                    if (whereCond[2].matches(timeRegex)) {
+                                        SimpleDateFormat timeStamp = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+                                        whereCondDate = timeStamp.parse(whereCond[2]);
+                                        elementDate = timeStamp.parse(condElement.getTextContent());
+                                    } else{
+                                        //check which variation mm/dd/yy[yy]
+                                        String yyyyRegex = "^(0[0-9]||1[0-2])/([0-2][0-9]||3[0-1])/[0-9][0-9][0-9][0-9]$";
+                                        String yyRegex = "^(0[0-9]||1[0-2])/([0-2][0-9]||3[0-1])/[0-9][0-9]$";
+
+                                        if (whereCond[2].matches(yyyyRegex)) {
+                                            SimpleDateFormat fourYearDf = new SimpleDateFormat("MM/dd/yyyy");
+                                            whereCondDate = fourYearDf.parse(whereCond[2]);
+                                            elementDate = fourYearDf.parse(condElement.getTextContent());
+                                        } else {
+                                            SimpleDateFormat twoYearDf = new SimpleDateFormat("MM/dd/yy");
+                                            whereCondDate = (twoYearDf.parse(whereCond[2]));
+                                            elementDate = twoYearDf.parse(condElement.getTextContent());
+                                        }
+                                    }
+                                    switch (comparator) {
+                                        case "=":
+                                            if (whereCondDate.equals(elementDate)) {
+                                                printIt = true;
+                                            }
+                                            break;
+                                        case ">":
+                                            if (elementDate.after(whereCondDate)) {
+                                                printIt = true;
+                                            }
+                                            break;
+                                        case "<":
+                                            if (elementDate.before(whereCondDate)) {
+                                                printIt = true;
+                                            }
+                                            break;
+                                        case "<=":
+                                            if (elementDate.equals(whereCondDate) || elementDate.before(whereCondDate)) {
+                                                printIt = true;
+                                            }
+                                            break;
+                                        case ">=":
+                                            if (elementDate.equals(whereCondDate) || elementDate.after(whereCondDate)) {
+                                                printIt = true;
+                                            }
+                                            break;
+                                        case "!=":
+                                            if (!elementDate.equals(whereCondDate)) {
+                                                printIt = true;
+                                            }
+                                            break;
+                                        default:
+                                            System.out.print("Error:compare value is not a valid comparator");
+
+                                    }
+                                } else {
+
+                                    switch(comparator){
                                     case "=":if(condElement.getTextContent().equals(whereCond[2])){
                                         printIt = true;
                                     }
@@ -146,6 +214,7 @@ public class tSelect extends SQLCommand {
                                         printIt = true;
                                     }break;
                                     default: System.out.println("ERROR: this is not a valide comparator");
+                                    }
                                 }
 
                                 if(printIt) {
@@ -175,7 +244,7 @@ public class tSelect extends SQLCommand {
                 arrayCounter = 0;
             }
         }
-        /*} catch (Exception e) {
+       /*} catch (Exception e) {
             e.printStackTrace();
         }*/
     }

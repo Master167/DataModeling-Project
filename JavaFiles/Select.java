@@ -110,13 +110,14 @@ public class Select extends SQLCommand {
                                         // =, >, <, <=, >=, !=
                                         String comparator = whereCond[1];
                                         //CHECK if compare value is date------------------
-                                        String regex = "^(0[0-9]||1[0-2])/([0-2][0-9]||3[0-1])/([0-9][0-9])?[0-9][0-9]$";
-                                        if(whereCond[2].matches(regex)){
+                                        String dateRegex = "^(0[0-9]||1[0-2])/([0-2][0-9]||3[0-1])/([0-9][0-9])?[0-9][0-9]$";
+                                        Date whereCondDate;
+                                        Date elementDate;
+                                        if(whereCond[2].matches(dateRegex)){
                                             //check which variation mm/dd/yy[yy]
                                             String yyyyRegex ="^(0[0-9]||1[0-2])/([0-2][0-9]||3[0-1])/[0-9][0-9][0-9][0-9]$";
                                             String yyRegex ="^(0[0-9]||1[0-2])/([0-2][0-9]||3[0-1])/[0-9][0-9]$";
-                                           Date whereCondDate;
-                                           Date elementDate;
+
                                             if(whereCond[2].matches(yyyyRegex)){
                                                 SimpleDateFormat fourYearDf = new SimpleDateFormat("MM/dd/yyyy");
                                                  whereCondDate = fourYearDf.parse(whereCond[2]);
