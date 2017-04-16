@@ -4,6 +4,26 @@
  *
  * c2 Parse XML
  */
+ 
+ /*CATCHES
+/* } catch (ParserConfigurationException e) {
+            System.out.print("ERROR:Parser Configuration error");
+            //e.printStackTrace();
+            return;
+        } catch (UnsupportedEncodingException e) {
+            System.out.print("ERROR:Unsupported Encoding");
+            //e.printStackTrace();
+            return;
+        } catch (IOException e) {
+             System.out.print("ERROR:IO error");
+            //e.printStackTrace();
+            return;
+        } catch (SAXException e) {
+            return;
+            //e.printStackTrace();
+        }*/
+
+*/
 import org.w3c.dom.*;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
@@ -18,7 +38,7 @@ public class XMLToSQLParser {
 
     public void parse(ArrayList<Schema> table, String xmlFilename, String outputFilename) {
         boolean error = false;
-        try {
+       try {
             //CREATE file to write SQL commands to
             if(!outputFilename.contains(".txt")){
                 System.out.print("Error: please specify the output file extension type(ex: output.txt)");
@@ -130,20 +150,27 @@ public class XMLToSQLParser {
                 }
                 //if error remove file from directory? Option
                 if (error) {
-
+                     return;
                 }
                 writer.close();
                 System.out.println("File has been converted to SQL Insert Command File");
             }
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
+       /* } catch (ParserConfigurationException e) {
+            System.out.print("ERROR:Parser Configuration error");
+            //e.printStackTrace();
+            return;
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            System.out.print("ERROR:Unsupported Encoding");
+            //e.printStackTrace();
+            return;
         } catch (IOException e) {
-            e.printStackTrace();
+             System.out.print("ERROR:IO error");
+            //e.printStackTrace();
+            return;
         } catch (SAXException e) {
-            e.printStackTrace();
-        }
+            return;
+            //e.printStackTrace();
+        }*/
 
     }
 
