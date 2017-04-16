@@ -463,8 +463,13 @@ public class SQLParser {
                 temp = this.finalTokens.get(tokenCount++).getToken();
             }
             if (!temp.equals("FROM")) {
-                throw new Exception("No Table selected using FROM");
+                throw new Exception("No columns Selected");
             }
+        }
+        else {      
+            if (!this.finalTokens.get(tokenCount++).getToken().equals("FROM")) {        
+                throw new Exception("No Table selected using FROM");        
+            }       
         }
         
         temp = this.finalTokens.get(tokenCount++).getToken();
@@ -946,7 +951,25 @@ public class SQLParser {
                     dataTypeCorrect = (date != null);
                 }
                 else if (columnDataType.equalsIgnoreCase("TIME")) {
-                    
+                    // Get the rest of the date
+                    for (int i = 0; i < 4; i++) {
+                        value += this.finalTokens.get(tokenCount++).getToken();
+                    }
+                    value += " " + this.finalTokens.get(tokenCount++).getToken();
+                    // Determine Java dateformat
+                    String dateFormat = "MM/dd/yyyy HH:mm:ss";
+                    // Simliar to: http://stackoverflow.com/questions/20231539/java-check-the-date-format-of-current-string-is-according-to-required-format-or
+                    Date date;
+                    try {
+                        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+                        date = sdf.parse(value);
+                        if (!value.equals(sdf.format(date))) {
+                            date = null;
+                        }
+                    } catch (ParseException e) {
+                        date = null;
+                    }
+                    dataTypeCorrect = (date != null);
                 }
             }
         }
