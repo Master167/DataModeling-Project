@@ -307,29 +307,46 @@ public class SQLParser {
     }
 
     private void generateSaveDatabase() throws Exception {
-        String databaseName = this.finalTokens.get(tokenCount++).getToken();
-        if (this.currentDatabase.equals(databaseName)) {
-            this.command = new SaveDatabase(databaseName);
-            this.command.database = "";
+        String databaseName;
+        if (this.finalTokens.get(tokenCount++).getToken().equals("DATABASE")) {
+            databaseName = this.finalTokens.get(tokenCount++).getToken();
+            if (this.currentDatabase.equals(databaseName)) {
+                if (this.checkEndOfCommand()) {
+                    this.command = new SaveDatabase(databaseName);
+                    this.command.database = "";
+                }
+                else {
+                    this.badEndOfCommand();
+                }
+            }
+            else {
+                // They are not in the database they are trying to save
+                throw new Exception("Unable to save " + databaseName);
+            }
         }
         else {
-            // They are not in the database they are trying to save
-            throw new Exception("Unable to save " + databaseName);
+            this.badEndOfCommand();
         }
     }
 
     private void generateLoadDatabase() throws Exception {
-        String databaseName = this.finalTokens.get(tokenCount++).getToken();
-        if (this.checkIfFileExists("databases\\" + databaseName + ".xml")) {
-            if (this.checkEndOfCommand()) {
-                this.command = new LoadDatabase(databaseName);
+        String databaseName;
+        if (this.finalTokens.get(tokenCount++).getToken().equals("DATABASE")) {
+            databaseName = this.finalTokens.get(tokenCount++).getToken();
+            if (this.checkIfFileExists("databases\\" + databaseName + ".xml")) {
+                if (this.checkEndOfCommand()) {
+                    this.command = new LoadDatabase(databaseName);
+                }
+                else {
+                    this.badEndOfCommand();
+                }
             }
             else {
-                this.badEndOfCommand();
+                throw new Exception(databaseName + " does not exist");
             }
         }
         else {
-            throw new Exception(databaseName + " does not exist");
+            this.badEndOfCommand();
         }
     }
 
@@ -338,7 +355,7 @@ public class SQLParser {
     }
 
     private void generateSelect() throws Exception {
-        throw new Exception("Not implemented");
+        
     }
 
     private void generateTSelect() throws Exception {
@@ -562,13 +579,15 @@ public class SQLParser {
         return true;
     }
     
+    // Just a strach board for now.
     private boolean makeColumnCheck(String database, String table, String column) {
         // Get database catalog
         // Check if column exists in catalog
         // return true if it does
         return true;
     }
-    
+
+    // Just a strach board for now.
     private boolean makeTableCheck(String database, String table) {
         // Get database catalog
         // Check if table exists in catalog

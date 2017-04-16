@@ -120,6 +120,7 @@ public class DataEngine {
                 this.currentDatabase = command.database;
             }
             command.executeCommand();
+            this.userInterface.showUser(this.currentDatabase);
         }
         catch (IndexOutOfBoundsException e) {
             this.userInterface.showUser("Error:");
