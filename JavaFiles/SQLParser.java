@@ -15,7 +15,10 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.StringTokenizer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -160,7 +163,7 @@ public class SQLParser {
             }
             else{
                 isLegal(c);
-                if (c !='\'' && c != '.') {
+                if (c !='\'') {
                     buildToken += c;
                 }
              }
@@ -836,11 +839,95 @@ public class SQLParser {
     
     // Just a strach board for now.
     private boolean makeDatatypeCheck(String database, String table, String column, String value) throws Exception {
+        boolean dataTypeCorrect = false;
+        boolean columnDataTypeFound = false;
+        String columnDataType = "";
+        String columnLength = "";
+        int columnDecimal = 0;
+        int valueLength;
+        int valueDecimalLength;
+        Document catalog;
+        Node tempNode;
+        Element columnElement;
+        Element tempElement;
+        
         // Get Database Catalog and column Type.
-        // Check Type of value
-        // Check Length or format of value
-        // Return true if the value is valid for that column
-        return true;
+        if (this.makeColumnCheck(database, table, column)) {
+            catalog = this.getDatabase(database);
+            tempNode = catalog.getFirstChild();
+            // Find the right table
+            for (Node tableNode = tempNode.getFirstChild(); (tableNode != null) && !columnDataTypeFound; tableNode = tableNode.getNextSibling()) {
+                if (tableNode.getNodeType() == Node.ELEMENT_NODE && tableNode.getNodeName().equals(table)) {
+                    // Find the right Column
+                    for (Node columnNode = tableNode.getFirstChild(); (columnNode != null) && !columnDataTypeFound; columnNode = columnNode.getNextSibling()) {
+                        // Get the info about the column
+                        if (columnNode.getNodeType() == Node.ELEMENT_NODE && columnNode.getNodeName().equals(column)) {
+                            columnElement = (Element) columnNode;
+                            tempNode = columnElement.getElementsByTagName("type").item(0);
+                            columnDataType = tempNode.getTextContent();
+                            if (columnDataType.equalsIgnoreCase("CHARACTER") || columnDataType.equalsIgnoreCase("INTEGER") || columnDataType.equalsIgnoreCase("DATE") || columnDataType.equalsIgnoreCase("TIME")) {
+                                tempNode = columnElement.getElementsByTagName("length").item(0);
+                                columnLength = tempNode.getTextContent();
+                                columnDataTypeFound = true;
+                            }
+                            else if (columnDataType.equalsIgnoreCase("NUMBER")) {
+                                tempNode = columnElement.getElementsByTagName("length").item(0);
+                                tempElement = (Element) tempNode;
+                                columnLength = tempElement.getElementsByTagName("digits").item(0).getTextContent();
+                                // Check for empty decimal
+                                if (tempElement.getElementsByTagName("decimals").item(0).getTextContent().length() >= 1) {
+                                    columnDecimal = Integer.parseInt(tempElement.getElementsByTagName("decimals").item(0).getTextContent());
+                                }
+                                else {
+                                    columnDecimal = 0;
+                                }
+                                columnDataTypeFound = true;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Check if we found the column datatype
+            if (columnDataTypeFound) {
+                // Check Type of value is compatible with columnDatatype
+                if (columnDataType.equalsIgnoreCase("INTEGER")) {
+                    if (value.matches("[0-9]+")) {
+                        if (value.length() <= Integer.parseInt(columnLength)) {
+                            dataTypeCorrect = true;
+                        }
+                    }
+                }
+                else if (columnDataType.equalsIgnoreCase("NUMBER")) {
+                    // Check if value has decimal
+                    if (value.matches("[0-9]+\\.[0-9]+")) {
+                        valueDecimalLength = value.replaceAll("[0-9]+\\.", "").length();
+                        valueLength = value.replaceAll("\\.[0-9]+", "").length() + valueDecimalLength;
+                        if (valueLength <= Integer.parseInt(columnLength) && valueDecimalLength <= columnDecimal) {
+                            dataTypeCorrect = true;
+                        }
+                    }
+                    // Ok no decimal, does the column need a decimal?
+                    else if (columnDecimal == 0 && value.matches("[0-9]+")) {
+                        if (value.length() <= Integer.parseInt(columnLength)) {
+                            dataTypeCorrect = true;
+                        }
+                    }
+                }
+                else if (columnDataType.equalsIgnoreCase("CHARACTER")) {
+                    if (value.length() <= Integer.parseInt(columnLength)) {
+                        dataTypeCorrect = true;
+                    }
+                }
+                else if (columnDataType.equalsIgnoreCase("DATE")) {
+                    
+                }
+                else if (columnDataType.equalsIgnoreCase("TIME")) {
+                    
+                }
+            }
+        }
+        return dataTypeCorrect;
     }
     
     // Just a strach board for now.
@@ -929,7 +1016,7 @@ public class SQLParser {
                     this.whereConditional[2] = value;
                 }
                 else {
-                    throw new Exception("Invalid Datatype");
+                    throw new Exception("Invalid Datatype in WHERE");
                 }
             }
             else {

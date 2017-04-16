@@ -52,11 +52,11 @@ public class DataEngine {
         while (running) {
             userInput = this.userInterface.getInput();
             
-            if (userInput.equalsIgnoreCase("exit")) {
+            if (userInput.replace(";","").equalsIgnoreCase("exit")) {
                 this.userInterface.showUser("Goodbye");
                 running = false;
             }
-            else if (userInput.equalsIgnoreCase("help")) {
+            else if (userInput.replace(";","").equalsIgnoreCase("help")) {
                 if (this.currentDatabase.equals("")) {
                     this.userInterface.showDatabaseHelp();
                 }
