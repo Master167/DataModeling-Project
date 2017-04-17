@@ -5,6 +5,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 /**
  * CreateDatabase
+ * This class contains the WriteDomtoFilewriter, DOMUtility, Path, Document, and File objects
+ * as attributes.  This class is used to instantiate the createDatabase object in order to
+ * create a database cataloge file in /database/ folder as well as a folder in the table folder 
+ * in the form /tables/<databaseName>/databaseName.xml.  This class extends SQLCommand class.
+ * 
  * @author Sean Domingo, Michael Frederick, Megan Molumby, Mai Huong Nguyen, Richard Pratt
  */
 public class CreateDatabase extends SQLCommand {
