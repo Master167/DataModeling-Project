@@ -19,7 +19,6 @@ public class DataEngine {
 
     private SQLParser sqlParser;
     private UserInterface userInterface;
-    private XMLToSQLGenerator xmlToSqlGenerator;
     private XMLToSQLParser xmlToSqlParser;
     private XSDParser xsdParser;
     
@@ -29,7 +28,6 @@ public class DataEngine {
     public DataEngine() {
         this.sqlParser = new SQLParser();
         this.userInterface = new UserInterface();
-        this.xmlToSqlGenerator = new XMLToSQLGenerator();
         this.xmlToSqlParser = new XMLToSQLParser();
         this.xsdParser = new XSDParser();
         checkFilesystem();
