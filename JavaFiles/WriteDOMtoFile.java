@@ -1,3 +1,16 @@
+/*
+ * 
+ * 
+ * WriteDOMtoFile is a class which is used to write 
+ * the DOM objects to file.  This class is used often 
+ * throughout database catalog and table file manipulation.  
+ * WriteDOMtoFile contains  DOMSource, StringWriter, StreamResult, 
+ * TransformerFactory, and Transformer objects as attributes.  
+ * WriteDOMtoFile is utilized each time the DOMUtility object 
+ * performs write operations back to file from DOM objects.  
+ * 
+ * 
+ */
 import java.io.File;
 import java.io.StringWriter;
 
