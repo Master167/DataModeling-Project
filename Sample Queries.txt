@@ -1,0 +1,31 @@
+CREATE DATABASE Gold;
+
+CREATE TABLE team (id INTEGER(10), memberName CHARACTER(100), wage NUMBER(10,2), joinDate DATE(mm/dd/yy));
+
+INSERT INTO team VALUES (1, Sean, 7880.15, 04/12/12);
+
+INSERT INTO team VALUES (2, Michael, 1.1, 04/06/17);
+
+INSERT INTO team VALUES (3, Megan, 10000.1, 09/12/13);
+
+INSERT INTO team VALUES (4, Mai, 6666.66, 08/19/16);
+
+INSERT INTO team VALUES (5, Anthony, 79813.71, 11/01/15);
+
+SELECT * FROM team;
+
+SELECT * FROM team WHERE id = 5;
+
+TSELECT memberName, wage FROM team;
+
+TSELECT memberName, wage FROM team WHERE wage > 7000.00;
+
+DELETE FROM team WHERE id = 2;
+
+SAVE DATABASE Gold;
+
+LOAD DATABASE Gold;
+
+DROP TABLE team;
+
+DROP DATABASE Gold;
