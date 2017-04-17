@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<root>
+  <CUST>
+    <CNO>C8</CNO>
+    <CNAME>Lange</CNAME>
+    <CITY>Jacksonville</CITY>
+  </CUST>
+  <CUST>
+    <CNO>C9</CNO>
+    <CNAME>Amick</CNAME>
+    <CITY>BOSTON</CITY>
+  </CUST>
+</root>

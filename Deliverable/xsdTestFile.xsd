@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<xsd:schema xmlns:xsd='FacultyXSDnew' elementFormDefault='qualified'
+attributeFormDefault='qualified'>
+  <xsd:complexType name="CUST">
+    <xsd:element name='CNO' type='xsd:string' maxOccurs='2' minOccurs='1' />
+    <xsd:element name='CNAME' type='xsd:string' maxOccurs='40' minOccurs='1' />
+    <xsd:element name='CITY' type='xsd:string' maxOccurs='20' minOccurs='1' />
+  </xsd:complexType >
+</xsd:schema>
