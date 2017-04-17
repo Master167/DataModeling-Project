@@ -2,89 +2,89 @@
 <tables>
 	<CUST>
 		<CNO>
-			<type>character</type>
+			<type>CHARACTER</type>
 			<length>2</length>
 		</CNO>
 		<CNAME>
-			<type>character</type>
+			<type>CHARACTER</type>
 			<length>40</length>
 		</CNAME>
 		<CITY>
-			<type>character</type>
+			<type>CHARACTER</type>
 			<length>20</length>
 		</CITY>
 		<time>
-			<type>time</type>
-			<format>mm/dd/yyyy hh:mm:ss</format>
+			<type>TIME</type>
+			<length>mm/dd/yyyy hh:mm:ss</length>
 		</time>
 	</CUST>
 	<S>
 		<SNO>
-			<type>character</type>
+			<type>CHARACTER</type>
 			<length>2</length>
 		</SNO>
 		<SNAME>
-			<type>character</type>
+			<type>CHARACTER</type>
 			<length>10</length>
 		</SNAME>
 		<QUOTA>
-			<type>integer</type>
+			<type>INTEGER</type>
 			<length>10</length>
 		</QUOTA>
 		<CITY>
-			<type>character</type>
+			<type>CHARACTER</type>
 			<length>20</length>
 		</CITY>
 		<time>
-			<type>time</type>
-			<format>mm/dd/yyyy hh:mm:ss</format>
+			<type>TIME</type>
+			<length>mm/dd/yyyy hh:mm:ss</length>
 		</time>
 	</S>
 	<PRODCT>
 		<PNO>
-			<type>character</type>
+			<type>CHARACTER</type>
 			<length>2</length>
 		</PNO>
 		<PNAME>
-			<type>character</type>
+			<type>CHARACTER</type>
 			<length>30</length>
 		</PNAME>
 		<COST>
-			<type>number</type>
+			<type>NUMBER</type>
 			<length>
 				<digits>10</digits>
 				<decimals>2</decimals>
 			</length>
 		</COST>
 		<AVLQTY>
-			<type>integer</type>
+			<type>INTEGER</type>
 			<length>10</length>
 		</AVLQTY>
 		<time>
-			<type>time</type>
-			<format>mm/dd/yyyy hh:mm:ss</format>
+			<type>TIME</type>
+			<length>mm/dd/yyyy hh:mm:ss</length>
 		</time>
 	</PRODCT>
 	<ORDERS>
 		<SNO>
-			<type>character</type>
+			<type>CHARACTER</type>
 			<length>2</length>
 		</SNO>
 		<PNO>
-			<type>character</type>
+			<type>CHARACTER</type>
 			<length>2</length>
 		</PNO>
 		<CNO>
-			<type>character</type>
+			<type>CHARACTER</type>
 			<length>2</length>
 		</CNO>
 		<TTLQTY>
-			<type>integer</type>
+			<type>INTEGER</type>
 			<length>10</length>
 		</TTLQTY>
 		<time>
-			<type>time</type>
-			<format>mm/dd/yyyy hh:mm:ss</format>
+			<type>TIME</type>
+			<length>mm/dd/yyyy hh:mm:ss</length>
 		</time>
 	</ORDERS>
 </tables>
