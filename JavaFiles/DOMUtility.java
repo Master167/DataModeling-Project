@@ -1,3 +1,14 @@
+/*
+ * DOMUtility is a utility class used to facilitate DOM 
+ * operations which are repetitively used throughout various 
+ * file manipulation operations the program.  The DOMUtility
+ *  contains the attributes DocumentBuilderFactory, DocumentBuilder, 
+ *  and a Document attributes which are required objects utilized 
+ *  build DOM Document objects.  The DOMUtility contains the methods 
+ *  XMLtoDOM and createDOM.
+ * 
+ */
+
 import java.io.File;
 import java.io.IOException;
 
