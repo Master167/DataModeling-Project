@@ -1,0 +1,43 @@
+all: WriteDOMtoFile.class DOMUtility.class XSDParser.class SQLCommand.class SQLParser.class TSQLEngine.class UserInterface.class DataEngine.class Commit.class CreateDatabase.class CreateTable.class Delete.class DropDatabase.class DropTable.class Insert.class LoadDatabase.class SaveDatabase.class Schema.class Select.class TSelect.class
+WriteDOMtoFile.class: WriteDOMtoFile.java
+	javac WriteDOMtoFile.java
+DOMUtility.class: DOMUtility.java
+	javac DOMUtility.java
+XMLToSQLParser: XMLToSQLParser.java
+	javac XMLToSQLParser.java
+XSDParser.class: XSDParser.java
+	javac XSDParser.java
+SQLCommand.class: SQLCommand.java
+	javac SQLCommand.java
+SQLParser.class: SQLParser.java
+	javac SQLParser.java
+TSQLEngine.class: TSQLEngine.java
+	javac TSQLEngine.java
+UserInterface.class: UserInterface.java
+	javac UserInterface.java
+DataEngine.class: DataEngine.java
+	javac DataEngine.java
+Commit.class: Commit.java
+	javac Commit.java
+CreateDatabase.class: CreateDatabase.java
+	javac CreateDatabase.java
+CreateTable.class: CreateTable.java
+	javac CreateTable.java
+Delete.class: Delete.java
+	javac Delete.java
+DropDatabase.class: DropDatabase.java
+	javac DropDatabase.java
+DropTable.class: DropTable.java
+	javac DropTable.java
+Insert.class: Insert.java
+	javac Insert.java
+LoadDatabase.class: LoadDatabase.java
+	javac LoadDatabase.java
+SaveDatabase.class: SaveDatabase.java
+	javac SaveDatabase.java
+Schema.class: Schema.java
+	javac Schema.java
+Select.class: Select.java
+	javac Select.java
+TSelect.class: TSelect.java
+	javac TSelect.java

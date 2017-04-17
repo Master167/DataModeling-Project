@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PRDCT>
+	<record>
+		<PNO>P1</PNO>
+		<PNAME>Modem</PNAME>
+		<COST>350.00</COST>
+		<AVLQTY>100</AVLQTY>
+		<time>04/04/2017 03:45:00</time>
+	</record>
+	<record>
+		<PNO>P2</PNO>
+		<PNAME>Monitor</PNAME>
+		<COST>400.00</COST>
+		<AVLQTY>45</AVLQTY>
+		<time>04/04/2017 03:45:00</time>
+	</record>
+	<record>
+		<PNO>P3</PNO>
+		<PNAME>Printer</PNAME>
+		<COST>700.00</COST>
+		<AVLQTY>15</AVLQTY>
+		<time>04/04/2017 03:45:00</time>
+	</record>
+	<record>
+		<PNO>P4</PNO>
+		<PNAME>CPU Cards</PNAME>
+		<COST>2500.00</COST>
+		<AVLQTY>10</AVLQTY>
+		<time>04/04/2017 03:45:00</time>
+	</record>
+	<record>
+		<PNO>P5</PNO>
+		<PNAME>Disk Unit</PNAME>
+		<COST>700</COST>
+		<AVLQTY>25</AVLQTY>
+		<time>04/04/2017 03:45:00</time>
+	</record>
+	<record>
+		<PNO>P6</PNO>
+		<PNAME>Tape Drive</PNAME>
+		<COST>1200.00</COST>
+		<AVLQTY>27</AVLQTY>
+		<time>04/04/2017 03:45:00</time>
+	</record>
+</PRDCT>
