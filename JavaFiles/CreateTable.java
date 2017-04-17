@@ -97,7 +97,7 @@ public class CreateTable extends SQLCommand {
         }
         dbRoot.appendChild(tableElem);
         writer.write(dbFileDOM, databaseFile);
-        System.out.println("Succesfully inserted into " + tableName + " table.");
+        System.out.println("Succesfully created " + tableName + " table.");
     }
     
     private void createFile(File table, Path path) {
