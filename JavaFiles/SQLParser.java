@@ -515,7 +515,7 @@ public class SQLParser {
         }
         else {
             if (this.checkEndOfCommand()) {
-                this.command = new Select(this.currentDatabase, tableName, this.convertObjectArrayString(selectedColumns.toArray()), null);
+                this.command = new TSelect(this.currentDatabase, tableName, this.convertObjectArrayString(selectedColumns.toArray()), null);
             }
             else {
                 this.badEndOfCommand();

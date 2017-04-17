@@ -35,7 +35,7 @@ public class TSelect extends SQLCommand {
         this.tableName  = tableName;
         this.columnNames = columnNames;
         this.whereCond = whereCond;
-        columnNames = columnNames;
+        this.columnNames = columnNames;
 
     }
     @Override
