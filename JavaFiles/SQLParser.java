@@ -1036,30 +1036,15 @@ public class SQLParser {
         // Get database catalog
         Document catalog = this.getDatabase(database);
         // Check if table exists in catalog
-        Node tempNode = catalog.getFirstChild();
-        NodeList childList;
-        Element tempElement;
-        // Check first child
-        if (tempNode.getNodeType() == Node.ELEMENT_NODE) {
-            tempElement = (Element) tempNode;
-            if (tempElement.hasChildNodes()) {
-                childList = tempElement.getElementsByTagName(table);
-                if (childList.getLength() == 1) {
+        Node catalogNode = catalog.getFirstChild();
+        Element element;
+        for (Node tableNode = catalogNode.getFirstChild(); (tableNode != null) && (!tableExists); tableNode = tableNode.getNextSibling()) {
+            if (tableNode.getNodeType() == Node.ELEMENT_NODE) {
+                element = (Element) tableNode;
+                if (element.getNodeName().equals(table)) {
                     tableExists = true;
                 }
-            }
-        }
-        while (tempNode.getNextSibling() != null && !tableExists) {
-            tempNode = tempNode.getNextSibling();
-            if (tempNode.getNodeType() == Node.ELEMENT_NODE) {
-                tempElement = (Element) tempNode;
-                if (tempElement.hasChildNodes()) {
-                    childList = tempElement.getElementsByTagName(table);
-                    if (childList.getLength() == 1) {
-                        tableExists = true;
-                        break;
-                    }
-                }
+                        
             }
         }
         return tableExists;

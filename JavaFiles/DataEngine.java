@@ -18,7 +18,6 @@ import java.util.StringTokenizer;
 public class DataEngine {
 
     private SQLParser sqlParser;
-    private FileReader fileReader;
     private UserInterface userInterface;
     private XMLToSQLGenerator xmlToSqlGenerator;
     private XMLToSQLParser xmlToSqlParser;
@@ -29,7 +28,6 @@ public class DataEngine {
 
     public DataEngine() {
         this.sqlParser = new SQLParser();
-        this.fileReader = new FileReader();
         this.userInterface = new UserInterface();
         this.xmlToSqlGenerator = new XMLToSQLGenerator();
         this.xmlToSqlParser = new XMLToSQLParser();
