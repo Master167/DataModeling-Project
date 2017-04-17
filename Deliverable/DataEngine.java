@@ -138,7 +138,7 @@ public class DataEngine {
         catch (Exception e) {
             this.userInterface.showUser("Error:");
             this.userInterface.showUser(e.getMessage());
-            e.printStackTrace(System.out);
+            //e.printStackTrace(System.out);
         }
         
         return;
