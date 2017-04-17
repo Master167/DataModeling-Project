@@ -279,7 +279,7 @@ public class SQLParser {
     private void generateCreateDatabase() throws Exception {
         // Check if database exists
         String databaseName = this.finalTokens.get(tokenCount++).getToken();
-        if (!this.checkIfFileExists("databases\\" + databaseName + ".xml")) {
+        if (!this.checkIfFileExists("databases/" + databaseName + ".xml")) {
             if (this.checkEndOfCommand()) {
                 this.command = new CreateDatabase(databaseName);
             }
@@ -295,7 +295,7 @@ public class SQLParser {
     private void generateDropTable() throws Exception {
         this.checkDatabase();
         String tableName = this.finalTokens.get(tokenCount++).getToken();
-        if (this.checkIfFileExists("tables\\" + this.currentDatabase + "\\" + tableName + ".xml")) {
+        if (this.checkIfFileExists("tables/" + this.currentDatabase + "/" + tableName + ".xml")) {
             if (this.checkEndOfCommand()) {
                 this.command = new DropTable(this.currentDatabase, tableName);
             }
@@ -310,7 +310,7 @@ public class SQLParser {
 
     private void generateDropDatabase() throws Exception {
         String databaseName = this.finalTokens.get(tokenCount++).getToken();
-        if (this.checkIfFileExists("databases\\" + databaseName + ".xml")) {
+        if (this.checkIfFileExists("databases/" + databaseName + ".xml")) {
             if (this.checkEndOfCommand()) {
                 this.command = new DropDatabase(databaseName);
                 this.command.database = "";
@@ -352,7 +352,7 @@ public class SQLParser {
         String databaseName;
         if (this.finalTokens.get(tokenCount++).getToken().equals("DATABASE")) {
             databaseName = this.finalTokens.get(tokenCount++).getToken();
-            if (this.checkIfFileExists("databases\\" + databaseName + ".xml")) {
+            if (this.checkIfFileExists("databases/" + databaseName + ".xml")) {
                 if (this.checkEndOfCommand()) {
                     this.command = new LoadDatabase(databaseName);
                 }
@@ -672,6 +672,7 @@ public class SQLParser {
     }
     
     private boolean checkIfFileExists(String filepath) {
+        filepath = filepath.replace("\\", "/");
         Path path = Paths.get(filepath);
         boolean a = Files.exists(path);
         return a;
@@ -1117,7 +1118,7 @@ public class SQLParser {
     // Checks if catalog has already been loaded, if not builds it.
     private Document getDatabase(String database) throws Exception {
         if (this.databaseCatalog == null) {
-            String databaseLocation = "databases\\" + database + ".xml";
+            String databaseLocation = "databases/" + database + ".xml";
             DOMUtility util = new DOMUtility();
             Document doc = util.XMLtoDOM(new File(databaseLocation));
             this.databaseCatalog = doc;

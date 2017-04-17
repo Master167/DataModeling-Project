@@ -95,10 +95,23 @@ public class DataEngine {
     
     private void convertXmlToSql(String xmlFilename, String xsdFilename, String outputFilename) {
         try {
-            // Passing xml, xsd, and outputFilename
-            // Make call here
-            this.xsdParser.parseXSD(xmlFilename, xsdFilename, outputFilename, this.xmlToSqlParser);
-            this.userInterface.showUser("Conversion completed: " + outputFilename + " was created for INPUT command");
+            if (Files.exists(Paths.get(xmlFilename))) {
+                if (Files.exists(Paths.get(xsdFilename))) {
+                    if (!Files.exists(Paths.get(outputFilename))) {
+                        this.xsdParser.parseXSD(xmlFilename, xsdFilename, outputFilename, this.xmlToSqlParser);
+                        this.userInterface.showUser("Conversion completed: " + outputFilename + " was created for INPUT command");
+                    }
+                    else {
+                        throw new Exception(outputFilename + " already exists");
+                    }
+                }
+                else {
+                    throw new Exception(xsdFilename + " does not exist");
+                }
+            }
+            else {
+                throw new Exception(xmlFilename + " does not exist");
+            }
         }
         catch (Exception e) {
             this.userInterface.showUser("Error:");
@@ -125,7 +138,7 @@ public class DataEngine {
         catch (Exception e) {
             this.userInterface.showUser("Error:");
             this.userInterface.showUser(e.getMessage());
-            //e.printStackTrace(System.out);
+            e.printStackTrace(System.out);
         }
         
         return;
