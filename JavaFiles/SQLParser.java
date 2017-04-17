@@ -14,7 +14,6 @@ import java.util.StringTokenizer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 public class SQLParser {
    ArrayList<Token> allTokens;
@@ -574,6 +573,14 @@ public class SQLParser {
                         if (temp.equals(",")) {
                             temp = this.finalTokens.get(tokenCount++).getToken();
                         }
+                        else if (this.finalTokens.get(tokenCount).getToken().equals("/")) {
+                            while (!(this.finalTokens.get(tokenCount).getToken().equals(",") || this.finalTokens.get(tokenCount).getToken().equals(")"))) {
+                                temp += this.finalTokens.get(tokenCount++).getToken();
+                                if (this.finalTokens.get(tokenCount).getToken().contains(":")) {
+                                    temp += " " + this.finalTokens.get(tokenCount++).getToken();
+                                }
+                            }
+                        }
                         if (this.makeDatatypeCheck(this.currentDatabase, tableName, selectedColumns.get(i), temp)) {
                             values.add(temp);
                         }
@@ -944,10 +951,6 @@ public class SQLParser {
                     }
                 }
                 else if (columnDataType.equalsIgnoreCase("DATE")) {
-                    // Get the rest of the date
-                    for (int i = 0; i < 4; i++) {
-                        value += this.finalTokens.get(tokenCount++).getToken();
-                    }
                     // Determine Java dateformat
                     String dateFormat;
                     if (columnLength.length() > "mm/dd/yy".length()) {
@@ -970,11 +973,6 @@ public class SQLParser {
                     dataTypeCorrect = (date != null);
                 }
                 else if (columnDataType.equalsIgnoreCase("TIME")) {
-                    // Get the rest of the date
-                    for (int i = 0; i < 4; i++) {
-                        value += this.finalTokens.get(tokenCount++).getToken();
-                    }
-                    value += " " + this.finalTokens.get(tokenCount++).getToken();
                     // Determine Java dateformat
                     String dateFormat = "MM/dd/yyyy HH:mm:ss";
                     // Simliar to: http://stackoverflow.com/questions/20231539/java-check-the-date-format-of-current-string-is-according-to-required-format-or
